@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Toybox Tanks — tabletop co-op</title>
+<style>
+:root{color-scheme:light;--ink:#303b41;--muted:#6b706c;--blue:#287ba6;--orange:#b66325;--paper:#fff8e9;--line:#d7c4a2}*{box-sizing:border-box}body{margin:0;background:#dfcbaa;background:radial-gradient(ellipse at 30% 5%,#f7ecd5,#d4b88f);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);min-height:100vh}button{font:inherit;cursor:pointer;border:1px solid #bca784;background:#fffaf0;color:var(--ink);border-radius:10px;padding:9px 16px;box-shadow:0 3px 0 #ad956d;transition:background .12s,transform .12s}button:hover{background:#fff}button:active{transform:translateY(2px);box-shadow:0 1px 0 #ad956d}button:focus-visible{outline:3px solid #167aad;outline-offset:3px}.primary{background:#236f90;color:#fff;border-color:#1e5e77;box-shadow:0 3px 0 #17465a}.primary:hover{background:#2b819f}.app{max-width:1320px;margin:auto;padding:16px 22px;outline:none}header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}.brand{font-size:23px;font-weight:850;letter-spacing:-.7px}.brand span{color:#ab5c2b}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted)}.tools{display:flex;gap:8px}.tools button{padding:6px 12px;font-size:12px}.hud{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:10px;margin-bottom:10px}.card{background:#fff9ebc9;border:1px solid #c8b28b;border-radius:12px;padding:9px 13px;box-shadow:0 2px 3px #66502a0c}.player-head{display:flex;align-items:center;justify-content:space-between;gap:7px}.pname{font-weight:800}.p1 .pname{color:var(--blue)}.p2 .pname{color:var(--orange)}.sub{font-size:11px;color:#626962;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hp{font-size:14px;font-weight:750;letter-spacing:2px}.room{text-align:center}.room strong{font-size:16px}.room .sub{font-size:12px}.stage-wrap{display:flex;justify-content:center}.stage{position:relative;width:min(100%,calc((100dvh - 248px)*16/9));aspect-ratio:16/9;min-width:0;background:#c8ae83;border:0;border-radius:15px;overflow:hidden;box-shadow:0 0 0 5px #a17b4d,0 12px 32px #70512d30,0 2px 0 #fff5d2;outline:none}.stage:focus-visible{outline:3px solid #3d8a9d;outline-offset:3px}canvas{width:100%;height:100%;display:block}.overlay{position:absolute;inset:0;display:grid;place-items:center;background:#322b224b;backdrop-filter:blur(3px);padding:14px}.overlay[hidden]{display:none}.dialog{max-width:570px;max-height:100%;overflow:auto;text-align:center;padding:25px 30px;background:#fff8eaf5;border:2px solid #c5aa7a;border-radius:20px;box-shadow:0 16px 50px #362a2240}.dialog h1{font-size:clamp(24px,3.5vw,40px);line-height:1.1;margin:7px 0 12px;letter-spacing:-1.5px}.dialog p{margin:10px 0;color:#62675e}.dialog .tag{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#8b6d43}.buttons{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:20px 0 12px}.keys{display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:left;padding:12px 0;border-top:1px solid var(--line);font-size:12px}.keys b{display:block;margin-bottom:5px}kbd{background:#eee5d2;border:1px solid #cebc99;border-bottom-width:2px;border-radius:4px;padding:1px 4px;font:11px ui-monospace,monospace;white-space:nowrap}.tiny{font-size:11px!important}.foot{display:flex;justify-content:space-between;gap:15px;margin-top:12px;font-size:12px;color:#645b4a}.foot p{margin:0}.foot strong{font-weight:750}.status{min-height:20px;margin-top:7px;font-size:11px;color:#706653;text-align:center}.debug{position:absolute;left:9px;top:9px;max-width:65%;padding:9px 12px;background:#10262bea;color:#dcf7e4;border:1px solid #8ba98f;border-radius:7px;font:10px/1.45 ui-monospace,monospace;white-space:pre-wrap;pointer-events:none}.debug[hidden]{display:none}.mobile-note{display:none}@media(max-width:700px){.app{padding:10px}.brand{font-size:20px}.eyebrow{display:none}.hud{gap:5px}.card{padding:7px}.sub{font-size:9px}.room strong{font-size:12px}.hp{font-size:11px}.foot{font-size:10px}.stage{width:100%}.dialog{padding:15px;max-width:95%}.dialog h1{font-size:26px}.keys{font-size:10px}.buttons{margin:12px 0}.mobile-note{display:block}.tools button{padding:5px 8px}}@media(max-height:650px) and (min-width:701px){.app{padding:8px 18px}header{margin-bottom:5px}.card{padding:5px 10px}.hud{margin-bottom:6px}.stage{width:min(100%,calc((100dvh - 190px)*16/9))}.foot{margin-top:7px}.dialog{padding:16px 22px}.dialog h1{font-size:28px}.buttons{margin:12px 0}}
+</style>
+</head>
+<body>
+<main class="app" id="app" tabindex="-1">
+<header><div><div class="eyebrow">A tiny tabletop co-op experiment</div><div class="brand">Toybox <span>Tanks</span></div></div><div class="tools"><button id="pauseBtn" type="button">Pause · Esc</button><button id="debugBtn" type="button" aria-pressed="false">Debug · `</button><button id="menuBtn" type="button">Menu</button></div></header>
+<section class="hud" aria-label="Game status">
+<div class="card p1"><div class="player-head"><span class="pname">● P1 · BLUE</span><span class="hp" id="hp1">♥ ♥</span></div><div class="sub" id="device1">WASD · Q/E aim · F fire</div><div class="sub" id="aim1">Turret ↑ · 270°</div></div>
+<div class="card room"><strong id="roomName">First Bounce</strong><div class="sub" id="roomInfo">Room 1 / 3 · 2 sentries</div><div class="sub" id="modeInfo">Choose co-op or solo practice</div></div>
+<div class="card p2"><div class="player-head"><span class="pname">■ P2 · ORANGE</span><span class="hp" id="hp2">♥ ♥</span></div><div class="sub" id="device2">Arrows · ,/. aim · Enter fire</div><div class="sub" id="aim2">Turret ↑ · 270°</div></div>
+</section>
+<div class="stage-wrap"><section class="stage" id="stage" tabindex="0" aria-label="Toybox Tanks game arena. Keyboard controls are listed below."><canvas id="game" aria-label="Top-down toy tank arena"></canvas><pre id="debug" class="debug" hidden></pre><div id="overlay" class="overlay"><div class="dialog" id="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle"></div></div></section></div>
+<footer class="foot"><p><strong>P1</strong> WASD move · Q/E turret · F fire<br><strong>P2</strong> Arrows move · ,/. turret · Enter fire</p><p>One bounce. Three shells each. No friendly fire.<br>Esc pause · R retry on defeat · ` debug</p><p>Gamepads optional: left stick move, right stick aim.<br>RT / A fire · Start pause. Keyboard always works.</p></footer>
+<div id="status" class="status" role="status" aria-live="polite">Three handcrafted rooms. Both players return after each clear.</div>
+</main>
+<script>
+'use strict';
+// ─── CONFIGURATION ──────────────────────────────────────────────────────
+// All speeds use logical pixels / second; angles use radians.
+const CONFIG = {
+  width:960, height:540, tile:40, gridY:10, columns:24, rows:13,
+  fixedStep:1/120, maxFrameTime:0.10, maxSteps:16,
+  playerSpeed:185, turretRotationSpeed:2.8, shellSpeed:330,
+  firingCooldown:0.28, activeShellLimit:3, enemyFiringInterval:2.7,
+  playerHealth:2, postHitInvulnerability:1.25,
+  tankRadius:15, shellRadius:3, enemyShellSpeedFactor:0.72,
+  enemyTurnSpeed:1.9, enemyTelegraph:0.50, stickDeadzone:0.22,
+  maxProjectileContacts:4, separationEpsilon:0.025
+};
+// ─── EDITABLE MAP DATA ───────────────────────────────────────────────────
+// Exactly 24 × 13. # = solid wooden block; . = floor; 1/2 = spawns;
+// S = stationary sentry. Each room must contain exactly one 1 and one 2.
+// No patrols or destructible terrain. All rooms use the same loader.
+const MAPS = [
+ {name:'First Bounce',hint:'Try the outer rails: every shell gets one bounce.',expectedEnemies:2,grid:`########################
+#......................#
+#......................#
+#...S..##.....##...S...#
+#......##.....##.......#
+#......................#
+#......................#
+#.........####.........#
+#......................#
+#......................#
+#...1..............2...#
+#......................#
+########################`},
+ {name:'Block Party',hint:'Take different routes. Corners are cover, not dead ends.',expectedEnemies:3,grid:`########################
+#......................#
+#..S......#..S.........#
+#....#....#........#...#
+#....#....#....#...#...#
+#....#....#....#...#...#
+#....#.........#...#...#
+#....#.........#.......#
+#........###...#.....S.#
+#......................#
+#..1..............2....#
+#......................#
+########################`},
+ {name:'Together Through',hint:'Cover each other. Either surviving player can finish.',expectedEnemies:4,grid:`########################
+#......................#
+#..S..........S........#
+#.........#.....###..S.#
+#...###...#............#
+#.........#............#
+#.........#............#
+#..................#...#
+#.....###.....###..#...#
+#...........S......#...#
+#..1.................2.#
+#......................#
+########################`}
+];
+// ─── MAP VALIDATION & ENTITY CREATION ─────────────────────────────────────
+function validateMap(data){
+ const errors=[], rows=String(data.grid).trim().split(/\r?\n/), count={'1':0,'2':0,'S':0};
+ if(rows.length!==CONFIG.rows) errors.push(`Expected ${CONFIG.rows} rows, got ${rows.length}.`);
+ rows.forEach((row,y)=>{
+  if(row.length!==CONFIG.columns) errors.push(`Row ${y+1}: expected ${CONFIG.columns} cells, got ${row.length}.`);
+  [...row].forEach((c,x)=>{if(!'#.12S'.includes(c))errors.push(`Unknown symbol "${c}" at row ${y+1}, column ${x+1}.`);if(c in count)count[c]++;if((y===0||y===CONFIG.rows-1||x===0||x===CONFIG.columns-1)&&c!=='#')errors.push(`Open border at row ${y+1}, column ${x+1}.`);});
+ });
+ for(const p of ['1','2'])if(count[p]!==1)errors.push(`Need exactly one player ${p} spawn; found ${count[p]}.`);
+ if(count.S<1)errors.push('At least one sentry is required.');
+ if(data.expectedEnemies!==undefined&&count.S!==data.expectedEnemies)errors.push(`Expected ${data.expectedEnemies} sentries; found ${count.S}.`);
+ // Every non-wall tile must be reachable from player 1, including the other spawn.
+ if(!errors.length){const visited=new Set(), stack=[];rows.forEach((r,y)=>{const x=r.indexOf('1');if(x>=0)stack.push([x,y]);});while(stack.length){const [x,y]=stack.pop(),k=x+','+y;if(visited.has(k)||!rows[y]||!rows[y][x]||rows[y][x]==='#')continue;visited.add(k);stack.push([x+1,y],[x-1,y],[x,y+1],[x,y-1]);}rows.forEach((r,y)=>[...r].forEach((c,x)=>{if(c!=='#'&&!visited.has(x+','+y))errors.push(`Unreachable floor at row ${y+1}, column ${x+1}.`);}));}
+ return {ok:errors.length===0,errors,rows};
+}
+function tank(id,faction,x,y){return{id,faction,x,y,spawnX:x,spawnY:y,r:CONFIG.tankRadius,angle:-Math.PI/2,hp:faction==='player'?CONFIG.playerHealth:1,alive:true,invuln:0,cooldown:0,charge:0,targetId:null,track:0};}
+function makeWorld(index,mode){
+ const data=MAPS[index];if(!data)throw Error('Unknown room '+index);
+ const checked=validateMap(data);if(!checked.ok)throw Error(`${data.name}:\n${checked.errors.join('\n')}`);
+ const w={room:index,mode,state:'playing',time:0,walls:[],players:[],enemies:[],shells:[],effects:[],events:[],nextShell:0,shots:0,bounces:0};
+ checked.rows.forEach((row,y)=>[...row].forEach((c,x)=>{const px=x*CONFIG.tile,py=CONFIG.gridY+y*CONFIG.tile;if(c==='#')w.walls.push({x:px,y:py,w:CONFIG.tile,h:CONFIG.tile});else if(c==='1'||(c==='2'&&mode==='coop'))w.players.push(tank('p'+c,'player',px+20,py+20));else if(c==='S'){const e=tank('s'+w.enemies.length,'enemy',px+20,py+20);e.angle=Math.PI/2;e.cooldown=1.2+w.enemies.length*.38;w.enemies.push(e);}}));
+ w.players.sort((a,b)=>a.id.localeCompare(b.id));record(w,'Room loaded: '+data.name);return w;
+}
+function record(w,text){w.events.unshift(w.time.toFixed(2)+'  '+text);w.events.length=Math.min(7,w.events.length);}
+// ─── COLLISION ───────────────────────────────────────────────────────────
+// Ray against shell-radius-expanded AABB. Corner ties are deliberately
+// rejected (shell removed), not given an unstable or repeated reflection.
+function rayBox(x,y,dx,dy,box,r=0){
+ const lo=[box.x-r,box.y-r],hi=[box.x+box.w+r,box.y+box.h+r],p=[x,y],d=[dx,dy];
+ let near=-Infinity,far=Infinity,nx=0,ny=0,ambiguous=false;
+ for(let axis=0;axis<2;axis++){
+  if(Math.abs(d[axis])<1e-10){if(p[axis]<lo[axis]||p[axis]>hi[axis])return null;continue;}
+  let a=(lo[axis]-p[axis])/d[axis],b=(hi[axis]-p[axis])/d[axis];const normal=d[axis]>0?-1:1;
+  if(a>b)[a,b]=[b,a];
+  if(a>near+1e-7){near=a;nx=axis===0?normal:0;ny=axis===1?normal:0;ambiguous=false;}
+  else if(Math.abs(a-near)<1e-7){ambiguous=true;}
+  far=Math.min(far,b);if(near>far+1e-8)return null;
+ }
+ if(far<0||near>1||near< -1e-7)return null;
+ return{t:Math.max(0,near),nx,ny,ambiguous};
+}
+function firstWall(w,x,y,dx,dy,r=CONFIG.shellRadius){
+ let best=null;
+ for(const wall of w.walls){const h=rayBox(x,y,dx,dy,wall,r);if(!h)continue;
+  if(!best||h.t<best.t-1e-7)best={...h,wall};
+  else if(Math.abs(h.t-best.t)<1e-7){if(h.ambiguous||h.nx!==best.nx||h.ny!==best.ny)best.ambiguous=true;}
+ }return best;
+}
+function rayCircle(x,y,dx,dy,t){
+ const ox=x-t.x,oy=y-t.y,r=t.r+CONFIG.shellRadius,c=ox*ox+oy*oy-r*r;
+ if(c<=0)return 0;const a=dx*dx+dy*dy;if(a<1e-12)return null;
+ const b=ox*dx+oy*dy,disc=b*b-a*c;if(disc<0)return null;
+ const hit=(-b-Math.sqrt(disc))/a;return hit>=0&&hit<=1?hit:null;
+}
+function canHit(shell,t){return t.alive&&shell.faction!==t.faction;}
+function reflect(vx,vy,nx,ny){const d=vx*nx+vy*ny;return{x:vx-2*d*nx,y:vy-2*d*ny};}
+function shellWallContact(w,s,h){
+ if(h.ambiguous||s.bounces>=1){s.dead=true;poof(w,s.x,s.y,'spark');return false;}
+ const v=reflect(s.vx,s.vy,h.nx,h.ny);s.vx=v.x;s.vy=v.y;s.bounces++;w.bounces++;
+ s.x+=h.nx*CONFIG.separationEpsilon;s.y+=h.ny*CONFIG.separationEpsilon;
+ poof(w,s.x,s.y,'spark');record(w,'Bounce · '+s.owner);return true;
+}
+function advanceShell(w,s,distance){
+ let remaining=distance,contacts=0;
+ while(remaining>1e-7&&!s.dead&&contacts++<CONFIG.maxProjectileContacts){
+  const speed=Math.hypot(s.vx,s.vy);if(speed<1e-7){s.dead=true;break;}
+  const dx=s.vx/speed*remaining,dy=s.vy/speed*remaining,wall=firstWall(w,s.x,s.y,dx,dy);
+  let hitTank=null,tHit=Infinity;
+  for(const t of [...w.players,...w.enemies]){if(!canHit(s,t))continue;const ht=rayCircle(s.x,s.y,dx,dy,t);if(ht!==null&&ht<tHit){tHit=ht;hitTank=t;}}
+  if(hitTank&&(!wall||tHit<wall.t-1e-7)){s.x+=dx*tHit;s.y+=dy*tHit;damage(w,hitTank);s.dead=true;break;}
+  if(!wall){s.x+=dx;s.y+=dy;remaining=0;break;}
+  s.x+=dx*wall.t;s.y+=dy*wall.t;remaining*=1-wall.t;
+  if(!shellWallContact(w,s,wall))break;
+ }
+ if(remaining>1e-7&&!s.dead)s.dead=true;
+ if(s.x<0||s.x>CONFIG.width||s.y<0||s.y>CONFIG.height)s.dead=true;
+}
+// Tanks use a circular collision shape; axis-separated movement slides along
+// walls. Small fixed-time substeps keep overlap correction stable.
+function moveTank(w,t,dx,dy){
+ const pieces=Math.max(1,Math.ceil(Math.max(Math.abs(dx),Math.abs(dy))/5));
+ for(let k=0;k<pieces;k++)for(const axis of ['x','y']){
+  const amount=(axis==='x'?dx:dy)/pieces;t[axis]+=amount;
+  for(let iteration=0;iteration<3;iteration++){
+   let adjusted=false;
+   for(const b of w.walls){const qx=Math.max(b.x,Math.min(t.x,b.x+b.w)),qy=Math.max(b.y,Math.min(t.y,b.y+b.h)),ox=t.x-qx,oy=t.y-qy,dist=Math.hypot(ox,oy);
+    if(dist<t.r-1e-8){if(dist>1e-8){const push=t.r-dist;t.x+=ox/dist*push;t.y+=oy/dist*push;}else{t[axis]-=amount;}adjusted=true;}
+   }if(!adjusted)break;
+  }
+ }
+}
+function hasLOS(w,a,b){return !firstWall(w,a.x,a.y,b.x-a.x,b.y-a.y,CONFIG.shellRadius);}
+// ─── COMBAT, ENEMY BEHAVIOR & FIXED-STEP SIMULATION ────────────────────────
+function poof(w,x,y,type){w.effects.push({x,y,type,age:0,life:type==='spark'?.22:.52,seed:w.effects.length*1.7+w.time});}
+function damage(w,t){
+ if(!t.alive||t.invuln>0)return false;
+ t.hp=Math.max(0,t.hp-1);record(w,'Hit · '+t.id+' · HP '+t.hp);poof(w,t.x,t.y,'poof');
+ if(t.hp<=0){t.alive=false;t.charge=0;record(w,'Disabled · '+t.id);}else t.invuln=CONFIG.postHitInvulnerability;
+ return true;
+}
+function activeShells(w,id){return w.shells.filter(s=>!s.dead&&s.owner===id).length;}
+function shoot(w,t){
+ if(!t.alive||t.cooldown>1e-8)return false;
+ if(t.faction==='player'&&activeShells(w,t.id)>=CONFIG.activeShellLimit)return false;
+ const speed=CONFIG.shellSpeed*(t.faction==='enemy'?CONFIG.enemyShellSpeedFactor:1);
+ const s={id:++w.nextShell,owner:t.id,faction:t.faction,x:t.x,y:t.y,vx:Math.cos(t.angle)*speed,vy:Math.sin(t.angle)*speed,bounces:0,dead:false};
+ w.shells.push(s);t.cooldown=t.faction==='player'?CONFIG.firingCooldown:CONFIG.enemyFiringInterval;w.shots++;
+ // Sweep all the way out of the barrel, never spawn beyond a nearby wall.
+ advanceShell(w,s,23);return true;
+}
+function angleDelta(a,b){return Math.atan2(Math.sin(b-a),Math.cos(b-a));}
+function turnToward(a,b,max){const d=angleDelta(a,b);return a+Math.max(-max,Math.min(max,d));}
+function updateEnemy(w,e,dt){
+ if(!e.alive)return;
+ const visible=w.players.filter(p=>p.alive&&hasLOS(w,e,p)).sort((a,b)=>Math.hypot(a.x-e.x,a.y-e.y)-Math.hypot(b.x-e.x,b.y-e.y));
+ const target=visible[0];
+ if(!target){e.charge=0;e.targetId=null;return;}
+ if(e.targetId!==target.id){e.charge=0;e.targetId=target.id;}
+ const aim=Math.atan2(target.y-e.y,target.x-e.x);e.angle=turnToward(e.angle,aim,CONFIG.enemyTurnSpeed*dt);
+ if(e.cooldown<=0&&Math.abs(angleDelta(e.angle,aim))<.09){
+  e.charge+=dt;
+  if(e.charge>=CONFIG.enemyTelegraph){
+   // Require actual barrel alignment and unobstructed shell-radius clearance
+   // at the firing instant. No prediction and no planned ricochets.
+   if(hasLOS(w,e,target))shoot(w,e);e.charge=0;
+  }
+ }else e.charge=0;
+}
+function commitOutcome(w,state){
+ if(w.state!=='playing')return;
+ w.state=state;w.shells.length=0;for(const e of w.enemies)e.charge=0;
+ record(w,state==='defeat'?'DEFEAT':state==='completed'?'VICTORY · all rooms':'VICTORY · room clear');
+}
+function evaluateOutcome(w){
+ if(w.state!=='playing')return;
+ if(w.players.every(p=>!p.alive))commitOutcome(w,'defeat');
+ else if(w.enemies.every(e=>!e.alive))commitOutcome(w,w.room===MAPS.length-1?'completed':'cleared');
+}
+function stepWorld(w,dt,commands=[]){
+ if(w.state!=='playing')return;
+ w.time+=dt;
+ for(const t of [...w.players,...w.enemies]){t.cooldown=Math.max(0,t.cooldown-dt);t.invuln=Math.max(0,t.invuln-dt);}
+ w.players.forEach((p,i)=>{if(!p.alive)return;const c=commands[i]||{};let mx=c.x||0,my=c.y||0;const len=Math.hypot(mx,my);if(len>1){mx/=len;my/=len;}moveTank(w,p,mx*CONFIG.playerSpeed*dt,my*CONFIG.playerSpeed*dt);p.track+=Math.hypot(mx,my)*dt*12;if(c.aim!==undefined)p.angle=c.aim;else p.angle+=(c.turn||0)*CONFIG.turretRotationSpeed*dt;if(c.fire)shoot(w,p);});
+ for(const e of w.enemies)updateEnemy(w,e,dt);
+ for(const s of w.shells)if(!s.dead)advanceShell(w,s,Math.hypot(s.vx,s.vy)*dt);
+ w.shells=w.shells.filter(s=>!s.dead);
+ for(const f of w.effects)f.age+=dt;w.effects=w.effects.filter(f=>f.age<f.life);
+ // Do not short-circuit during projectile processing: defeat has priority
+ // when the last enemy and last player fall in the same simulation step.
+ evaluateOutcome(w);
+}
+// ─── INPUT: TWO KEYBOARDS + OPTIONAL GAMEPADS ─────────────────────────────
+const held=new Set();let padAssignments=[],padNeutral=[true,true],padStartDown=new Map();
+const KEYSETS=[{left:'KeyA',right:'KeyD',up:'KeyW',down:'KeyS',ccw:'KeyQ',cw:'KeyE',fire:'KeyF'},{left:'ArrowLeft',right:'ArrowRight',up:'ArrowUp',down:'ArrowDown',ccw:'Comma',cw:'Period',fire:'Enter'}];
+const CONTROL_KEYS=new Set([...KEYSETS.flatMap(k=>Object.values(k)),'Escape','KeyR','Backquote']);
+const app=document.getElementById('app'),stage=document.getElementById('stage');
+function clearInputs(){held.clear();padNeutral=[true,true];}
+function focusGame(){stage.focus({preventScroll:true});}
+function ownsFocus(){return app.contains(document.activeElement);}
+window.addEventListener('keydown',ev=>{
+ if(!ownsFocus()||!CONTROL_KEYS.has(ev.code))return;
+ if(ev.target.tagName==='BUTTON'&&ev.code==='Enter'&&world.state!=='playing')return;
+ ev.preventDefault();
+ if(ev.code==='Backquote'){if(!ev.repeat)toggleDebug();return;}
+ if(ev.code==='Escape'){if(!ev.repeat)togglePause();return;}
+ if(ev.code==='KeyR'){if(!ev.repeat&&world.state==='defeat')restartRoom();return;}
+ if(world.state==='playing')held.add(ev.code);
+});
+window.addEventListener('keyup',ev=>{held.delete(ev.code);if(ownsFocus()&&CONTROL_KEYS.has(ev.code)&&!(ev.target.tagName==='BUTTON'&&ev.code==='Enter'))ev.preventDefault();});
+window.addEventListener('blur',()=>{clearInputs();pauseGame('Focus lost — resume when you are ready.');});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){clearInputs();pauseGame('Tab hidden — the tabletop is waiting.');}});
+app.addEventListener('focusout',()=>{queueMicrotask(()=>{if(!ownsFocus()){clearInputs();pauseGame('Game focus lost — resume when ready.');}});});
+stage.addEventListener('pointerdown',ev=>{if(ev.target===canvas||ev.target===stage)focusGame();});
+function stick(x=0,y=0){const len=Math.hypot(x,y);if(len<=CONFIG.stickDeadzone)return{x:0,y:0};const scale=Math.min(1,(len-CONFIG.stickDeadzone)/(1-CONFIG.stickDeadzone))/len;return{x:x*scale,y:y*scale};}
+function pollPads(){
+ let pads=[];try{pads=navigator.getGamepads?Array.from(navigator.getGamepads()).filter(p=>p&&p.connected):[];}catch(_){pads=[];}
+ padAssignments=pads.slice(0,world.mode==='solo'?1:2);
+ for(const p of pads){const down=!!p.buttons[9]?.pressed,prev=padStartDown.get(p.index)||false;if(down&&!prev&&padAssignments.some(q=>q.index===p.index)){togglePause();}padStartDown.set(p.index,down);}
+ for(const key of padStartDown.keys())if(!pads.some(p=>p.index===key))padStartDown.delete(key);
+}
+function readCommand(i){
+ const k=KEYSETS[i],keyboard={x:Number(held.has(k.right))-Number(held.has(k.left)),y:Number(held.has(k.down))-Number(held.has(k.up)),turn:Number(held.has(k.cw))-Number(held.has(k.ccw)),fire:held.has(k.fire)};
+ const p=padAssignments[i];if(!p)return keyboard;
+ const left=stick(p.axes[0],p.axes[1]),right=stick(p.axes[2],p.axes[3]),fire=!!(p.buttons[0]?.pressed||p.buttons[7]?.pressed||p.buttons[7]?.value>.3);
+ if(padNeutral[i]){if(!left.x&&!left.y&&!right.x&&!right.y&&!fire)padNeutral[i]=false;return keyboard;}
+ if(!keyboard.x&&!keyboard.y){keyboard.x=left.x;keyboard.y=left.y;}
+ if(!keyboard.turn&&(right.x||right.y))keyboard.aim=Math.atan2(right.y,right.x);
+ keyboard.fire=keyboard.fire||fire;return keyboard;
+}
+// ─── PROCEDURAL CANVAS RENDERING ─────────────────────────────────────────
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+let backingScaleX=1,backingScaleY=1,debugEnabled=false,renderRate=0,simRate=0;
+function resizeCanvas(){const r=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;const width=Math.max(1,Math.round(r.width*dpr)),height=Math.max(1,Math.round(r.height*dpr));if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}backingScaleX=width/CONFIG.width;backingScaleY=height/CONFIG.height;}
+new ResizeObserver(resizeCanvas).observe(canvas);window.addEventListener('resize',resizeCanvas);
+function rounded(x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r);if(fill){ctx.fillStyle=fill;ctx.fill();}if(stroke){ctx.strokeStyle=stroke;ctx.stroke();}}
+function drawFloor(w){
+ ctx.fillStyle='#e6d3ac';ctx.fillRect(0,0,960,540);
+ for(let y=0;y<540;y+=45){ctx.fillStyle=(y/45)%2?'#e4cea5':'#ead8b6';ctx.fillRect(0,y,960,44);ctx.strokeStyle='#c3a16d25';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,y+.5);ctx.lineTo(960,y+.5);ctx.stroke();}
+ ctx.strokeStyle='#ab89552c';ctx.lineWidth=.7;
+ for(let i=0;i<38;i++){const x=(i*151+37)%960,y=(i*83+19)%540;ctx.beginPath();ctx.moveTo(x,y);ctx.bezierCurveTo(x+20,y-3,x+50,y+4,x+85,y);ctx.stroke();}
+ ctx.fillStyle='#8c755322';ctx.font='800 34px system-ui';ctx.textAlign='center';ctx.fillText('TOYBOX',480,286);ctx.font='11px system-ui';ctx.fillText('ONE BOUNCE • BIG TEAMWORK',480,307);
+ // Quiet spawn markers, never treated as collision or extra entities.
+ w.players.forEach(p=>{ctx.strokeStyle=p.id==='p1'?'#297fa43b':'#be6b303b';ctx.setLineDash([3,5]);ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(p.spawnX,p.spawnY,23,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);});
+}
+function drawWall(b){
+ rounded(b.x+2,b.y+5,37,37,5,'#6548262a');
+ rounded(b.x+1,b.y+1,38,37,5,'#b88650','#9a6d3c');
+ rounded(b.x+3,b.y+2,34,31,4,'#d4aa70');
+ ctx.strokeStyle='#eccb92';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(b.x+7,b.y+5);ctx.lineTo(b.x+32,b.y+5);ctx.stroke();
+ ctx.strokeStyle='#b4864e66';ctx.lineWidth=.8;
+ for(let j=0;j<3;j++){const yy=b.y+12+j*7;ctx.beginPath();ctx.moveTo(b.x+6,yy);ctx.bezierCurveTo(b.x+15,yy-3,b.x+23,yy+3,b.x+33,yy-1);ctx.stroke();}
+ ctx.fillStyle='#aa7b4955';ctx.beginPath();ctx.ellipse(b.x+25,b.y+22,4,2,0,0,7);ctx.fill();
+}
+function drawAim(w,p){
+ if(!p.alive)return;
+ const dx=Math.cos(p.angle),dy=Math.sin(p.angle),hit=firstWall(w,p.x,p.y,dx*350,dy*350),len=hit?350*hit.t:110;
+ ctx.strokeStyle=p.id==='p1'?'#17688980':'#ae572980';ctx.lineWidth=1.25;ctx.setLineDash([4,6]);ctx.beginPath();ctx.moveTo(p.x+dx*27,p.y+dy*27);ctx.lineTo(p.x+dx*len,p.y+dy*len);ctx.stroke();
+ if(hit&&!hit.ambiguous){const v=reflect(dx,dy,hit.nx,hit.ny),x=p.x+dx*len+hit.nx*.05,y=p.y+dy*len+hit.ny*.05,h2=firstWall(w,x,y,v.x*130,v.y*130),d2=h2?130*h2.t:130;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+v.x*d2,y+v.y*d2);ctx.stroke();ctx.setLineDash([]);ctx.beginPath();ctx.arc(x,y,3.5,0,7);ctx.stroke();}
+ ctx.setLineDash([]);
+}
+function drawTank(t,w){
+ if(!t.alive&&t.faction==='enemy')return;
+ const isP=t.faction==='player',blue=t.id==='p1',main=isP?(blue?'#378ebb':'#ed9c40'):'#b86280',dark=isP?(blue?'#226080':'#9d5e27'):'#78384e',light=isP?(blue?'#8bd5ec':'#ffd18b'):'#e4a2b9';
+ ctx.save();ctx.translate(t.x,t.y);
+ if(!t.alive){ctx.globalAlpha=.8;rounded(-17,-13,34,30,7,'#9a8e79');rounded(-12,-12,24,24,5,'#b1a38b','#7e7769');ctx.lineWidth=3;ctx.strokeStyle='#665f50';ctx.beginPath();ctx.moveTo(-6,-6);ctx.lineTo(6,6);ctx.moveTo(6,-6);ctx.lineTo(-6,6);ctx.stroke();ctx.fillStyle='#514e46';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText(t.id.toUpperCase()+' OUT',0,29);ctx.restore();return;}
+ if(t.invuln>0){ctx.globalAlpha=.58+.42*Math.abs(Math.sin(w.time*20));ctx.strokeStyle='#fff9dd';ctx.lineWidth=2.5;ctx.setLineDash([5,3]);ctx.beginPath();ctx.arc(0,0,21,0,7);ctx.stroke();ctx.setLineDash([]);}
+ rounded(-17,-12+5,34,27,7,'#53422830');
+ rounded(-17,-13,9,27,4,'#454e50');rounded(8,-13,9,27,4,'#454e50');
+ ctx.strokeStyle='#87918a';ctx.lineWidth=1.5;for(let j=-9;j<12;j+=5){const off=(t.track%5);ctx.beginPath();ctx.moveTo(-15,j+off-2);ctx.lineTo(-10,j+off-2);ctx.moveTo(10,j+off-2);ctx.lineTo(15,j+off-2);ctx.stroke();}
+ if(isP)rounded(-12,-14,24,28,6,main,dark);
+ else{ctx.fillStyle=main;ctx.strokeStyle=dark;ctx.beginPath();ctx.moveTo(0,-17);ctx.lineTo(14,-5);ctx.lineTo(12,13);ctx.lineTo(-12,13);ctx.lineTo(-14,-5);ctx.closePath();ctx.fill();ctx.stroke();}
+ ctx.strokeStyle=light;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-7,-10);ctx.lineTo(7,-10);ctx.stroke();
+ // A distinct square badge for P2, round badge for P1, diamond enemies.
+ ctx.fillStyle=dark;if(isP&&blue){ctx.beginPath();ctx.arc(-7,8,2.5,0,7);ctx.fill();}else ctx.fillRect(-9,6,5,5);
+ ctx.save();ctx.rotate(t.angle);
+ rounded(2,-4.5,21,9,3,dark);rounded(7,-3,17,6,2,main);rounded(20,-5,5,10,2,dark);ctx.fillStyle='#fff4c4';ctx.fillRect(23,-2,2,4);
+ if(t.charge>0){const q=t.charge/CONFIG.enemyTelegraph;ctx.fillStyle=`rgba(255,238,138,${.35+q*.65})`;ctx.beginPath();ctx.arc(25,0,5+q*7,0,7);ctx.fill();ctx.strokeStyle='#fff0ad';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,19+q*3,0,7);ctx.stroke();}
+ ctx.restore();ctx.fillStyle=dark;ctx.beginPath();ctx.arc(0,0,10,0,7);ctx.fill();ctx.fillStyle=main;ctx.beginPath();ctx.arc(0,-1,8,0,7);ctx.fill();
+ ctx.save();ctx.rotate(t.angle);ctx.fillStyle=light;ctx.beginPath();ctx.moveTo(8,0);ctx.lineTo(2,-3);ctx.lineTo(2,3);ctx.closePath();ctx.fill();ctx.restore();
+ ctx.fillStyle=isP?'#263d46':'#633748';ctx.font='800 9px system-ui';ctx.textAlign='center';ctx.fillText(isP?t.id.toUpperCase():'S',0,-23);
+ ctx.restore();
+}
+function drawShell(s){
+ ctx.save();ctx.translate(s.x,s.y);ctx.rotate(Math.atan2(s.vy,s.vx));
+ ctx.strokeStyle=s.faction==='enemy'?'#7a274e':'#6d5c2d';ctx.lineWidth=1;ctx.fillStyle=s.faction==='enemy'?'#f589ac':'#fff5b1';
+ rounded(-5,-3,10,6,3,ctx.fillStyle,ctx.strokeStyle);ctx.fillStyle='#ffffffb0';ctx.fillRect(-1,-1,3,1.5);
+ if(s.bounces){ctx.strokeStyle='#fff';ctx.beginPath();ctx.arc(0,0,5,0,7);ctx.stroke();}ctx.restore();
+}
+function drawEffect(f){
+ const p=f.age/f.life;ctx.save();ctx.globalAlpha=1-p;
+ if(f.type==='spark'){ctx.strokeStyle='#fff6b7';ctx.lineWidth=2;for(let i=0;i<5;i++){const a=i*1.256+f.seed,r=3+p*12;ctx.beginPath();ctx.moveTo(f.x+Math.cos(a)*r*.4,f.y+Math.sin(a)*r*.4);ctx.lineTo(f.x+Math.cos(a)*r,f.y+Math.sin(a)*r);ctx.stroke();}}
+ else{ctx.fillStyle='#fff6df';for(let i=0;i<6;i++){const a=i*Math.PI/3+f.seed;ctx.beginPath();ctx.arc(f.x+Math.cos(a)*p*22,f.y+Math.sin(a)*p*22,3+(1-p)*5,0,7);ctx.fill();}}ctx.restore();
+}
+function drawGeometry(w){
+ ctx.save();ctx.lineWidth=.8;ctx.strokeStyle='#00eac177';for(const b of w.walls)ctx.strokeRect(b.x,b.y,b.w,b.h);
+ for(const t of [...w.players,...w.enemies]){ctx.strokeStyle=t.alive?'#003eff':'#777';ctx.beginPath();ctx.arc(t.x,t.y,t.r,0,7);ctx.stroke();ctx.beginPath();ctx.moveTo(t.x,t.y);ctx.lineTo(t.x+Math.cos(t.angle)*27,t.y+Math.sin(t.angle)*27);ctx.stroke();}
+ ctx.strokeStyle='#f000ee';for(const s of w.shells){ctx.beginPath();ctx.arc(s.x,s.y,CONFIG.shellRadius,0,7);ctx.stroke();}ctx.restore();
+}
+function render(w){
+ ctx.setTransform(backingScaleX,0,0,backingScaleY,0,0);ctx.clearRect(0,0,960,540);drawFloor(w);
+ for(const p of w.players)drawAim(w,p);
+ for(const b of w.walls)drawWall(b);
+ for(const e of w.enemies)drawTank(e,w);
+ for(const p of w.players)drawTank(p,w);
+ for(const s of w.shells)drawShell(s);
+ for(const f of w.effects)drawEffect(f);
+ if(debugEnabled)drawGeometry(w);
+}
+// ─── UI & GAME STATE ─────────────────────────────────────────────────────
+let world,initialMapError='';
+try{
+ const invalid=MAPS.map(m=>{const v=validateMap(m);return v.ok?'':m.name+':\n'+v.errors.join('\n');}).filter(Boolean);
+ if(invalid.length)throw Error(invalid.join('\n\n'));
+ world=makeWorld(0,'coop');world.state='menu';
+}catch(error){
+ initialMapError=String(error.message);
+ world={room:0,mode:'coop',state:'error',time:0,walls:[],players:[],enemies:[],shells:[],effects:[],events:[],nextShell:0,shots:0,bounces:0};
+}
+let lastShownState='',pauseReason=initialMapError,accumulator=0;
+const $=id=>document.getElementById(id),overlay=$('overlay'),dialog=$('dialog');
+const controlHTML='<div class="keys"><div><b>● BLUE / P1</b><kbd>W A S D</kbd> move<br><kbd>Q</kbd> / <kbd>E</kbd> turn turret · <kbd>F</kbd> fire</div><div><b>■ ORANGE / P2</b><kbd>↑ ← ↓ →</kbd> move<br><kbd>,</kbd> / <kbd>.</kbd> turn turret · <kbd>Enter</kbd> fire</div></div>';
+function button(label,action,primary=false){return `<button type="button" data-action="${action}" class="${primary?'primary':''}">${label}</button>`;}
+function setOverlay(){
+ if(lastShownState===world.state)return;lastShownState=world.state;
+ clearInputs();accumulator=0;overlay.hidden=world.state==='playing';$('pauseBtn').textContent=world.state==='paused'?'Resume · Esc':'Pause · Esc';
+ if(world.state==='playing'){focusGame();return;}
+ let title='',tag='',text='',actions='',extra='';
+ switch(world.state){
+ case'menu':title='Small tanks.<br>Big teamwork.';tag='Toybox Tanks · 3 tabletop rooms';text='Move freely. Aim separately. Bounce once.<br>Clear the room together — only one of you needs to survive.';actions=button('Start two-player co-op','coop',true)+button('Solo practice','solo');extra=controlHTML+'<p class="tiny">Two hits per player · three active shells each · no friendly fire.<br>Dashed paths show your aim and first bounce. Muzzle glow means a sentry is about to fire.</p>';break;
+ case'paused':title='Tabletop timeout';tag='Paused';text=pauseReason||'Take a breath. No shells move while paused.';actions=button('Resume','resume',true)+button('Restart this room','retry')+button('Main menu','menu');extra=controlHTML;break;
+ case'cleared':title='Room cleared!';tag=`Room ${world.room+1} / 3`;text='Both tanks are repaired for the next room.<br>Next up: '+MAPS[world.room+1].name;actions=button('Next room →','next',true)+button('Replay this room','retry');break;
+ case'defeat':title='A tiny setback';tag='Both tanks disabled';text='The whole team gets a fresh start in this room.<br>No lives to lose. Try a different angle.';actions=button('Retry room · R','retry',true)+button('Main menu','menu');break;
+ case'completed':title='A clean toybox sweep!';tag='All 3 rooms complete';text='You cleared First Bounce, Block Party, and Together Through.<br>The tabletop belongs to the team.';actions=button('Replay all rooms','replay',true)+button('Main menu','menu');break;
+ case'error':title='This map needs a fix';tag='Map validation';text='';actions=button('Recheck / main menu','menu');break;
+ }
+ dialog.innerHTML=`<div class="tag">${tag}</div><h1 id="dialogTitle">${title}</h1><p id="dialogText">${text}</p><div class="buttons">${actions}</div>${extra}`;
+ if(world.state==='error'){$('dialogText').textContent=pauseReason;$('dialogText').style.whiteSpace='pre-wrap';}
+ const first=dialog.querySelector('button');if(first)first.focus({preventScroll:true});
+}
+function loadRoom(index,mode=world.mode){
+ try{const fresh=makeWorld(index,mode);world=fresh;clearInputs();accumulator=0;lastShownState='';pauseReason='';setOverlay();updateHUD();}
+ catch(error){pauseReason=String(error.message);world.state='error';lastShownState='';setOverlay();}
+}
+function restartRoom(){loadRoom(world.room,world.mode);}
+function pauseGame(reason=''){if(world.state==='playing'){pauseReason=reason;world.state='paused';clearInputs();accumulator=0;setOverlay();}}
+function resumeGame(){if(world.state==='paused'){world.state='playing';pauseReason='';clearInputs();accumulator=0;setOverlay();}}
+function togglePause(){if(world.state==='playing')pauseGame();else if(world.state==='paused')resumeGame();}
+function showMenu(){try{world=makeWorld(0,'coop');world.state='menu';pauseReason='';}catch(error){world.state='error';pauseReason=String(error.message);}lastShownState='';clearInputs();setOverlay();updateHUD();}
+function toggleDebug(){debugEnabled=!debugEnabled;$('debug').hidden=!debugEnabled;$('debugBtn').setAttribute('aria-pressed',String(debugEnabled));}
+function act(action){
+ if(action==='coop'||action==='solo')loadRoom(0,action);
+ else if(action==='resume')resumeGame();else if(action==='retry')restartRoom();else if(action==='next'&&world.state==='cleared')loadRoom(world.room+1);else if(action==='replay')loadRoom(0);else if(action==='menu')showMenu();
+}
+// Avoid replacing a focused button until its click has been dispatched.
+ dialog.addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(b)act(b.dataset.action);});
+$('pauseBtn').addEventListener('click',togglePause);$('debugBtn').addEventListener('click',()=>{toggleDebug();if(world.state==='playing')focusGame();});$('menuBtn').addEventListener('click',showMenu);
+function directionLabel(a){const deg=((a*180/Math.PI)%360+360)%360,arrows=['→','↘','↓','↙','←','↖','↑','↗'];return arrows[Math.round(deg/45)%8]+' · '+Math.round(deg)%360+'°';}
+function updateHUD(){
+ $('roomName').textContent=MAPS[world.room].name;
+ const left=world.enemies.filter(e=>e.alive).length;
+ $('roomInfo').textContent=`Room ${world.room+1} / ${MAPS.length} · ${left} ${left===1?'sentry':'sentries'} left`;
+ $('modeInfo').textContent=world.state==='menu'?'Choose co-op or solo practice':world.mode==='solo'?'Solo practice · P1 only':'Local co-op · one survivor is enough';
+ for(let i=0;i<2;i++){
+  const p=world.players[i],id=i+1;
+  $('hp'+id).textContent=!p?'— SOLO':!p.alive?'DISABLED':Array.from({length:CONFIG.playerHealth},(_,j)=>j<p.hp?'♥':'♡').join(' ');
+  const pad=padAssignments[i];const kb=i===0?'WASD · Q/E · F':'Arrows · ,/. · Enter';
+  $('device'+id).textContent=!p?'No second tank spawned':kb+(pad?` + Pad ${pad.index+1}`:' · keyboard');
+  $('device'+id).title=pad?pad.id:'Keyboard';
+  $('aim'+id).textContent=!p?'Solo team size: 1':p.alive?'Turret '+directionLabel(p.angle)+` · shells ${activeShells(world,p.id)}/${CONFIG.activeShellLimit}`:'Repairs on room completion';
+ }
+ if(debugEnabled){$('debug').textContent=`RENDER ${renderRate.toFixed(0)} fps · SIM ${simRate.toFixed(0)} Hz (target 120)\nROOM ${world.room+1} · ${world.state.toUpperCase()} · t ${world.time.toFixed(2)}\nSHELLS ${world.shells.length} · shots ${world.shots} · bounces ${world.bounces}\n`+[...world.players,...world.enemies].map(t=>`${t.id.toUpperCase()} (${t.x.toFixed(1)}, ${t.y.toFixed(1)}) HP ${t.hp}${!t.alive?' OUT':''}`).join('\n')+'\n— EVENTS —\n'+world.events.join('\n');}
+}
+// ─── BUILT-IN INVARIANT TESTS (NO LIVE GAME STATE MODIFIED) ────────────────
+function runSelfChecks(){
+ const results=[];function check(name,fn){try{fn();results.push({name,pass:true});}catch(e){results.push({name,pass:false,error:e.message});}}function assert(v,msg){if(!v)throw Error(msg||'Assertion failed');}
+ function fixture(){return{room:0,mode:'coop',state:'playing',time:0,walls:[],players:[],enemies:[],shells:[],effects:[],events:[],nextShell:0,shots:0,bounces:0};}
+ function shell(x=80,y=100,vx=100,vy=0){return{id:1,x,y,vx,vy,faction:'player',owner:'p1',bounces:0,dead:false};}
+ check('All three maps validate',()=>{MAPS.forEach(m=>assert(validateMap(m).ok,m.name));assert(MAPS.map(m=>m.expectedEnemies).join(',')==='2,3,4');});
+ check('Invalid dimensions, symbols and spawns rejected',()=>{for(const grid of ['#','?'.repeat(24),MAPS[0].grid.replace('1','.')])assert(!validateMap({grid}).ok);});
+ check('Flat-wall reflection preserves tangential velocity',()=>{const v=reflect(120,35,-1,0);assert(v.x===-120&&v.y===35);});
+ check('Swept contact catches a wall crossed in one step',()=>{const w=fixture();w.walls=[{x:100,y:0,w:10,h:200}];const s=shell();advanceShell(w,s,60);assert(!s.dead&&s.bounces===1&&s.vx<0&&s.x<97);});
+ check('Remaining distance travels after a bounce',()=>{const w=fixture();w.walls=[{x:100,y:0,w:10,h:200}];const s=shell();advanceShell(w,s,40);assert(Math.abs(s.x-74)<.1);});
+ check('Second wall contact removes shell',()=>{const w=fixture();w.walls=[{x:100,y:0,w:10,h:200},{x:40,y:0,w:10,h:200}];const s=shell();advanceShell(w,s,100);assert(s.dead&&s.bounces===1);});
+ check('Ambiguous corner safely removes shell',()=>{const w=fixture();w.walls=[{x:100,y:100,w:40,h:40}];const s=shell(80,80,100,100);advanceShell(w,s,60);assert(s.dead);});
+ check('Player shell ignores both players, hits enemy',()=>{const w=fixture();w.players=[tank('p1','player',100,100),tank('p2','player',140,100)];w.enemies=[tank('s0','enemy',190,100)];const s=shell(60);advanceShell(w,s,180);assert(w.players.every(p=>p.hp===CONFIG.playerHealth)&&!w.enemies[0].alive&&s.dead);});
+ check('Enemy shell ignores enemies, hits player',()=>{const w=fixture();w.enemies=[tank('s0','enemy',100,100),tank('s1','enemy',140,100)];w.players=[tank('p1','player',190,100)];const s=shell(60);s.faction='enemy';s.owner='s0';advanceShell(w,s,180);assert(w.enemies.every(e=>e.alive)&&w.players[0].hp===CONFIG.playerHealth-1&&s.dead);});
+ check('Invulnerability prevents repeated damage',()=>{const w=fixture(),p=tank('p1','player',50,50);damage(w,p);damage(w,p);assert(p.hp===CONFIG.playerHealth-1&&p.invuln>0);});
+ check('Three active shells cap each player independently',()=>{const w=fixture(),p=tank('p1','player',500,250),q=tank('p2','player',600,250);w.players=[p,q];for(let i=0;i<CONFIG.activeShellLimit;i++){p.cooldown=0;assert(shoot(w,p));}p.cooldown=0;assert(!shoot(w,p)&&activeShells(w,p.id)===CONFIG.activeShellLimit);assert(shoot(w,q));});
+ check('Walls block tanks but tanks never block tanks',()=>{const w=fixture(),p=tank('p1','player',70,100);w.players=[p,tank('p2','player',70,100)];w.walls=[{x:100,y:0,w:40,h:200}];moveTank(w,p,80,0);assert(p.x<=85.001);});
+ check('Sentries cannot shoot through cover',()=>{const w=fixture(),e=tank('s0','enemy',80,100);w.enemies=[e];w.players=[tank('p1','player',200,100)];w.walls=[{x:120,y:0,w:40,h:200}];for(let i=0;i<180;i++)updateEnemy(w,e,1/60);assert(w.shells.length===0&&e.charge===0);});
+ check('Defeat wins a simultaneous terminal state',()=>{const w=makeWorld(0,'coop');w.players.forEach(p=>p.alive=false);w.enemies.forEach(e=>e.alive=false);w.shells.push(shell());evaluateOutcome(w);assert(w.state==='defeat'&&w.shells.length===0);});
+ check('Either survivor can win; clear removes all shells',()=>{const w=makeWorld(0,'coop');w.players[0].alive=false;w.enemies.forEach(e=>e.alive=false);w.shells.push(shell());evaluateOutcome(w);assert(w.state==='cleared'&&w.shells.length===0);});
+ check('Third room commits completion and freezes combat',()=>{const w=makeWorld(2,'coop');w.enemies.forEach(e=>e.alive=false);evaluateOutcome(w);const t=w.time;stepWorld(w,1);assert(w.state==='completed'&&w.time===t);});
+ check('Solo has one real player and correct defeat count',()=>{const w=makeWorld(0,'solo');assert(w.players.length===1&&w.players[0].id==='p1');w.players[0].alive=false;evaluateOutcome(w);assert(w.state==='defeat');});
+ check('Fresh room resets combat, health, timers and outcomes',()=>{const dirty=makeWorld(1,'coop');dirty.players[0].hp=0;dirty.time=99;dirty.state='defeat';const w=makeWorld(1,'coop');assert(w.state==='playing'&&w.time===0&&w.shells.length===0&&w.effects.length===0&&w.nextShell===0&&w.players.every(p=>p.alive&&p.hp===CONFIG.playerHealth&&p.invuln===0&&p.cooldown===0));});
+ return results;
+}
+const selfChecks=runSelfChecks(),passed=selfChecks.filter(t=>t.pass).length;
+$('status').textContent=`Built-in checks: ${passed}/${selfChecks.length} passed · Keyboard-first · Gamepads optional / hardware untested · No audio`;
+if(passed!==selfChecks.length)console.error('Toybox Tanks self-check failure',selfChecks.filter(t=>!t.pass));
+// Exposed for inspection / automation, not needed to play. Editing the single
+// CONFIG object or MAPS then refreshing changes all rooms consistently.
+window.ToyboxTanks={CONFIG,MAPS,validateMap,makeWorld,stepWorld,runSelfChecks,getWorld:()=>world,loadRoom,restartRoom,act,clearInputs,held,selfChecks};
+// ─── MAIN LOOP ───────────────────────────────────────────────────────────
+let previousTime=0,rateTime=0,frames=0,steps=0,hudTime=0;
+function frame(timestamp){
+ const now=timestamp/1000,raw=previousTime?now-previousTime:0;previousTime=now;
+ if(Math.abs((canvas.getBoundingClientRect().width*(window.devicePixelRatio||1))-canvas.width)>1)resizeCanvas();
+ pollPads();
+ if(world.state==='playing'){
+  accumulator+=Math.min(CONFIG.maxFrameTime,Math.max(0,raw));let count=0;
+  while(accumulator>=CONFIG.fixedStep&&count<CONFIG.maxSteps&&world.state==='playing'){
+   stepWorld(world,CONFIG.fixedStep,world.players.map((_,i)=>readCommand(i)));accumulator-=CONFIG.fixedStep;count++;steps++;
+  }
+  if(count===CONFIG.maxSteps)accumulator=0;
+ }else accumulator=0;
+ setOverlay();render(world);frames++;rateTime+=raw;hudTime+=raw;
+ if(rateTime>=.5){renderRate=frames/rateTime;simRate=steps/rateTime;rateTime=0;frames=0;steps=0;}
+ if(hudTime>=.08){updateHUD();hudTime=0;}
+ requestAnimationFrame(frame);
+}
+resizeCanvas();setOverlay();updateHUD();render(world);requestAnimationFrame(frame);
+</script>
+</body>
+</html>

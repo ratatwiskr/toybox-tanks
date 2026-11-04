@@ -1,0 +1,11 @@
+cat > .gitignore <<'EOF'
+node_modules/
+dist/
+dist-*/
+coverage/
+playwright-report/
+test-results/
+.vite/
+.tmp/
+*.log
+EOF
