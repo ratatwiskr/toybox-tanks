@@ -5,6 +5,8 @@ export type Mode = 'coop' | 'solo';
 export type GameState =
   'menu' | 'playing' | 'paused' | 'cleared' | 'defeat' | 'completed' | 'error';
 
+export type EffectType = 'spark' | 'poof';
+
 export interface Command {
   readonly x: number;
   readonly y: number;
@@ -50,6 +52,15 @@ export interface Wall {
   readonly h: number;
 }
 
+export interface Effect {
+  readonly x: number;
+  readonly y: number;
+  readonly type: EffectType;
+  age: number;
+  readonly life: number;
+  readonly seed: number;
+}
+
 export interface World {
   room: number;
   mode: Mode;
@@ -59,6 +70,8 @@ export interface World {
   players: Tank[];
   enemies: Tank[];
   shells: Shell[];
+  effects: Effect[];
+  events: string[];
   nextShell: number;
   shots: number;
   bounces: number;

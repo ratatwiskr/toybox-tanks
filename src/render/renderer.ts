@@ -1,12 +1,51 @@
 import { CONFIG } from '../config';
 import type { Shell, Tank, Wall, World } from '../sim/types';
 
+// Rendering only needs this narrow slice of the Canvas API. Keeping the surface
+// explicit lets unit tests prove rendering is read-only without a DOM.
+export type RenderContext = Pick<
+  CanvasRenderingContext2D,
+  | 'globalAlpha'
+  | 'fillStyle'
+  | 'strokeStyle'
+  | 'lineWidth'
+  | 'font'
+  | 'textAlign'
+  | 'save'
+  | 'restore'
+  | 'beginPath'
+  | 'closePath'
+  | 'fill'
+  | 'stroke'
+  | 'fillRect'
+  | 'strokeRect'
+  | 'clearRect'
+  | 'moveTo'
+  | 'lineTo'
+  | 'bezierCurveTo'
+  | 'arc'
+  | 'ellipse'
+  | 'roundRect'
+  | 'translate'
+  | 'rotate'
+  | 'setTransform'
+  | 'setLineDash'
+  | 'fillText'
+>;
+
+export interface RenderCanvas {
+  width: number;
+  height: number;
+  getContext(contextId: '2d'): RenderContext | null;
+  getBoundingClientRect(): { readonly width: number; readonly height: number };
+}
+
 export interface Renderer {
   resize(): void;
   render(world: World, debug?: boolean): void;
 }
 
-export function createRenderer(canvas: HTMLCanvasElement): Renderer {
+export function createRenderer(canvas: RenderCanvas): Renderer {
   const context = canvas.getContext('2d');
   if (context === null) {
     throw new Error('Canvas 2D context is unavailable');

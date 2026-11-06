@@ -26,14 +26,14 @@ npm run verify
 
 `npm run typecheck` checks every focused project:
 
-| Project                  | Scope                                                 |
-| ------------------------ | ----------------------------------------------------- |
-| `tsconfig.app.json`      | Browser application source.                           |
-| `tsconfig.sim.json`      | `src/config.ts` and `src/sim/**`, DOM- and Node-free. |
-| `tsconfig.tooling.json`  | Vite, Vitest, and Playwright configuration.           |
-| `tsconfig.unit.json`     | Unit and architecture tests.                          |
-| `tsconfig.e2e.json`      | E2E, visual, and release specs.                       |
-| `tsconfig.fixtures.json` | Guardrail fixtures (compiled, never bundled).         |
+| Project                  | Scope                                                                        |
+| ------------------------ | ---------------------------------------------------------------------------- |
+| `tsconfig.app.json`      | Browser application source.                                                  |
+| `tsconfig.sim.json`      | `src/config.ts` and `src/sim/**`, DOM- and Node-free.                        |
+| `tsconfig.tooling.json`  | Vite, Vitest, and Playwright configuration.                                  |
+| `tsconfig.unit.json`     | Unit and architecture tests (includes `DOM` for the renderer contract test). |
+| `tsconfig.e2e.json`      | E2E, visual, and release specs.                                              |
+| `tsconfig.fixtures.json` | Guardrail fixtures (compiled, never bundled).                                |
 
 ## Lint and guardrails
 

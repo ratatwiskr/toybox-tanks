@@ -13,15 +13,18 @@ Do not implement backlog features from `docs/backlog.md` without a separate task
 
 ## Current repository stage
 
-At the time of writing, the repository is at **Gate B (toolchain, guardrails, and
-minimal skeleton — complete and locally verified)**. Gate A is committed as `25296e7`.
-The TypeScript skeleton, strict tsconfigs, ESLint/Prettier, Vite/Vitest/Playwright,
-architecture guardrails, browser/release specs, Husky hook, CI workflow, and docs exist,
-and `npm run verify` passes locally. The visual regression gate is still **pending human
-approval**: `test:visual` captures unapproved candidates only. Firefox is blocked locally
-by the nono sandbox and is exercised in CI instead. Gate B has not been committed. Gate C
-(behavior-preserving simulation extraction) is next. Read `docs/progress.md` for the
-authoritative checkpoint and `docs/verification.md` for exact checks.
+At the time of writing, the repository is at **Gate C (behavior-preserving simulation
+extraction — complete and locally verified)**. Gates A and B are committed as `25296e7`
+and `1c12fcf`. The simulation now matches the prototype's gameplay rules (sentry AI,
+one-bounce shells with remaining travel, corners, muzzle sweeping, damage/invulnerability,
+effects/events, shell caps/cooldowns, and terminal outcomes) across `src/sim/collision.ts`,
+`combat.ts`, `enemies.ts`, `feedback.ts`, and `world.ts`, with 59 unit/architecture tests
+and 96%+ simulation coverage. Gate C has not been committed. The visual regression gate is
+still **pending human approval**: `test:visual` captures unapproved candidates only.
+Firefox is blocked locally by the nono sandbox and is exercised in CI instead. Gate D
+(adapters, full rendering parity, UI/runtime, test bridge, releases) is next. Read
+`docs/progress.md` for the authoritative checkpoint and `docs/verification.md` for exact
+checks.
 
 Always check `docs/progress.md` before assuming the stage; it is the authoritative
 checkpoint.

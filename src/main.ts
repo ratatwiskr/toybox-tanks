@@ -58,8 +58,7 @@ try {
   pauseReason = error instanceof Error ? error.message : String(error);
 }
 
-statusLine.textContent =
-  'Toybox Tanks · Gate B skeleton · Keyboard-first · No audio · Full simulation lands in Gate C';
+statusLine.textContent = 'Toybox Tanks · 3 tabletop rooms · Keyboard-first · No audio';
 
 function focusGame(): void {
   stage.focus({ preventScroll: true });
@@ -94,7 +93,7 @@ function overlayContent(state: GameState): OverlayContent {
         actions: button('Start two-player co-op', 'coop', true) + button('Solo practice', 'solo'),
         extra:
           controlHTML +
-          '<p class="tiny">Two hits per player · three active shells each · no friendly fire.<br>This Gate B skeleton proves the toolchain and rendering pipeline; full combat parity arrives in Gate C.</p>',
+          '<p class="tiny">Two hits per player · three active shells each · no friendly fire.<br>Dashed paths show your aim and first bounce. Muzzle glow means a sentry is about to fire.</p>',
       };
     case 'paused':
       return {

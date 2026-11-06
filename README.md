@@ -9,9 +9,10 @@ prototype to TypeScript with verified build and test guardrails.
 - Both a hosted release (`dist/`) and a self-contained `file://` release
   (`dist-single/index.html`).
 
-**Status:** Gate B (toolchain, guardrails, and minimal executable skeleton) is complete
-and locally verified. Gate C (behavior-preserving simulation extraction) is next. The
-current world skeleton is intentionally not feature-complete; see `docs/progress.md` and
+**Status:** Gate C (behavior-preserving simulation extraction) is complete and locally
+verified. The simulation now matches the prototype's sentry AI, one-bounce shells, muzzle
+sweeping, damage/invulnerability, effects, and outcome rules. Gate D (adapters, full
+rendering parity, UI/runtime, test bridge, releases) is next. See `docs/progress.md` and
 `docs/handoff.md`.
 
 ## Requirements
