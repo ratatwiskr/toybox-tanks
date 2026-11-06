@@ -13,10 +13,15 @@ Do not implement backlog features from `docs/backlog.md` without a separate task
 
 ## Current repository stage
 
-At the time of writing, the repository is at **Gate A (inspected and baselined)**.
-There is no application source, `index.html`, toolchain config, test suite, or CI yet.
-Gate B adds the toolchain, guardrails, and a minimal playable skeleton and must not
-start until Gate A has been reported and reviewed.
+At the time of writing, the repository is at **Gate B (toolchain, guardrails, and
+minimal skeleton — complete and locally verified)**. Gate A is committed as `25296e7`.
+The TypeScript skeleton, strict tsconfigs, ESLint/Prettier, Vite/Vitest/Playwright,
+architecture guardrails, browser/release specs, Husky hook, CI workflow, and docs exist,
+and `npm run verify` passes locally. The visual regression gate is still **pending human
+approval**: `test:visual` captures unapproved candidates only. Firefox is blocked locally
+by the nono sandbox and is exercised in CI instead. Gate B has not been committed. Gate C
+(behavior-preserving simulation extraction) is next. Read `docs/progress.md` for the
+authoritative checkpoint and `docs/verification.md` for exact checks.
 
 Always check `docs/progress.md` before assuming the stage; it is the authoritative
 checkpoint.
@@ -25,8 +30,8 @@ checkpoint.
 
 - Read this file and any more-specific `AGENTS.md` affecting files you will change.
 - Read `docs/handoff.md`, `docs/session-handoff.md`, `docs/baseline.md`,
-  `docs/progress.md`, and `docs/backlog.md`. Read `docs/architecture.md` and relevant
-  tests once they exist.
+  `docs/progress.md`, `docs/gate-b-handoff.md`, and `docs/backlog.md`. Read
+  `docs/architecture.md` and relevant tests once they exist.
 - Inspect the actual repository and existing user changes; do not overwrite them.
 - `reference/toybox-tanks.original.html` is the immutable behavioral/visual reference.
   Do not edit, reformat, overwrite, or use it as runtime. `reference/toybox-tanks.html`
@@ -67,8 +72,8 @@ checkpoint.
 ## Verification commands
 
 The command names below are the required script contract from `docs/handoff.md`
-section 7. They are wired during **Gate B**; they do not all exist at Gate A. Do not
-claim a command passed until it exists and has actually been run.
+section 7. They are wired and exercised in Gate B. Do not claim a command passed until
+it has actually been run in the current state.
 
 - `npm run verify:fast` — formatting, lint, typecheck, unit/architecture checks.
 - `npm run verify` — complete local gate including coverage, browser/visual, and

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>Toybox Tanks — tabletop co-op</title>
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body>
+    <main class="app" id="app" tabindex="-1">
+      <header>
+        <div>
+          <div class="eyebrow">A tiny tabletop co-op experiment</div>
+          <div class="brand">Toybox <span>Tanks</span></div>
+        </div>
+        <div class="tools">
+          <button id="pauseBtn" type="button">Pause · Esc</button>
+          <button id="debugBtn" type="button" aria-pressed="false">Debug · `</button>
+          <button id="menuBtn" type="button">Menu</button>
+        </div>
+      </header>
+      <section class="hud" aria-label="Game status">
+        <div class="card p1">
+          <div class="player-head">
+            <span class="pname">● P1 · BLUE</span><span class="hp" id="hp1">♥ ♥</span>
+          </div>
+          <div class="sub" id="device1">WASD · Q/E aim · F fire</div>
+          <div class="sub" id="aim1">Turret ↑ · 270°</div>
+        </div>
+        <div class="card room">
+          <strong id="roomName">First Bounce</strong>
+          <div class="sub" id="roomInfo">Room 1 / 3 · 2 sentries</div>
+          <div class="sub" id="modeInfo">Choose co-op or solo practice</div>
+        </div>
+        <div class="card p2">
+          <div class="player-head">
+            <span class="pname">■ P2 · ORANGE</span><span class="hp" id="hp2">♥ ♥</span>
+          </div>
+          <div class="sub" id="device2">Arrows · ,/. aim · Enter fire</div>
+          <div class="sub" id="aim2">Turret ↑ · 270°</div>
+        </div>
+      </section>
+      <div class="stage-wrap">
+        <section
+          class="stage"
+          id="stage"
+          tabindex="0"
+          aria-label="Toybox Tanks game arena. Keyboard controls are listed below."
+        >
+          <canvas id="game" aria-label="Top-down toy tank arena"></canvas>
+          <pre id="debug" class="debug" hidden></pre>
+          <div id="overlay" class="overlay">
+            <div
+              class="dialog"
+              id="dialog"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="dialogTitle"
+            ></div>
+          </div>
+        </section>
+      </div>
+      <footer class="foot">
+        <p>
+          <strong>P1</strong> WASD move · Q/E turret · F fire<br /><strong>P2</strong> Arrows move ·
+          ,/. turret · Enter fire
+        </p>
+        <p>
+          One bounce. Three shells each. No friendly fire.<br />Esc pause · R retry on defeat · `
+          debug
+        </p>
+        <p>
+          Gamepads optional: left stick move, right stick aim.<br />RT / A fire · Start pause.
+          Keyboard always works.
+        </p>
+      </footer>
+      <div id="status" class="status" role="status" aria-live="polite">
+        Three handcrafted rooms. Both players return after each clear.
+      </div>
+    </main>
+  </body>
+</html>

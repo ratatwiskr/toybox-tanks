@@ -1,18 +1,44 @@
 {
   "name": "toybox-tanks",
   "version": "1.0.0",
-  "description": "",
-  "scripts": {
-    "prepare": "husky"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "description": "A small browser-based couch co-op tank game.",
+  "private": true,
   "type": "module",
+  "license": "ISC",
+  "author": "",
+  "keywords": [],
   "volta": {
     "node": "24.22.2"
   },
-  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "preview": "vite preview",
+    "typecheck": "tsc -p tsconfig.app.json && tsc -p tsconfig.sim.json && tsc -p tsconfig.tooling.json && tsc -p tsconfig.unit.json && tsc -p tsconfig.e2e.json && tsc -p tsconfig.fixtures.json",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test:unit": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test --project=chromium",
+    "test:visual": "playwright test --project=visual",
+    "test:browsers": "npm run build && playwright test --config playwright.release.config.ts tests/release/hosted.spec.ts",
+    "build": "vite build",
+    "build:single": "vite build --mode single",
+    "test:release": "npm run build && npm run build:single && playwright test --config playwright.release.config.ts --project=chromium",
+    "verify:fast": "npm run format:check && npm run lint && npm run typecheck && npm run test:unit",
+    "verify": "npm run format:check && npm run lint && npm run typecheck && npm run test:coverage && npm run test:e2e && npm run test:visual && npm run test:release",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,js,mjs,cjs}": [
+      "eslint --fix --max-warnings 0 --no-warn-ignored",
+      "prettier --write"
+    ],
+    "*.{css,html,json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "@playwright/test": "1.64.1",

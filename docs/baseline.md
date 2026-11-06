@@ -38,16 +38,16 @@ not the runtime and must not be reformatted, overwritten, or built from.
 
 ## 2. Environment used
 
-| Item | Value |
-|---|---|
-| OS | Linux (nono sandbox session) |
-| Node | `24.22.2` |
-| npm | `11.19.1` |
-| Playwright | `1.64.1` |
-| Chromium | `156.0.8078.4` |
-| Browser cache | `$HOME/.cache/ms-playwright` |
-| Viewport | `1440 × 1000`, device scale factor `2` |
-| Page URL | `file:///home/toast/dev/toybox-tanks/reference/toybox-tanks.html` |
+| Item          | Value                                                             |
+| ------------- | ----------------------------------------------------------------- |
+| OS            | Linux (nono sandbox session)                                      |
+| Node          | `24.22.2`                                                         |
+| npm           | `11.19.1`                                                         |
+| Playwright    | `1.64.1`                                                          |
+| Chromium      | `156.0.8078.4`                                                    |
+| Browser cache | `$HOME/.cache/ms-playwright`                                      |
+| Viewport      | `1440 × 1000`, device scale factor `2`                            |
+| Page URL      | `file:///home/toast/dev/toybox-tanks/reference/toybox-tanks.html` |
 
 The launcher `_start_opencode_with_nono.sh` sets
 `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/toybox-tanks-playwright"`, which does not
@@ -149,21 +149,21 @@ hardware certification. Gamepads were not connected or tested physically.
 
 The prototype is one HTML file with one inline `'use strict'` script:
 
-| Area | Prototype location | Notes |
-|---|---|---|
-| Configuration | `CONFIG` object | One mutable-by-convention object; all gameplay constants. |
-| Maps | `MAPS` array | Three metadata objects with 13-line, 24-column text grids. |
-| Validation | `validateMap` | Dimensions, symbols, borders, spawn counts, enemy count, reachability. |
-| Entities/world | `tank`, `makeWorld` | `world` object owns room/mode/state/time/walls/players/enemies/shells/effects/events/counters. |
-| Collision | `rayBox`, `firstWall`, `rayCircle`, `reflect`, `advanceShell`, `moveTank`, `hasLOS` | Swept shell segment; shell-radius-expanded AABBs; circle tanks; axis-separated wall sliding. |
-| Combat | `damage`, `activeShells`, `shoot` | Shell ownership/faction gate; per-player live-shell cap; cooldown; muzzle sweeping. |
-| Enemies | `updateEnemy`, `turnToward`, `angleDelta` | Stationary sentries, line-of-sight target selection, gradual turn, telegraph, fire. |
-| Simulation | `stepWorld`, `evaluateOutcome`, `commitOutcome` | Explicit fixed-step function; terminal-state commit and shell clearing. |
-| Input | `held`, `KEYSETS`, `CONTROL_KEYS`, `clearInputs`, `pollPads`, `readCommand` | Module-global held-key set and gamepad assignments; adapters produce command objects. |
-| Rendering | `canvas`, `ctx`, `resizeCanvas`, `draw*`, `render` | Procedural Canvas drawing; reads world; writes only canvas/backing-size state. |
-| UI/state | `world`, `setOverlay`, `loadRoom`, `restartRoom`, `pauseGame`, `showMenu`, `act`, `updateHUD` | DOM overlay/HUD; owns room transitions and menu state. |
-| Self-checks | `runSelfChecks` | 18 invariant checks on isolated fixtures/worlds. |
-| Main loop | `frame`, `requestAnimationFrame` | RAF render plus fixed-step accumulator; pause/focus handling; HUD refresh. |
+| Area           | Prototype location                                                                            | Notes                                                                                          |
+| -------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Configuration  | `CONFIG` object                                                                               | One mutable-by-convention object; all gameplay constants.                                      |
+| Maps           | `MAPS` array                                                                                  | Three metadata objects with 13-line, 24-column text grids.                                     |
+| Validation     | `validateMap`                                                                                 | Dimensions, symbols, borders, spawn counts, enemy count, reachability.                         |
+| Entities/world | `tank`, `makeWorld`                                                                           | `world` object owns room/mode/state/time/walls/players/enemies/shells/effects/events/counters. |
+| Collision      | `rayBox`, `firstWall`, `rayCircle`, `reflect`, `advanceShell`, `moveTank`, `hasLOS`           | Swept shell segment; shell-radius-expanded AABBs; circle tanks; axis-separated wall sliding.   |
+| Combat         | `damage`, `activeShells`, `shoot`                                                             | Shell ownership/faction gate; per-player live-shell cap; cooldown; muzzle sweeping.            |
+| Enemies        | `updateEnemy`, `turnToward`, `angleDelta`                                                     | Stationary sentries, line-of-sight target selection, gradual turn, telegraph, fire.            |
+| Simulation     | `stepWorld`, `evaluateOutcome`, `commitOutcome`                                               | Explicit fixed-step function; terminal-state commit and shell clearing.                        |
+| Input          | `held`, `KEYSETS`, `CONTROL_KEYS`, `clearInputs`, `pollPads`, `readCommand`                   | Module-global held-key set and gamepad assignments; adapters produce command objects.          |
+| Rendering      | `canvas`, `ctx`, `resizeCanvas`, `draw*`, `render`                                            | Procedural Canvas drawing; reads world; writes only canvas/backing-size state.                 |
+| UI/state       | `world`, `setOverlay`, `loadRoom`, `restartRoom`, `pauseGame`, `showMenu`, `act`, `updateHUD` | DOM overlay/HUD; owns room transitions and menu state.                                         |
+| Self-checks    | `runSelfChecks`                                                                               | 18 invariant checks on isolated fixtures/worlds.                                               |
+| Main loop      | `frame`, `requestAnimationFrame`                                                              | RAF render plus fixed-step accumulator; pause/focus handling; HUD refresh.                     |
 
 The prototype intentionally exposes `window.ToyboxTanks` for inspection/automation.
 This is **not** the production test bridge. The production test bridge must exist only
@@ -251,11 +251,11 @@ maxProjectileContacts 4, separationEpsilon 0.025
 
 ## 9. Maps observed
 
-| Room | Name | Sentries | Grid |
-|---|---|---|---|
-| 1 | First Bounce | 2 | 24 × 13 |
-| 2 | Block Party | 3 | 24 × 13 |
-| 3 | Together Through | 4 | 24 × 13 |
+| Room | Name             | Sentries | Grid    |
+| ---- | ---------------- | -------- | ------- |
+| 1    | First Bounce     | 2        | 24 × 13 |
+| 2    | Block Party      | 3        | 24 × 13 |
+| 3    | Together Through | 4        | 24 × 13 |
 
 All three validated with matching `expectedEnemies` values `2, 3, 4`.
 
@@ -275,15 +275,15 @@ All three validated with matching `expectedEnemies` values `2, 3, 4`.
 
 ## 11. Gate A criteria
 
-| Criterion | Status |
-|---|---|
-| Original prototype preserved unchanged with hash recorded | Met |
-| Prototype reproduced in a real browser | Met (Chromium `156.0.8078.4`, `file://`) |
-| 18/18 embedded checks and menu state recorded | Met |
-| Page/console errors recorded | Met (none) |
-| Source organization, state owners, render effects, input/focus, collision, reset understood | Met (section 6–7) |
-| `docs/baseline.md`, `docs/progress.md`, `docs/backlog.md`, `AGENTS.md` created | Met |
-| No application source changed | Met (only reference copy, docs, evidence, gitignored local script) |
+| Criterion                                                                                   | Status                                                             |
+| ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Original prototype preserved unchanged with hash recorded                                   | Met                                                                |
+| Prototype reproduced in a real browser                                                      | Met (Chromium `156.0.8078.4`, `file://`)                           |
+| 18/18 embedded checks and menu state recorded                                               | Met                                                                |
+| Page/console errors recorded                                                                | Met (none)                                                         |
+| Source organization, state owners, render effects, input/focus, collision, reset understood | Met (section 6–7)                                                  |
+| `docs/baseline.md`, `docs/progress.md`, `docs/backlog.md`, `AGENTS.md` created              | Met                                                                |
+| No application source changed                                                               | Met (only reference copy, docs, evidence, gitignored local script) |
 
 Next gate: **Gate B — toolchain, guardrails, and minimal executable skeleton**.
 Do not begin Gate B until Gate A is reported and reviewed.

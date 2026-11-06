@@ -1,0 +1,16 @@
+node_modules/
+dist/
+dist-*/
+coverage/
+playwright-report/
+test-results/
+.vite/
+.tmp/
+reference/
+Perplexity-assets-*/
+package-lock.json
+docs/handoff.md
+docs/kickoff.md
+docs/session-handoff.md
+toybox-tanks-opencode-handoff.md
+toybox-tanks-evergreen-kontext.md
