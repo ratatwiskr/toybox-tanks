@@ -1,0 +1,204 @@
+{
+  "title": "Toybox Tanks — tabletop co-op",
+  "statusText": "Built-in checks: 18/18 passed · Keyboard-first · Gamepads optional / hardware untested · No audio",
+  "selfChecks": [
+    {
+      "name": "All three maps validate",
+      "pass": true
+    },
+    {
+      "name": "Invalid dimensions, symbols and spawns rejected",
+      "pass": true
+    },
+    {
+      "name": "Flat-wall reflection preserves tangential velocity",
+      "pass": true
+    },
+    {
+      "name": "Swept contact catches a wall crossed in one step",
+      "pass": true
+    },
+    {
+      "name": "Remaining distance travels after a bounce",
+      "pass": true
+    },
+    {
+      "name": "Second wall contact removes shell",
+      "pass": true
+    },
+    {
+      "name": "Ambiguous corner safely removes shell",
+      "pass": true
+    },
+    {
+      "name": "Player shell ignores both players, hits enemy",
+      "pass": true
+    },
+    {
+      "name": "Enemy shell ignores enemies, hits player",
+      "pass": true
+    },
+    {
+      "name": "Invulnerability prevents repeated damage",
+      "pass": true
+    },
+    {
+      "name": "Three active shells cap each player independently",
+      "pass": true
+    },
+    {
+      "name": "Walls block tanks but tanks never block tanks",
+      "pass": true
+    },
+    {
+      "name": "Sentries cannot shoot through cover",
+      "pass": true
+    },
+    {
+      "name": "Defeat wins a simultaneous terminal state",
+      "pass": true
+    },
+    {
+      "name": "Either survivor can win; clear removes all shells",
+      "pass": true
+    },
+    {
+      "name": "Third room commits completion and freezes combat",
+      "pass": true
+    },
+    {
+      "name": "Solo has one real player and correct defeat count",
+      "pass": true
+    },
+    {
+      "name": "Fresh room resets combat, health, timers and outcomes",
+      "pass": true
+    }
+  ],
+  "initialWorld": {
+    "room": 0,
+    "mode": "coop",
+    "state": "menu",
+    "players": [
+      {
+        "id": "p1",
+        "x": 180,
+        "y": 430,
+        "hp": 2,
+        "angle": -1.5707963267948966
+      },
+      {
+        "id": "p2",
+        "x": 780,
+        "y": 430,
+        "hp": 2,
+        "angle": -1.5707963267948966
+      }
+    ],
+    "enemies": [
+      {
+        "id": "s0",
+        "x": 180,
+        "y": 150,
+        "hp": 1
+      },
+      {
+        "id": "s1",
+        "x": 780,
+        "y": 150,
+        "hp": 1
+      }
+    ],
+    "shells": 0
+  },
+  "config": {
+    "width": 960,
+    "height": 540,
+    "tile": 40,
+    "gridY": 10,
+    "columns": 24,
+    "rows": 13,
+    "fixedStep": 0.008333333333333333,
+    "maxFrameTime": 0.1,
+    "maxSteps": 16,
+    "playerSpeed": 185,
+    "turretRotationSpeed": 2.8,
+    "shellSpeed": 330,
+    "firingCooldown": 0.28,
+    "activeShellLimit": 3,
+    "enemyFiringInterval": 2.7,
+    "playerHealth": 2,
+    "postHitInvulnerability": 1.25,
+    "tankRadius": 15,
+    "shellRadius": 3,
+    "enemyShellSpeedFactor": 0.72,
+    "enemyTurnSpeed": 1.9,
+    "enemyTelegraph": 0.5,
+    "stickDeadzone": 0.22,
+    "maxProjectileContacts": 4,
+    "separationEpsilon": 0.025
+  },
+  "maps": [
+    {
+      "name": "First Bounce",
+      "expectedEnemies": 2,
+      "rows": 13,
+      "columns": 24
+    },
+    {
+      "name": "Block Party",
+      "expectedEnemies": 3,
+      "rows": 13,
+      "columns": 24
+    },
+    {
+      "name": "Together Through",
+      "expectedEnemies": 4,
+      "rows": 13,
+      "columns": 24
+    }
+  ],
+  "canvas": {
+    "cssWidth": 1276,
+    "cssHeight": 717.75,
+    "backingWidth": 2552,
+    "backingHeight": 1436,
+    "dpr": 2
+  },
+  "afterStart": {
+    "state": "playing",
+    "mode": "coop",
+    "players": 2,
+    "enemies": 2
+  },
+  "p1Input": {
+    "before": {
+      "x": 180,
+      "y": 430,
+      "angle": -1.5707963267948966,
+      "shots": 0
+    },
+    "after": {
+      "x": 294.0833333333333,
+      "y": 430,
+      "angle": 0.06253700653843842,
+      "shots": 2,
+      "shells": 2
+    }
+  },
+  "p2Input": {
+    "before": {
+      "x": 780,
+      "y": 430
+    },
+    "after": {
+      "x": 721.4166666666681,
+      "y": 430
+    }
+  },
+  "pausedState": "paused",
+  "resumedState": "playing",
+  "pageErrors": [],
+  "consoleErrors": [],
+  "consoleAll": []
+}
