@@ -1,12 +1,75 @@
 # Toybox Tanks — progress
 
 Updated: 2026-11-07  
-Current gate: **D — adapters, rendering, UI, runtime, automation, releases (complete, committed; push pending)**  
-Next gate: **E — harden and deliver (blocked on human decisions)**  
-Next handoff: `docs/gate-e-handoff.md`  
-Earlier handoff notes: `docs/gate-b-handoff.md` (historical)  
+Current gate: **E — harden and deliver (remote checkpoint reconciled; verification blocked)**  
+Previous gate: **D — complete according to the recorded implementation checkpoint; pushed**  
+Next handoff: `docs/gate-e-handoff.md` (its push-pending statements are superseded below)  
 Verification details: `docs/verification.md`  
 Visual asset plan: `docs/asset-integration-plan.md`
+
+## Remote checkpoint reconciliation — 2026-11-07
+
+The authenticated GitHub connector resolved remote `main` to
+`a754b1ba1ec3e78fdb7e85b7fd3ad6467f91ed52` (`record push pending in gate e handoff`).
+The remote commit listing also contains `7f3b448` (Gate E handoff/asset plan) and
+`2cfbba8` (Gate D). These commits have already been pushed. No repeat push is needed
+for them. This supersedes the push-pending statements in `AGENTS.md`,
+`docs/gate-e-handoff.md`, and the historical checkpoint retained below. It does not
+prove that CI ran or passed.
+
+This session performed read-only repository inspection before preparing this
+documentation-only change. It did not change gameplay, tests, dependencies, the
+lockfile, CI configuration, visual baselines, or remote protection settings.
+
+### Checks actually performed in this session
+
+- GitHub `get_commit` for `main`: successful; resolved SHA recorded above.
+- GitHub file reads at that SHA: successful for the inspected documentation and
+  configuration. This is source inspection, not command execution.
+- `.github/workflows/verify.yml`: statically confirmed checkout, Node setup,
+  `npm ci`, browser installation, `npm run verify`, `npm run test:browsers`, and
+  artifact upload. `Full verification` and `Cross-browser release smoke` are
+  steps in the single `verify` job, not two independent jobs.
+- `package.json`: statically confirmed sequential verification scripts, a
+  separate browser matrix command, and development dependencies only.
+- `vitest.config.ts`: statically confirmed unit/architecture discovery separate
+  from browser suites, `passWithNoTests: false`, explicit simulation/config
+  coverage includes, and 85/85/85/80 statement/line/function/branch floors.
+- `.husky/pre-commit`: statically confirmed `npx lint-staged`. Hook execution in
+  an isolated Git fixture was not performed.
+- Direct web fetch of the repository Actions page: failed to retrieve content.
+  This is not evidence of a failed CI run or a private repository.
+
+No shell commands were executed in this session; there are no new process exit
+statuses or test results. The available GitHub connector has no Actions-run,
+artifact-download, or branch-protection tools, and this session has no shell or
+Playwright execution tool. CI results and protection settings remain unknown.
+The historical local results below are retained as prior-session evidence only.
+
+### Remaining Gate E work
+
+1. Inspect the Actions run for the current source revision and record its URL,
+   tested SHA, `verify` job conclusion, and both verification-step results.
+   If it fails, preserve logs and artifacts before making a targeted fix.
+2. Retrieve or regenerate the nine visual candidates and obtain explicit
+   approve/reject decisions per scene. No visual review or approval occurred
+   in this session. Choose a baseline policy only after review.
+3. Obtain clean-install evidence from the appropriate CI run or a separately
+   authorized fresh-clone run. The existing no-install restriction is unchanged.
+4. Run the remaining Gate E checks in an execution-capable environment, including
+   full verification and the isolated Husky fixture. Static inspection here is
+   not a complete architecture audit or substitute for execution.
+5. Read and verify branch protection with owner-capable tools. Do not infer it
+   from the workflow and do not modify it without specific approval.
+6. Update the older status summaries after evidence is available, then produce
+   the delivery report. Gate E is not complete. Asset integration stays a
+   separate task; no assets or deferred mechanics are authorized by this note.
+
+## Historical implementation checkpoint
+
+The remainder of this file preserves the previous implementation report. Its
+push-pending and no-CI-until-push statements are historical and superseded by the
+remote checkpoint above. Its recorded tests were not rerun in this session.
 
 ## Gate D status
 
@@ -159,7 +222,7 @@ sequentially.
 | `npm run build:test`                                                                         | 0    | Test build in `dist-test/`; bridge present.                                                                                    |
 | `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:release`                 | 0    | Chromium release: 4/4 passed (hosted + single-file, normal smoke + bridge absence with `?test=1`).                             |
 | `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run verify`                       | 0    | Full local gate passed sequentially.                                                                                           |
-| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:browsers`                | n/a  | Not run locally: Firefox still fails before launch in the nono sandbox. Chromium/WebKit evidence is above; CI runs the matrix. |
+| `npm run test:browsers` locally | n/a | Not run locally: Firefox still fails before launch in the nono sandbox. Chromium/WebKit evidence is above; CI runs the matrix. |
 
 The WebKit regression was a test-synchronization issue, not an adapter bug: WebKit throttles
 `requestAnimationFrame` under Playwright, so a fixed sleep could contain no poll frame and
