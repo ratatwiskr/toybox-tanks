@@ -3,6 +3,9 @@
 A small browser-based couch co-op tank game, migrated from a single-file HTML
 prototype to TypeScript with verified build and test guardrails.
 
+[Play in your browser](https://ratatwiskr.github.io/toybox-tanks/) — solo or local
+two-player co-op. No installation required.
+
 - Two local players: free movement, independently aimed turrets, one-bounce shells.
 - Three handcrafted rooms with the original menu, pause, retry, clear, and replay loop.
 - Keyboard-first, with optional two-gamepad support: left stick move, right stick aim,
