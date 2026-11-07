@@ -1,7 +1,7 @@
 # Gate E handoff — harden and deliver
 
 Updated: 2026-11-07  
-Status: **Gate D complete and pushed; Gate E not started.**  
+Status: **Gate D complete and committed locally; push pending; Gate E not started.**  
 Read with: `docs/progress.md`, `docs/verification.md`, `docs/asset-integration-plan.md`.
 
 This handoff is for the human owner and the next agent. It lists only work that is
@@ -10,7 +10,10 @@ gate complete from this document alone; re-run the commands and record new evide
 
 ## State at handoff
 
-- Gate D is committed as `2cfbba8 complete gate d` and pushed to `origin/main`.
+- Gate D is committed as `2cfbba8 complete gate d`; the handoff/plan work is committed as
+  `7f3b448`. **Neither commit is pushed.** `git push origin main` fails inside nono because
+  no GitHub credential helper or SSH key is available. The owner must push from a host
+  terminal before CI can run.
 - Local full gate passed on that commit: 78/78 unit/architecture tests, coverage
   96.07/93.36/100/95.93, Chromium 6/6, WebKit 6/6, candidate capture 1/1, release 4/4.
 - Production bundles contain zero `__TOYBOX_TEST__` occurrences; the test build contains
@@ -36,7 +39,17 @@ gate complete from this document alone; re-run the commands and record new evide
 
 ## Step-by-step human checklist
 
-### 1. Confirm CI for the Gate D push
+### 1. Push the local commits, then confirm CI for Gate D
+
+`origin/main` is still at `891fee4` (Gate C). From a host terminal outside nono:
+
+```sh
+git -C /home/toast/dev/toybox-tanks push origin main
+```
+
+Both local commits (`2cfbba8`, `7f3b448`) go up together. The agent could not push because
+the sandbox has no credential helper or readable SSH key. Do not claim CI ran before the
+push succeeds.
 
 The workflow is `.github/workflows/verify.yml`: `npm ci`, install Chromium/Firefox/WebKit,
 `npm run verify`, `npm run test:browsers`, then upload artifacts.

@@ -1,7 +1,7 @@
 # Toybox Tanks — progress
 
 Updated: 2026-11-07  
-Current gate: **D — adapters, rendering, UI, runtime, automation, releases (complete, committed, pushed)**  
+Current gate: **D — adapters, rendering, UI, runtime, automation, releases (complete, committed; push pending)**  
 Next gate: **E — harden and deliver (blocked on human decisions)**  
 Next handoff: `docs/gate-e-handoff.md`  
 Earlier handoff notes: `docs/gate-b-handoff.md` (historical)  
@@ -10,8 +10,11 @@ Visual asset plan: `docs/asset-integration-plan.md`
 
 ## Gate D status
 
-Gate D is complete and committed. Input parity, rendering parity, UI/runtime composition,
-the typed test bridge, deterministic automation, and release isolation are all in place.
+Gate D is complete and committed as `2cfbba8`. The push to `origin/main` is still pending:
+the nono sandbox has no GitHub credential helper or SSH key access, so run
+`git push origin main` from a host terminal before relying on CI. Input parity, rendering
+parity, UI/runtime composition, the typed test bridge, deterministic automation, and
+release isolation are all in place.
 
 Gate D work completed:
 
@@ -180,8 +183,8 @@ re-pressing Start. Neutral gating and edge detection are unchanged.
       pending; Firefox local blocker).
 - [x] Gate C: behavior-preserving simulation extraction (complete, committed as `891fee4`,
       re-verified).
-- [x] Gate D: adapters, rendering, UI, runtime, automation, releases (complete, committed,
-      pushed; visual approval still pending).
+- [x] Gate D: adapters, rendering, UI, runtime, automation, releases (complete, committed;
+      push pending; visual approval still pending).
 - [ ] Gate E: harden and deliver (see `docs/gate-e-handoff.md`).
 - [ ] Optional follow-on: integrate the drafted visual assets
       (`docs/asset-integration-plan.md`), starting with phase 0.
@@ -202,23 +205,28 @@ re-pressing Start. Neutral gating and edge detection are unchanged.
    prefix local Playwright commands with `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright"`.
 4. **No installs or untracked remote changes.** Gate D added no dependencies, lockfile
    changes, package upgrades, browser downloads, or branch-protection changes. The Gate D
-   commit and the handoff commit were pushed to `origin/main` on explicit user
-   authorization; no visual baselines were committed.
-5. **CI for the Gate D push is pending at handoff time.** The only recorded CI run before
-   this push covered Gate C (`891fee4`) and passed, including the full browser matrix. The
-   Gate D run must be checked and recorded; do not reuse the Gate C result.
-6. **Gate E remains.** Gate D covers adapters, full rendering parity, UI/runtime, the
+   commit and the handoff/plan commit were made on explicit user authorization; no visual
+   baselines were committed.
+5. **Push pending.** `git push origin main` failed inside nono with
+   `fatal: could not read Username for 'https://github.com'`. No credential helper is
+   configured and `~/.ssh` is not readable. `origin/main` is still at `891fee4`; local
+   `main` is two commits ahead (`2cfbba8`, `7f3b448`). The owner must push from a host
+   terminal.
+6. **CI for Gate D is unverified.** The only recorded CI run covers Gate C (`891fee4`) and
+   passed, including the full browser matrix. No CI run exists for Gate D until the push
+   succeeds; do not reuse the Gate C result.
+7. **Gate E remains.** Gate D covers adapters, full rendering parity, UI/runtime, the
    test-only bridge, deterministic automation, and release isolation. Gate E still owns
    hardening, final delivery, cross-browser CI evidence, and visual-baseline approval.
-7. **Asset integration is a separate task.** Drafted art is committed but unused. Do not
+8. **Asset integration is a separate task.** Drafted art is committed but unused. Do not
    wire it into gameplay without the phase 0 decisions and visual approval described in
    `docs/asset-integration-plan.md`.
 
 ## Next action
 
-Follow `docs/gate-e-handoff.md`. In order: confirm the CI run for the pushed Gate D commit,
-review the nine visual candidates and record approve/reject decisions, choose a
-visual-baseline policy, run or explicitly authorize clean-install verification, and set
-branch protection with owner access. Only then decide between finishing Gate E delivery and
-starting asset integration phase 0. Do not approve visual baselines, weaken tests, or
-fabricate a local Firefox pass.
+Follow `docs/gate-e-handoff.md`. In order: push the two local commits from a host terminal,
+confirm the CI run for Gate D, review the nine visual candidates and record approve/reject
+decisions, choose a visual-baseline policy, run or explicitly authorize clean-install
+verification, and set branch protection with owner access. Only then decide between
+finishing Gate E delivery and starting asset integration phase 0. Do not approve visual
+baselines, weaken tests, or fabricate a local Firefox pass.

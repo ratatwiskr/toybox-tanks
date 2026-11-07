@@ -14,8 +14,11 @@ Do not implement backlog features from `docs/backlog.md` without a separate task
 ## Current repository stage
 
 At the time of writing, the repository is at **Gate D (adapters, full rendering parity,
-UI/runtime, test bridge, and releases — complete, committed, and pushed)**. Gates A, B, and
-C are committed as `25296e7`, `1c12fcf`, and `891fee4`; Gate D is `2cfbba8`. The simulation
+UI/runtime, test bridge, and releases — complete and committed locally; push pending)**.
+Gates A, B, and C are committed as `25296e7`, `1c12fcf`, and `891fee4`; Gate D is `2cfbba8`
+and the Gate E handoff/asset plan is `7f3b448`. Both local commits are **not pushed**:
+`origin/main` is still at `891fee4`, and nono has no GitHub credential helper or readable
+SSH key, so the owner must push from a host terminal. The simulation
 matches the prototype's gameplay rules (sentry AI, one-bounce shells with remaining travel,
 corners, muzzle sweeping, damage/invulnerability, effects/events, shell caps/cooldowns, and
 terminal outcomes), and Gate D adds the gamepad adapter, aim/bounce/effect rendering, the

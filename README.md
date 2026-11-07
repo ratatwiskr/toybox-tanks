@@ -10,12 +10,12 @@ prototype to TypeScript with verified build and test guardrails.
 - Both a hosted release (`dist/`) and a self-contained `file://` release
   (`dist-single/index.html`).
 
-**Status:** Gate D (adapters, rendering, UI/runtime, test bridge, and releases) is complete,
-committed, and pushed. The simulation and presentation match the prototype's sentry AI,
-one-bounce shells, aim/bounce guide, effects, controls, and outcome rules. Visual approval
-remains pending for nine candidate screenshots. Gate E (harden and deliver) is next and is
-blocked on human decisions; see `docs/gate-e-handoff.md`. See `docs/progress.md` and
-`docs/handoff.md`.
+**Status:** Gate D (adapters, rendering, UI/runtime, test bridge, and releases) is complete
+and committed locally. The push is pending: run `git push origin main` from a host terminal.
+The simulation and presentation match the prototype's sentry AI, one-bounce shells,
+aim/bounce guide, effects, controls, and outcome rules. Visual approval remains pending for
+nine candidate screenshots. Gate E (harden and deliver) is next and is blocked on human
+decisions; see `docs/gate-e-handoff.md`. See `docs/progress.md` and `docs/handoff.md`.
 
 ## Requirements
 
