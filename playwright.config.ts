@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const devServer = {
-  command: 'npm run dev -- --port 5173 --strictPort',
+  command: 'npm run dev:test -- --port 5173 --strictPort',
   url: 'http://127.0.0.1:5173',
   reuseExistingServer: !process.env.CI,
   timeout: 120_000,
@@ -9,6 +9,9 @@ const devServer = {
 
 export default defineConfig({
   testDir: './tests',
+  // Keep Playwright's per-run artifacts in a namespace so the unapproved visual
+  // candidates in test-results/visual-candidates/ survive later suites.
+  outputDir: 'test-results/e2e',
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: 0,

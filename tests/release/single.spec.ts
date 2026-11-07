@@ -28,4 +28,13 @@ test.describe('single-file release smoke', () => {
 
     expect(errors, errors.join('\n')).toEqual([]);
   });
+
+  test('does not expose the test bridge from the single-file release', async ({ page }) => {
+    const url = pathToFileURL(resolve('dist-single/index.html')).href;
+    await page.goto(`${url}?test=1`);
+    await expect(page.locator('#dialogTitle')).toContainText('Small tanks.');
+
+    const exposed = await page.evaluate(() => '__TOYBOX_TEST__' in window);
+    expect(exposed).toBe(false);
+  });
 });

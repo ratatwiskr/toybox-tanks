@@ -2,6 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests/release',
+  // Namespaced so release runs cannot delete visual candidate evidence.
+  outputDir: 'test-results/release',
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: 0,

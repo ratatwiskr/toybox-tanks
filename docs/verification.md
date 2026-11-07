@@ -65,7 +65,40 @@ guardrail rejects the intended mistake, not merely that some error occurred.
 - branches: 80%
 
 Coverage is a floor, not proof. Collision, outcome, and determinism invariants have named
-tests regardless of percentage.
+tests regardless of percentage. Gamepad and test-bridge code are covered by named unit
+tests but are outside the simulation coverage include set; do not lower or broaden the
+simulation thresholds to include them.
+
+## Test build and test bridge
+
+The deterministic bridge exists only in the dedicated test build:
+
+```sh
+npm run dev:test    # Vite dev server with __TEST_BUILD__ = true
+npm run build:test  # test bundle in dist-test/
+```
+
+`vite.config.ts` replaces the compile-time `__TEST_BUILD__` constant with `mode === 'test'`.
+`src/main.ts` installs `window.__TOYBOX_TEST__` only under that constant. A `?test=1`
+query parameter cannot enable the bridge in `dist/` or `dist-single/`; both release suites
+assert its runtime absence in addition to the source/bundle check.
+
+The bridge API is typed in `src/test-bridge.ts`:
+
+- `loadScenario(name, options?)` loads a validated `menu`, `coop`, `solo`, `room`,
+  `active-shot`, `disabled-player`, `paused`, `cleared`, `defeat`, `completed`, or `error`
+  fixture.
+- `advanceTicks(count, { commands?, sampleInput? })` steps bounded ticks synchronously.
+  `commands` and `sampleInput` are mutually exclusive; `sampleInput` reads the real
+  keyboard/gamepad adapters once per tick.
+- `snapshot()` returns copied gameplay state including room/state/time/ticks, entities,
+  effects, and recent events. It never exposes the mutable world.
+- `events()`, `render()`, and `clearInput()` support event assertions, explicit drawing,
+  and input reset between scenarios.
+
+Calling `loadScenario` or `advanceTicks` takes the simulation clock: RAF still renders and
+updates the HUD, but no real-time stepping can race manual ticks. Tests that do not use the
+bridge keep ordinary RAF simulation, which the real-time smoke suite exercises.
 
 ## Browser suites
 
@@ -75,34 +108,46 @@ All local Playwright commands need the browser path override on this machine:
 PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:e2e
 ```
 
-- `test:e2e` — Chromium against the Vite dev server. Covers page load, canvas paint,
-  keyboard-started co-op, real `d` key movement read from the debug panel, Escape
-  pause/resume, retry/restart, solo mode, and unexpected console/page errors.
-- `test:visual` — captures `test-results/visual-candidates/01-menu.png` and
-  `02-gameplay-paused.png`. It does **not** compare against committed snapshots and does
-  **not** claim aesthetic approval.
+- `test:e2e` — Chromium against the test-mode Vite dev server. Covers page load, canvas
+  paint, keyboard-started co-op, real `d` key movement read from the debug panel, Escape
+  pause/resume, retry/restart, solo mode, and unexpected console/page errors. It also runs
+  bridge scenario/manual-tick tests, real keyboard sampling during explicit ticks, and the
+  synthetic-gamepad flow (move, aim, fire, pause/resume via Start, disconnect cleanup).
+- `test:visual` — captures nine scenes under `test-results/visual-candidates/`: menu,
+  co-op gameplay, active shot, disabled player, pause, clear, defeat, completion, and
+  resized gameplay. It does **not** compare against committed snapshots and does **not**
+  claim aesthetic approval.
 - `test:release` — rebuilds both releases, serves `dist/` through Vite preview, and opens
-  `dist-single/index.html` through `file://` in Chromium.
+  `dist-single/index.html` through `file://` in Chromium. Each artifact runs a normal smoke
+  test plus a `?test=1` check proving `window.__TOYBOX_TEST__` is absent.
 - `test:browsers` — hosted release smoke in Chromium, Firefox, and WebKit.
+
+Playwright artifacts use namespaced output directories (`test-results/e2e` and
+`test-results/release`) so the unapproved candidates in `test-results/visual-candidates/`
+survive later suites. CI uploads the whole `test-results/` tree.
 
 ### Local browser limitations
 
-- Chromium: passes.
-- WebKit: passes the e2e smoke and hosted release smoke.
+- Chromium: passes the e2e and release suites.
+- WebKit: passes the e2e suite, including the synthetic-gamepad flow. WebKit throttles
+  `requestAnimationFrame` under Playwright, so specs wait on real frames rather than fixed
+  sleeps when the adapter must observe a neutral sample or a Start release.
 - Firefox: blocked before page launch by the nono sandbox with
   `Sandbox: CanCreateUserNamespace() unshare(CLONE_NEWPID): EPERM` /
   `Could not find profile folder.` This is an environment blocker and is never reported
   as a pass. CI runs Firefox on a normal runner.
 
-Automated WebKit is not physical Safari/iOS verification. Synthetic keyboard tests are
-not physical controller verification.
+Automated WebKit is not physical Safari/iOS verification. Synthetic gamepad tests are not
+physical controller verification.
 
 ## Visual approval gate
 
-The visual regression gate is **pending**. Candidate screenshots are generated for human
-review but no baselines are approved, so no comparison suite runs. See
+The visual regression gate is **pending**. `test:visual` captures nine candidate scenes
+for human review but no baselines are approved, so no comparison suite runs. See
 `docs/adr/0001-visual-gate-pending.md`. Do not auto-approve snapshots, commit generated
-baselines, or describe candidate capture as an approved visual suite.
+baselines, or describe candidate capture as an approved visual suite. Approval must cover
+menu, co-op gameplay, active shot, disabled player, pause, clear, defeat, completion, and
+resized gameplay.
 
 ## CI
 

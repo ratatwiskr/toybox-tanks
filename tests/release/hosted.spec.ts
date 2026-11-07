@@ -27,4 +27,12 @@ test.describe('hosted release smoke', () => {
 
     expect(errors, errors.join('\n')).toEqual([]);
   });
+
+  test('does not expose the test bridge even with a test-looking query', async ({ page }) => {
+    await page.goto('/?test=1');
+    await expect(page.locator('#dialogTitle')).toContainText('Small tanks.');
+
+    const exposed = await page.evaluate(() => '__TOYBOX_TEST__' in window);
+    expect(exposed).toBe(false);
+  });
 });

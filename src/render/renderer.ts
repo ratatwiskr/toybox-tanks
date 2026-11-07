@@ -1,5 +1,6 @@
 import { CONFIG } from '../config';
-import type { Shell, Tank, Wall, World } from '../sim/types';
+import { firstWall, reflect } from '../sim/collision';
+import type { Effect, Shell, Tank, Wall, World } from '../sim/types';
 
 // Rendering only needs this narrow slice of the Canvas API. Keeping the surface
 // explicit lets unit tests prove rendering is read-only without a DOM.
@@ -147,20 +148,41 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
     ctx.fill();
   };
 
-  const drawAim = (player: Tank): void => {
+  const drawAim = (world: World, player: Tank): void => {
     if (!player.alive) {
       return;
     }
 
     const dx = Math.cos(player.angle);
     const dy = Math.sin(player.angle);
+    const hit = firstWall(world, player.x, player.y, dx * 350, dy * 350);
+    const length = hit === null ? 110 : 350 * hit.t;
+
     ctx.strokeStyle = player.id === 'p1' ? '#17688980' : '#ae572980';
     ctx.lineWidth = 1.25;
     ctx.setLineDash([4, 6]);
     ctx.beginPath();
     ctx.moveTo(player.x + dx * 27, player.y + dy * 27);
-    ctx.lineTo(player.x + dx * 110, player.y + dy * 110);
+    ctx.lineTo(player.x + dx * length, player.y + dy * length);
     ctx.stroke();
+
+    if (hit !== null && !hit.ambiguous) {
+      const reflected = reflect(dx, dy, hit.nx, hit.ny);
+      const x = player.x + dx * length + hit.nx * 0.05;
+      const y = player.y + dy * length + hit.ny * 0.05;
+      const second = firstWall(world, x, y, reflected.x * 130, reflected.y * 130);
+      const secondLength = second === null ? 130 : 130 * second.t;
+
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + reflected.x * secondLength, y + reflected.y * secondLength);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
     ctx.setLineDash([]);
   };
 
@@ -325,6 +347,44 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
     ctx.restore();
   };
 
+  const drawEffect = (effect: Effect): void => {
+    const progress = effect.age / effect.life;
+    ctx.save();
+    ctx.globalAlpha = 1 - progress;
+
+    if (effect.type === 'spark') {
+      ctx.strokeStyle = '#fff6b7';
+      ctx.lineWidth = 2;
+      for (let index = 0; index < 5; index += 1) {
+        const angle = index * 1.256 + effect.seed;
+        const radius = 3 + progress * 12;
+        ctx.beginPath();
+        ctx.moveTo(
+          effect.x + Math.cos(angle) * radius * 0.4,
+          effect.y + Math.sin(angle) * radius * 0.4,
+        );
+        ctx.lineTo(effect.x + Math.cos(angle) * radius, effect.y + Math.sin(angle) * radius);
+        ctx.stroke();
+      }
+    } else {
+      ctx.fillStyle = '#fff6df';
+      for (let index = 0; index < 6; index += 1) {
+        const angle = (index * Math.PI) / 3 + effect.seed;
+        ctx.beginPath();
+        ctx.arc(
+          effect.x + Math.cos(angle) * progress * 22,
+          effect.y + Math.sin(angle) * progress * 22,
+          3 + (1 - progress) * 5,
+          0,
+          Math.PI * 2,
+        );
+        ctx.fill();
+      }
+    }
+
+    ctx.restore();
+  };
+
   const drawGeometry = (world: World): void => {
     ctx.save();
     ctx.lineWidth = 0.8;
@@ -373,7 +433,7 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
       drawFloor(world);
 
       for (const player of world.players) {
-        drawAim(player);
+        drawAim(world, player);
       }
       for (const wall of world.walls) {
         drawWall(wall);
@@ -386,6 +446,9 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
       }
       for (const shell of world.shells) {
         drawShell(shell);
+      }
+      for (const effect of world.effects) {
+        drawEffect(effect);
       }
       if (debug) {
         drawGeometry(world);

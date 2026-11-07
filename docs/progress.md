@@ -1,10 +1,52 @@
 # Toybox Tanks — progress
 
-Updated: 2026-11-06  
-Current gate: **C — behavior-preserving simulation extraction (complete, locally verified)**  
-Next gate: **D — adapters, rendering, UI, runtime, automation, releases (not started)**  
+Updated: 2026-11-07  
+Current gate: **D — adapters, rendering, UI, runtime, automation, releases (complete, committed)**  
+Next gate: **E — harden and deliver**  
 Earlier handoff notes: `docs/gate-b-handoff.md` (historical)  
 Verification details: `docs/verification.md`
+
+## Gate D status
+
+Gate D is complete and committed. Input parity, rendering parity, UI/runtime composition,
+the typed test bridge, deterministic automation, and release isolation are all in place.
+
+Gate D work completed:
+
+- `src/input/gamepad.ts`: optional two-gamepad adapter with deadzones, normalized sticks,
+  keyboard-vs-stick precedence, absolute right-stick aim, A/right-trigger fire, Start edge
+  detection, disconnect cleanup, neutral gating after focus/pause/restart, and solo
+  assignment limited to one pad. Synthetic pads use structural types, so unit tests never
+  need a real controller.
+- `src/main.ts`: polls pads each frame, merges pad and keyboard commands, clears both
+  adapters on focus loss/pause/room reset, shows assigned pad labels in the HUD, and adds a
+  manual test clock so RAF renders without racing explicit ticks.
+- `src/render/renderer.ts`: restores the prototype's dashed aim line, first-bounce
+  continuation and marker, and spark/poof effect drawing. Rendering still never mutates
+  gameplay.
+- `src/test-bridge.ts`: typed `window.__TOYBOX_TEST__` with `loadScenario`, `advanceTicks`,
+  `snapshot`, `events`, `render`, and `clearInput`; scenario validation, bounded tick
+  counts, mutually exclusive command sources, and copied snapshots. Installed only when the
+  build-time `__TEST_BUILD__` constant is true.
+- `vite.config.ts`, `package.json`, and `playwright.config.ts`: `dev:test`/`build:test`,
+  isolated `dist-test/` output, and a test-mode dev server for browser suites. Production
+  `dist/` and `dist-single/` contain no bridge code and cannot enable it with `?test=1`.
+- Unit coverage: `tests/unit/gamepad.test.ts` (10 tests) and
+  `tests/unit/test-bridge.test.ts` (9 tests).
+- Browser coverage: `tests/e2e/bridge.spec.ts` (scenario/time ownership, real keyboard
+  sampling during explicit ticks, outcome/error states, render non-mutation) and
+  `tests/e2e/gamepad.spec.ts` (synthetic pad move/aim/fire/pause/resume/disconnect). Release
+  specs prove bridge absence in both production artifacts. The candidate visual spec now
+  captures nine stable scenes.
+
+WebKit throttles `requestAnimationFrame` under Playwright, so the synthetic-gamepad spec
+waits for real animation frames when the adapter must observe a Start release or a neutral
+sample. Fixed sleeps were replaced; the adapter's neutral gate and Start edge detection were
+not weakened.
+
+Visual approval remains pending: `test:visual` writes nine unapproved candidates to
+`test-results/visual-candidates/`. Firefox remains blocked locally by the nono sandbox and
+is exercised in CI.
 
 ## Gate C status
 
@@ -13,9 +55,10 @@ gameplay rules: enemy sentry AI, one-bounce shells with remaining travel, ambigu
 removal, muzzle sweeping, damage/invulnerability, feedback effects/events, shell caps and
 cooldowns, and terminal outcome semantics. `sim/` remains DOM- and Node-free.
 
-No commits were made. The visual regression gate is still **pending human/vision
-approval**: candidate screenshots are captured, not approved. Firefox remains blocked
-locally by the nono sandbox; Chromium and WebKit pass.
+Gate C is committed as `891fee4` (`WIP gate c`) and was re-verified unchanged on
+2026-11-07 with the full local gate. The visual regression gate is still **pending
+human/vision approval**: candidate screenshots are captured, not approved. Firefox
+remains blocked locally by the nono sandbox; Chromium and WebKit pass.
 
 Gate C work completed:
 
@@ -75,6 +118,33 @@ Browser suites must not be run concurrently in this repo: they share
 false `ENOENT ... browserContext.close` errors. Running them sequentially (as `verify`
 does) passes.
 
+## Gate D verification
+
+All runs are from `/home/toast/dev/toybox-tanks`. Local Playwright commands used
+`PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright"`, and browser suites were run
+sequentially.
+
+| Command                                                                                      | Exit | Result                                                                                                                         |
+| -------------------------------------------------------------------------------------------- | ---- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `npm run format:check`                                                                       | 0    | All matched files use Prettier.                                                                                                |
+| `npm run lint`                                                                               | 0    | ESLint passed with `--max-warnings 0`.                                                                                         |
+| `npm run typecheck`                                                                          | 0    | `app`, `sim`, `tooling`, `unit`, `e2e`, and `fixtures` projects passed.                                                        |
+| `npm run test:unit`                                                                          | 0    | 10 files, 78 tests passed (72 unit + 6 architecture guardrails).                                                               |
+| `npm run test:coverage`                                                                      | 0    | 78 tests passed; coverage 96.07/93.36/100/95.93 (st/branch/fn/lines) over `src/config.ts` and `src/sim/**`.                    |
+| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:e2e`                     | 0    | Chromium: 6/6 passed (bridge scenarios/manual ticks, real keyboard sampling, synthetic gamepad, real-time smoke, solo).        |
+| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npx playwright test --project=webkit` | 0    | WebKit e2e: 6/6 passed, including the synthetic gamepad flow with frame-based synchronization.                                 |
+| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:visual`                  | 0    | Candidate capture: 1/1 passed; nine unapproved PNGs. **Not approved baselines.**                                               |
+| `npm run build`                                                                              | 0    | Hosted `dist/` built; `__TOYBOX_TEST__` count in bundled JS: 0.                                                                |
+| `npm run build:test`                                                                         | 0    | Test build in `dist-test/`; bridge present.                                                                                    |
+| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:release`                 | 0    | Chromium release: 4/4 passed (hosted + single-file, normal smoke + bridge absence with `?test=1`).                             |
+| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run verify`                       | 0    | Full local gate passed sequentially.                                                                                           |
+| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:browsers`                | n/a  | Not run locally: Firefox still fails before launch in the nono sandbox. Chromium/WebKit evidence is above; CI runs the matrix. |
+
+The WebKit regression was a test-synchronization issue, not an adapter bug: WebKit throttles
+`requestAnimationFrame` under Playwright, so a fixed sleep could contain no poll frame and
+the adapter never observed a Start release. The spec now waits for real frames before
+re-pressing Start. Neutral gating and edge detection are unchanged.
+
 ## Task checklist
 
 - [x] Read `docs/handoff.md`, `docs/kickoff.md`, `docs/session-handoff.md` completely.
@@ -90,9 +160,10 @@ does) passes.
 - [ ] Gate A owner review.
 - [x] Gate B: toolchain, guardrails, minimal skeleton (committed as `1c12fcf`; visual gate
       pending; Firefox local blocker).
-- [x] Gate C: behavior-preserving simulation extraction (complete, locally verified; no
-      commits).
-- [ ] Gate D: adapters, rendering, UI, runtime, automation, releases.
+- [x] Gate C: behavior-preserving simulation extraction (complete, committed as `891fee4`,
+      re-verified).
+- [x] Gate D: adapters, rendering, UI, runtime, automation, releases (complete, committed;
+      visual approval still pending).
 - [ ] Gate E: harden and deliver.
 
 ## Known blockers and limitations
@@ -103,24 +174,22 @@ does) passes.
    regression gate.
 2. **Firefox locally blocked.** Prior runs failed before page launch with
    `Sandbox: CanCreateUserNamespace() unshare(CLONE_NEWPID): EPERM` /
-   `Could not find profile folder.` Chromium and WebKit pass the same hosted smoke. This is
-   the known nono process-isolation limitation; CI runs Firefox on a normal runner. Gate C
-   did not rerun Firefox.
+   `Could not find profile folder.` Chromium and WebKit pass the hosted smoke. This is the
+   known nono process-isolation limitation; CI runs Firefox on a normal runner. Gate D did
+   not claim a local Firefox pass.
 3. **Launcher browser path mismatch.** `_start_opencode_with_nono.sh` points
    `PLAYWRIGHT_BROWSERS_PATH` at a non-existent directory. The launcher stays unchanged;
    prefix local Playwright commands with `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright"`.
-4. **No installs/commits performed.** No `npm install`/`npm ci`, lockfile changes, package
-   upgrades, browser downloads, commits, pushes, or remote changes were made.
-5. **Gate D remains.** The simulation is at prototype parity, but rendering still lacks the
-   prototype's drawn aim/bounce guide, effect visuals, and gamepad/DOM adapters. The
-   deterministic test-only bridge and the full overlay/room-transition automation matrix
-   are also Gate D. `renderer.render` ignores the new `effects` array for now.
+4. **No installs or remote changes.** Gate D added no dependencies, lockfile changes,
+   package upgrades, browser downloads, pushes, or remote changes. The Gate D commit was
+   made on explicit user authorization; no visual baselines were committed.
+5. **Gate E remains.** Gate D covers adapters, full rendering parity, UI/runtime, the
+   test-only bridge, deterministic automation, and release isolation. Gate E still owns
+   hardening, final delivery, cross-browser CI evidence, and visual-baseline approval.
 
 ## Next action
 
-Report Gate C completion with the verification table above. Gate D should add adapters
-(keyboard refinements and gamepads), full procedural rendering parity (aim/bounce guide,
-effects), UI/runtime composition and focus/visibility behavior, the typed test-only bridge,
-manual-tick automation, release proof that the bridge is absent, and candidate visual
-capture for human approval. Do not commit or approve baselines without explicit
-authorization.
+Report Gate D completion with the verification table above. Gate E should harden delivery:
+obtain human/vision approval for the nine visual candidates before enabling a comparison
+suite, confirm the Chromium/Firefox/WebKit matrix in CI, and complete the final delivery
+review. Do not approve visual baselines or fabricate a local Firefox pass.

@@ -56,9 +56,11 @@ at lint time with restricted globals, restricted imports, and restricted propert
 | `src/sim/enemies.ts`     | Sentry targeting, LOS, turning, telegraph/cancel, and firing.                           |
 | `src/sim/feedback.ts`    | Bounded event log and spark/poof effect creation.                                       |
 | `src/sim/world.ts`       | Entity creation, room loading, outcome commits, fixed-step orchestration.               |
-| `src/render/renderer.ts` | DPR-aware Canvas rendering; narrow read-only canvas surface for headless tests.         |
+| `src/render/renderer.ts` | DPR-aware Canvas rendering, aim/first-bounce guide, effects; read-only canvas surface.  |
 | `src/input/keyboard.ts`  | Key sets, held-key state, focus/overlay guards, command sampling.                       |
-| `src/main.ts`            | Menus, overlays, HUD, pause/retry, RAF loop, fixed-step accumulator.                    |
+| `src/input/gamepad.ts`   | Optional pad assignment, deadzones, stick/keyboard precedence, fire, Start edges.       |
+| `src/test-bridge.ts`     | Test-build-only scenarios, bounded manual ticks, copied snapshots, events, rendering.   |
+| `src/main.ts`            | Menus, overlays, HUD, pause/retry, RAF loop, fixed-step accumulator, input composition. |
 
 ## Guardrails
 
@@ -78,14 +80,25 @@ Guardrails are requirements, not suggestions:
 - The unit test project includes `DOM` types only so `tests/unit/renderer.test.ts` can
   supply a structural fake canvas and prove rendering is read-only. The simulation project
   remains DOM-free.
-- Release builds do not install deterministic test hooks. Browser tests currently use
-  real UI and real keyboard input; the typed test bridge arrives in Gate D.
+- Release builds do not install deterministic test hooks. `__TEST_BUILD__` is a
+  compile-time constant replaced by Vite; only the `test` mode installs the bridge. Both
+  production release suites assert `window.__TOYBOX_TEST__` is absent even with `?test=1`.
+
+## Test boundary
+
+`src/test-bridge.ts` is an application-layer module: it composes simulation helpers,
+scenarios, and a narrow host interface supplied by `src/main.ts`. It does not leak the
+mutable world, accepts only validated scenario names/options and bounded tick counts, and
+returns copied snapshots. Taking the clock disables RAF simulation while leaving rendering
+and HUD updates active, so there is exactly one simulation time owner. Scenario changes
+reuse the same input/reset discipline as normal room loads.
 
 ## Scope
 
-Gate C completes the simulation-parity migration: config, maps/validation, collision,
-combat, sentry AI, feedback state, and the fixed-step loop all match the prototype, with
-named tests for every invariant. Gate D remains: keyboard/gamepad adapters, rendering
-parity (aim/bounce guide and effect visuals), UI/runtime composition, the typed test-only
-bridge, manual-tick automation, and release proof that the bridge is absent. Do not add
-speculative architecture while implementing them.
+Gates C and D complete the behavior-preserving migration. Simulation parity covers config,
+maps/validation, collision, combat, sentry AI, feedback state, and the fixed-step loop.
+Gate D adds keyboard/gamepad adapters, rendering parity (aim/bounce guide and effect
+visuals), UI/runtime composition, the typed test-only bridge, manual-tick automation, and
+release proof that the bridge is absent. Gate E owns hardening, delivery, cross-browser CI
+evidence, and visual-baseline approval. Do not add speculative architecture while
+implementing it.

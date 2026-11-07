@@ -13,18 +13,18 @@ Do not implement backlog features from `docs/backlog.md` without a separate task
 
 ## Current repository stage
 
-At the time of writing, the repository is at **Gate C (behavior-preserving simulation
-extraction — complete and locally verified)**. Gates A and B are committed as `25296e7`
-and `1c12fcf`. The simulation now matches the prototype's gameplay rules (sentry AI,
-one-bounce shells with remaining travel, corners, muzzle sweeping, damage/invulnerability,
-effects/events, shell caps/cooldowns, and terminal outcomes) across `src/sim/collision.ts`,
-`combat.ts`, `enemies.ts`, `feedback.ts`, and `world.ts`, with 59 unit/architecture tests
-and 96%+ simulation coverage. Gate C has not been committed. The visual regression gate is
-still **pending human approval**: `test:visual` captures unapproved candidates only.
-Firefox is blocked locally by the nono sandbox and is exercised in CI instead. Gate D
-(adapters, full rendering parity, UI/runtime, test bridge, releases) is next. Read
-`docs/progress.md` for the authoritative checkpoint and `docs/verification.md` for exact
-checks.
+At the time of writing, the repository is at **Gate D (adapters, full rendering parity,
+UI/runtime, test bridge, and releases — complete and committed)**. Gates A, B, and C are
+committed as `25296e7`, `1c12fcf`, and `891fee4`. The simulation matches the prototype's
+gameplay rules (sentry AI, one-bounce shells with remaining travel, corners, muzzle
+sweeping, damage/invulnerability, effects/events, shell caps/cooldowns, and terminal
+outcomes), and Gate D adds the gamepad adapter, aim/bounce/effect rendering, the typed
+test-only bridge, deterministic manual ticks, and release proof that the bridge is absent.
+The suite has 78 unit/architecture tests plus Chromium and WebKit browser coverage. The
+visual regression gate is still **pending human approval**: `test:visual` captures nine
+unapproved candidates only. Firefox is blocked locally by the nono sandbox and is exercised
+in CI instead. Gate E (harden and deliver) is next. Read `docs/progress.md` for the
+authoritative checkpoint and `docs/verification.md` for exact checks.
 
 Always check `docs/progress.md` before assuming the stage; it is the authoritative
 checkpoint.

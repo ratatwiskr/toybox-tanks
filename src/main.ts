@@ -1,10 +1,12 @@
 import './styles.css';
 import { CONFIG } from './config';
+import { GamepadAdapter, type GamepadSource } from './input/gamepad';
 import { KeyboardAdapter } from './input/keyboard';
 import { createRenderer } from './render/renderer';
 import { MAPS } from './sim/maps';
-import type { GameState, Mode, World } from './sim/types';
+import type { Command, GameState, Mode, World } from './sim/types';
 import { activeShells, createEmptyWorld, createWorld, stepWorld } from './sim/world';
+import { installTestBridge } from './test-bridge';
 
 function requireElement(id: string): HTMLElement {
   const element = document.getElementById(id);
@@ -42,11 +44,16 @@ const aimElements = [requireElement('aim1'), requireElement('aim2')];
 
 const renderer = createRenderer(canvas);
 const keyboard = new KeyboardAdapter();
+const gamepads = new GamepadAdapter();
+const gamepadSource: GamepadSource = {
+  getGamepads: () => (typeof navigator.getGamepads === 'function' ? navigator.getGamepads() : []),
+};
 
 let pauseReason = '';
 let lastShownState = '';
 let accumulator = 0;
 let debugEnabled = false;
+let manualClock = false;
 
 let world: World;
 try {
@@ -66,6 +73,19 @@ function focusGame(): void {
 
 function ownsFocus(): boolean {
   return app.contains(document.activeElement);
+}
+
+function clearInputs(): void {
+  keyboard.clear();
+  gamepads.clear();
+}
+
+function pollGamepads(): void {
+  gamepads.poll(world.mode, gamepadSource, { onPause: togglePause });
+}
+
+function readCommand(index: number): Command {
+  return gamepads.readCommand(index, keyboard.readCommand(index));
 }
 
 function button(label: string, action: string, primary = false): string {
@@ -151,7 +171,7 @@ function setOverlay(): void {
   }
 
   lastShownState = world.state;
-  keyboard.clear();
+  clearInputs();
   accumulator = 0;
   overlay.hidden = world.state === 'playing';
   pauseButton.textContent = world.state === 'paused' ? 'Resume · Esc' : 'Pause · Esc';
@@ -179,7 +199,7 @@ function setOverlay(): void {
 function loadRoom(index: number, mode: Mode = world.mode): void {
   try {
     world = createWorld(index, mode);
-    keyboard.clear();
+    clearInputs();
     accumulator = 0;
     lastShownState = '';
     pauseReason = '';
@@ -199,6 +219,29 @@ function restartRoom(): void {
   loadRoom(world.room, world.mode);
 }
 
+// The test bridge is the only caller that replaces a world wholesale. Keep the
+// same input/reset discipline as a normal room load.
+function replaceWorld(next: World): void {
+  world = next;
+  clearInputs();
+  accumulator = 0;
+  lastShownState = '';
+  pauseReason = '';
+  setOverlay();
+  updateHUD();
+}
+
+function showError(message: string): void {
+  pauseReason = message;
+  world = createEmptyWorld(world.mode);
+  world.state = 'error';
+  lastShownState = '';
+  clearInputs();
+  accumulator = 0;
+  setOverlay();
+  updateHUD();
+}
+
 function isPlaying(world: World): boolean {
   return world.state === 'playing';
 }
@@ -207,7 +250,7 @@ function pauseGame(reason = ''): void {
   if (world.state === 'playing') {
     pauseReason = reason;
     world.state = 'paused';
-    keyboard.clear();
+    clearInputs();
     accumulator = 0;
     setOverlay();
   }
@@ -217,7 +260,7 @@ function resumeGame(): void {
   if (world.state === 'paused') {
     world.state = 'playing';
     pauseReason = '';
-    keyboard.clear();
+    clearInputs();
     accumulator = 0;
     setOverlay();
   }
@@ -243,7 +286,7 @@ function showMenu(): void {
   }
 
   lastShownState = '';
-  keyboard.clear();
+  clearInputs();
   setOverlay();
   updateHUD();
 }
@@ -316,8 +359,12 @@ function updateHUD(): void {
         ).join(' ');
 
     const keyboardHint = index === 0 ? 'WASD · Q/E · F' : 'Arrows · ,/. · Enter';
-    deviceElement.textContent = `${keyboardHint} · keyboard`;
-    deviceElement.title = 'Keyboard';
+    const pad = gamepads.assigned[index];
+    deviceElement.textContent =
+      pad === undefined
+        ? `${keyboardHint} · keyboard`
+        : `${keyboardHint} + Pad ${String(pad.index + 1)}`;
+    deviceElement.title = pad?.id ?? 'Keyboard';
     aimElement.textContent = player.alive
       ? `Turret ${directionLabel(player.angle)} · shells ${String(activeShells(world, player.id))}/${String(CONFIG.activeShellLimit)}`
       : 'Repairs on room completion';
@@ -367,13 +414,13 @@ stage.addEventListener('pointerdown', (event) => {
 });
 
 window.addEventListener('blur', () => {
-  keyboard.clear();
+  clearInputs();
   pauseGame('Focus lost — resume when you are ready.');
 });
 
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
-    keyboard.clear();
+    clearInputs();
     pauseGame('Tab hidden — the tabletop is waiting.');
   }
 });
@@ -381,7 +428,7 @@ document.addEventListener('visibilitychange', () => {
 app.addEventListener('focusout', () => {
   queueMicrotask(() => {
     if (!ownsFocus()) {
-      keyboard.clear();
+      clearInputs();
       pauseGame('Game focus lost — resume when ready.');
     }
   });
@@ -414,7 +461,9 @@ function frame(timestamp: number): void {
   const raw = previousTime === null ? 0 : now - previousTime;
   previousTime = now;
 
-  if (world.state === 'playing') {
+  pollGamepads();
+
+  if (!manualClock && world.state === 'playing') {
     accumulator += Math.min(CONFIG.maxFrameTime, Math.max(0, raw));
     let count = 0;
 
@@ -422,7 +471,7 @@ function frame(timestamp: number): void {
       stepWorld(
         world,
         CONFIG.fixedStep,
-        world.players.map((_, index) => keyboard.readCommand(index)),
+        world.players.map((_, index) => readCommand(index)),
       );
       accumulator -= CONFIG.fixedStep;
       count += 1;
@@ -439,6 +488,30 @@ function frame(timestamp: number): void {
   renderer.render(world, debugEnabled);
   updateHUD();
   requestAnimationFrame(frame);
+}
+
+if (__TEST_BUILD__) {
+  installTestBridge({
+    getWorld: () => world,
+    replaceWorld,
+    readCommands: () => {
+      pollGamepads();
+      return world.players.map((_, index) => readCommand(index));
+    },
+    takeClock: () => {
+      manualClock = true;
+      accumulator = 0;
+    },
+    sync: () => {
+      setOverlay();
+      updateHUD();
+    },
+    render: () => {
+      renderer.render(world, debugEnabled);
+    },
+    clearInput: clearInputs,
+    showError,
+  });
 }
 
 renderer.resize();

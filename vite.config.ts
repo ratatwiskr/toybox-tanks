@@ -6,8 +6,11 @@ export default defineConfig(({ mode }) => {
 
   return {
     base: './',
+    define: {
+      __TEST_BUILD__: JSON.stringify(mode === 'test'),
+    },
     build: {
-      outDir: single ? 'dist-single' : 'dist',
+      outDir: single ? 'dist-single' : mode === 'test' ? 'dist-test' : 'dist',
       emptyOutDir: true,
       target: 'es2022',
       sourcemap: false,
