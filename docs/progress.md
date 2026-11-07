@@ -222,7 +222,7 @@ sequentially.
 | `npm run build:test`                                                                         | 0    | Test build in `dist-test/`; bridge present.                                                                                    |
 | `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:release`                 | 0    | Chromium release: 4/4 passed (hosted + single-file, normal smoke + bridge absence with `?test=1`).                             |
 | `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run verify`                       | 0    | Full local gate passed sequentially.                                                                                           |
-| `npm run test:browsers` locally | n/a | Not run locally: Firefox still fails before launch in the nono sandbox. Chromium/WebKit evidence is above; CI runs the matrix. |
+| `npm run test:browsers` locally                                                              | n/a  | Not run locally: Firefox still fails before launch in the nono sandbox. Chromium/WebKit evidence is above; CI runs the matrix. |
 
 The WebKit regression was a test-synchronization issue, not an adapter bug: WebKit throttles
 `requestAnimationFrame` under Playwright, so a fixed sleep could contain no poll frame and
