@@ -14,17 +14,25 @@ Do not implement backlog features from `docs/backlog.md` without a separate task
 ## Current repository stage
 
 At the time of writing, the repository is at **Gate D (adapters, full rendering parity,
-UI/runtime, test bridge, and releases — complete and committed)**. Gates A, B, and C are
-committed as `25296e7`, `1c12fcf`, and `891fee4`. The simulation matches the prototype's
-gameplay rules (sentry AI, one-bounce shells with remaining travel, corners, muzzle
-sweeping, damage/invulnerability, effects/events, shell caps/cooldowns, and terminal
-outcomes), and Gate D adds the gamepad adapter, aim/bounce/effect rendering, the typed
-test-only bridge, deterministic manual ticks, and release proof that the bridge is absent.
-The suite has 78 unit/architecture tests plus Chromium and WebKit browser coverage. The
-visual regression gate is still **pending human approval**: `test:visual` captures nine
+UI/runtime, test bridge, and releases — complete, committed, and pushed)**. Gates A, B, and
+C are committed as `25296e7`, `1c12fcf`, and `891fee4`; Gate D is `2cfbba8`. The simulation
+matches the prototype's gameplay rules (sentry AI, one-bounce shells with remaining travel,
+corners, muzzle sweeping, damage/invulnerability, effects/events, shell caps/cooldowns, and
+terminal outcomes), and Gate D adds the gamepad adapter, aim/bounce/effect rendering, the
+typed test-only bridge, deterministic manual ticks, and release proof that the bridge is
+absent. The suite has 78 unit/architecture tests plus Chromium and WebKit browser coverage.
+The visual regression gate is still **pending human approval**: `test:visual` captures nine
 unapproved candidates only. Firefox is blocked locally by the nono sandbox and is exercised
-in CI instead. Gate E (harden and deliver) is next. Read `docs/progress.md` for the
-authoritative checkpoint and `docs/verification.md` for exact checks.
+in CI instead. Gate E (harden and deliver) is next and is blocked on human decisions; follow
+`docs/gate-e-handoff.md`. Read `docs/progress.md` for the authoritative checkpoint and
+`docs/verification.md` for exact checks.
+
+Drafted high-fidelity art is committed at the repository root under
+`Perplexity-assets-w-rden-perks-und-etwa-cas-angriffe-zum-spiel-passen-aspekte/` (and its
+`+handoff` twin). **None of it is integrated.** Adopting it is a separate, presentation-only
+task described in `docs/asset-integration-plan.md`; it requires the phase 0 decisions and
+human visual approval. Never change simulation, collision, controls, world size, or release
+behavior to fit the art.
 
 Always check `docs/progress.md` before assuming the stage; it is the authoritative
 checkpoint.
@@ -33,8 +41,9 @@ checkpoint.
 
 - Read this file and any more-specific `AGENTS.md` affecting files you will change.
 - Read `docs/handoff.md`, `docs/session-handoff.md`, `docs/baseline.md`,
-  `docs/progress.md`, `docs/gate-b-handoff.md`, and `docs/backlog.md`. Read
-  `docs/architecture.md` and relevant tests once they exist.
+  `docs/progress.md`, `docs/gate-e-handoff.md`, and `docs/backlog.md`. Read
+  `docs/architecture.md`, `docs/asset-integration-plan.md`, and relevant tests once they
+  exist.
 - Inspect the actual repository and existing user changes; do not overwrite them.
 - `reference/toybox-tanks.original.html` is the immutable behavioral/visual reference.
   Do not edit, reformat, overwrite, or use it as runtime. `reference/toybox-tanks.html`

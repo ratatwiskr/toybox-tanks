@@ -1,10 +1,12 @@
 # Toybox Tanks — progress
 
 Updated: 2026-11-07  
-Current gate: **D — adapters, rendering, UI, runtime, automation, releases (complete, committed)**  
-Next gate: **E — harden and deliver**  
+Current gate: **D — adapters, rendering, UI, runtime, automation, releases (complete, committed, pushed)**  
+Next gate: **E — harden and deliver (blocked on human decisions)**  
+Next handoff: `docs/gate-e-handoff.md`  
 Earlier handoff notes: `docs/gate-b-handoff.md` (historical)  
-Verification details: `docs/verification.md`
+Verification details: `docs/verification.md`  
+Visual asset plan: `docs/asset-integration-plan.md`
 
 ## Gate D status
 
@@ -47,6 +49,22 @@ not weakened.
 Visual approval remains pending: `test:visual` writes nine unapproved candidates to
 `test-results/visual-candidates/`. Firefox remains blocked locally by the nono sandbox and
 is exercised in CI.
+
+## Visual asset integration (drafted, not started)
+
+Two content-identical copies of a drafted asset pack (plus their zips, about 8 MB total)
+are committed at the repository root under
+`Perplexity-assets-w-rden-perks-und-etwa-cas-angriffe-zum-spiel-passen-aspekte/` and its
+`+handoff` twin. They contain a warm-wood floor, an optional rug, 60 block variants, an
+arena border kit, player/enemy tank and turret art, projectiles, and sandbox-only
+catapult/chick/cork/roof studies.
+
+None of it is integrated. The plan in `docs/asset-integration-plan.md` records the verified
+API revision (`ToyboxAssets` v0.1 has no `prepareLayers`), the renderer mapping, the
+conflicts that need decisions (enemy palette, projectile colors, wall-cell framing, border
+padding), and five reviewable phases: inventory, adapter, floor, walls/border, existing
+tanks/shells, then a sandbox for future content. Asset work must stay presentation-only and
+must not change simulation, collision, controls, or releases.
 
 ## Gate C status
 
@@ -162,9 +180,11 @@ re-pressing Start. Neutral gating and edge detection are unchanged.
       pending; Firefox local blocker).
 - [x] Gate C: behavior-preserving simulation extraction (complete, committed as `891fee4`,
       re-verified).
-- [x] Gate D: adapters, rendering, UI, runtime, automation, releases (complete, committed;
-      visual approval still pending).
-- [ ] Gate E: harden and deliver.
+- [x] Gate D: adapters, rendering, UI, runtime, automation, releases (complete, committed,
+      pushed; visual approval still pending).
+- [ ] Gate E: harden and deliver (see `docs/gate-e-handoff.md`).
+- [ ] Optional follow-on: integrate the drafted visual assets
+      (`docs/asset-integration-plan.md`), starting with phase 0.
 
 ## Known blockers and limitations
 
@@ -180,16 +200,25 @@ re-pressing Start. Neutral gating and edge detection are unchanged.
 3. **Launcher browser path mismatch.** `_start_opencode_with_nono.sh` points
    `PLAYWRIGHT_BROWSERS_PATH` at a non-existent directory. The launcher stays unchanged;
    prefix local Playwright commands with `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright"`.
-4. **No installs or remote changes.** Gate D added no dependencies, lockfile changes,
-   package upgrades, browser downloads, pushes, or remote changes. The Gate D commit was
-   made on explicit user authorization; no visual baselines were committed.
-5. **Gate E remains.** Gate D covers adapters, full rendering parity, UI/runtime, the
+4. **No installs or untracked remote changes.** Gate D added no dependencies, lockfile
+   changes, package upgrades, browser downloads, or branch-protection changes. The Gate D
+   commit and the handoff commit were pushed to `origin/main` on explicit user
+   authorization; no visual baselines were committed.
+5. **CI for the Gate D push is pending at handoff time.** The only recorded CI run before
+   this push covered Gate C (`891fee4`) and passed, including the full browser matrix. The
+   Gate D run must be checked and recorded; do not reuse the Gate C result.
+6. **Gate E remains.** Gate D covers adapters, full rendering parity, UI/runtime, the
    test-only bridge, deterministic automation, and release isolation. Gate E still owns
    hardening, final delivery, cross-browser CI evidence, and visual-baseline approval.
+7. **Asset integration is a separate task.** Drafted art is committed but unused. Do not
+   wire it into gameplay without the phase 0 decisions and visual approval described in
+   `docs/asset-integration-plan.md`.
 
 ## Next action
 
-Report Gate D completion with the verification table above. Gate E should harden delivery:
-obtain human/vision approval for the nine visual candidates before enabling a comparison
-suite, confirm the Chromium/Firefox/WebKit matrix in CI, and complete the final delivery
-review. Do not approve visual baselines or fabricate a local Firefox pass.
+Follow `docs/gate-e-handoff.md`. In order: confirm the CI run for the pushed Gate D commit,
+review the nine visual candidates and record approve/reject decisions, choose a
+visual-baseline policy, run or explicitly authorize clean-install verification, and set
+branch protection with owner access. Only then decide between finishing Gate E delivery and
+starting asset integration phase 0. Do not approve visual baselines, weaken tests, or
+fabricate a local Firefox pass.

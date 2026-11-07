@@ -10,11 +10,12 @@ prototype to TypeScript with verified build and test guardrails.
 - Both a hosted release (`dist/`) and a self-contained `file://` release
   (`dist-single/index.html`).
 
-**Status:** Gate D (adapters, rendering, UI/runtime, test bridge, and releases) is complete
-and committed. The simulation and presentation match the prototype's sentry AI, one-bounce
-shells, aim/bounce guide, effects, controls, and outcome rules. Visual approval remains
-pending for nine candidate screenshots. Gate E (harden and deliver) is next. See
-`docs/progress.md` and `docs/handoff.md`.
+**Status:** Gate D (adapters, rendering, UI/runtime, test bridge, and releases) is complete,
+committed, and pushed. The simulation and presentation match the prototype's sentry AI,
+one-bounce shells, aim/bounce guide, effects, controls, and outcome rules. Visual approval
+remains pending for nine candidate screenshots. Gate E (harden and deliver) is next and is
+blocked on human decisions; see `docs/gate-e-handoff.md`. See `docs/progress.md` and
+`docs/handoff.md`.
 
 ## Requirements
 
@@ -110,7 +111,13 @@ clock, so RAF continues rendering while manual ticks alone advance gameplay. Pro
 `npm run test:visual` writes candidate screenshots to `test-results/visual-candidates/`.
 They are **not** approved baselines and are not compared against committed snapshots.
 A human/vision review must approve candidates before a real visual regression suite is
-enabled. See `docs/adr/0001-visual-gate-pending.md`.
+enabled. See `docs/adr/0001-visual-gate-pending.md` and `docs/gate-e-handoff.md`.
+
+Drafted high-fidelity art (floor, rug, block skins, border, tank/turret, projectiles, and
+sandbox-only props) is committed under
+`Perplexity-assets-w-rden-perks-und-etwa-cas-angriffe-zum-spiel-passen-aspekte/`. Nothing
+from it is loaded by the game yet. Adoption is a separate presentation-only task with
+owner decisions and visual review; see `docs/asset-integration-plan.md`.
 
 ## Project layout
 
