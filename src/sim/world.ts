@@ -3,7 +3,7 @@ import { moveTank } from './collision';
 import { advanceShell, shoot } from './combat';
 import { updateEnemy } from './enemies';
 import { record } from './feedback';
-import { MAPS, validateMap } from './maps';
+import { addMapBorder, MAPS, validateMap } from './maps';
 import type { Command, Faction, Mode, Tank, World } from './types';
 
 export { activeShells, damage, shoot } from './combat';
@@ -62,7 +62,7 @@ export function createWorld(index: number, mode: Mode): World {
   const world = createEmptyWorld(mode);
   world.room = index;
 
-  checked.rows.forEach((row, y) => {
+  addMapBorder(checked.rows).forEach((row, y) => {
     for (let x = 0; x < row.length; x += 1) {
       const cell = row[x];
       if (cell === undefined) {
