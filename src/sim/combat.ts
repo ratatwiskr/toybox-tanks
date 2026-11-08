@@ -2,13 +2,13 @@ import { CONFIG } from '../config';
 import { canHit, firstTerrain, rayCircle, reflect } from './collision';
 import type { TerrainHit, WallHit } from './collision';
 import { poof, record } from './feedback';
-import type { Shell, Tank, World } from './types';
+import type { Shell, SimulationEvent, Tank, World } from './types';
 
 export function activeShells(world: World, owner: string): number {
   return world.shells.filter((shell) => !shell.dead && shell.owner === owner).length;
 }
 
-export function damage(world: World, tank: Tank): boolean {
+export function damage(world: World, tank: Tank, events?: SimulationEvent[]): boolean {
   if (!tank.alive || tank.invuln > 0) {
     return false;
   }
@@ -25,10 +25,11 @@ export function damage(world: World, tank: Tank): boolean {
     tank.invuln = CONFIG.postHitInvulnerability;
   }
 
+  events?.push({ type: 'damage', faction: tank.faction, destroyed: !tank.alive });
   return true;
 }
 
-export function shoot(world: World, tank: Tank): boolean {
+export function shoot(world: World, tank: Tank, events?: SimulationEvent[]): boolean {
   if (!tank.alive || tank.cooldown > 1e-8) {
     return false;
   }
@@ -54,13 +55,20 @@ export function shoot(world: World, tank: Tank): boolean {
   world.shells.push(shell);
   tank.cooldown = tank.faction === 'player' ? CONFIG.firingCooldown : CONFIG.enemyFiringInterval;
   world.shots += 1;
+  events?.push({ type: 'shot', faction: tank.faction });
   // Sweep all the way out of the barrel, never spawn beyond nearby terrain.
-  advanceShell(world, shell, 23);
+  advanceShell(world, shell, 23, events);
   return true;
 }
 
-export function shellWallContact(world: World, shell: Shell, hit: WallHit): boolean {
+export function shellWallContact(
+  world: World,
+  shell: Shell,
+  hit: WallHit,
+  events?: SimulationEvent[],
+): boolean {
   if (hit.ambiguous || shell.bounces >= 1) {
+    events?.push({ type: 'terrain', kind: 'wall' });
     shell.dead = true;
     poof(world, shell.x, shell.y, 'spark');
     return false;
@@ -71,6 +79,7 @@ export function shellWallContact(world: World, shell: Shell, hit: WallHit): bool
   shell.vy = velocity.y;
   shell.bounces += 1;
   world.bounces += 1;
+  events?.push({ type: 'terrain', kind: 'bounce' });
   shell.x += hit.nx * CONFIG.separationEpsilon;
   shell.y += hit.ny * CONFIG.separationEpsilon;
   poof(world, shell.x, shell.y, 'spark');
@@ -78,12 +87,18 @@ export function shellWallContact(world: World, shell: Shell, hit: WallHit): bool
   return true;
 }
 
-function shellTerrainContact(world: World, shell: Shell, hit: TerrainHit): boolean {
+function shellTerrainContact(
+  world: World,
+  shell: Shell,
+  hit: TerrainHit,
+  events?: SimulationEvent[],
+): boolean {
   if (hit.kind === 'wall') {
-    return shellWallContact(world, shell, hit);
+    return shellWallContact(world, shell, hit, events);
   }
 
   shell.dead = true;
+  events?.push({ type: 'terrain', kind: 'cork' });
   if (!hit.ambiguous) {
     hit.cork.hitsRemaining = Math.max(0, hit.cork.hitsRemaining - 1);
     hit.cork.destroyed = hit.cork.hitsRemaining === 0;
@@ -91,7 +106,12 @@ function shellTerrainContact(world: World, shell: Shell, hit: TerrainHit): boole
   return false;
 }
 
-export function advanceShell(world: World, shell: Shell, distance: number): void {
+export function advanceShell(
+  world: World,
+  shell: Shell,
+  distance: number,
+  events?: SimulationEvent[],
+): void {
   let remaining = distance;
   let contacts = 0;
 
@@ -126,7 +146,7 @@ export function advanceShell(world: World, shell: Shell, distance: number): void
     if (hitTank !== null && (terrain === null || tankHitT < terrain.t - 1e-7)) {
       shell.x += dx * tankHitT;
       shell.y += dy * tankHitT;
-      damage(world, hitTank);
+      damage(world, hitTank, events);
       shell.dead = true;
       break;
     }
@@ -142,7 +162,7 @@ export function advanceShell(world: World, shell: Shell, distance: number): void
     shell.y += dy * terrain.t;
     remaining *= 1 - terrain.t;
 
-    if (!shellTerrainContact(world, shell, terrain)) {
+    if (!shellTerrainContact(world, shell, terrain, events)) {
       break;
     }
   }
