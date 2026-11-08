@@ -115,7 +115,8 @@ function pollGamepads(): void {
     },
   });
   const next = gamepads.assigned.map((pad) => `${String(pad.index)}:${pad.id}`);
-  const changed = previous.length !== next.length || previous.some((id, index) => id !== next[index]);
+  const changed =
+    previous.length !== next.length || previous.some((id, index) => id !== next[index]);
   const lost = previous.some((id) => !next.includes(id));
   if (changed) {
     clearInputs();

@@ -46,7 +46,10 @@ test('landscape native Chromium touch delivery moves and aims together, then tap
   await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [left, right] });
   await session.send('Input.dispatchTouchEvent', {
     type: 'touchMove',
-    touchPoints: [{ ...left, x: left.x + 35 }, { ...right, x: right.x + 35 }],
+    touchPoints: [
+      { ...left, x: left.x + 35 },
+      { ...right, x: right.x + 35 },
+    ],
   });
   await expect(page.locator('#movePad')).toHaveClass(/engaged/);
   await expect(page.locator('#aimPad')).toHaveClass(/engaged/);

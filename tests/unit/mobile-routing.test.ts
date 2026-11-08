@@ -24,9 +24,13 @@ describe('mobile gamepad routing contract', () => {
     const adapter = new GamepadAdapter();
     const first = pad(0);
     const second = pad(1);
-    adapter.poll(gamepadMode('coop', false), { getGamepads: () => [first, second] }, {
-      onPause: () => undefined,
-    });
+    adapter.poll(
+      gamepadMode('coop', false),
+      { getGamepads: () => [first, second] },
+      {
+        onPause: () => undefined,
+      },
+    );
     expect(adapter.assigned).toHaveLength(2);
     adapter.readCommand(0, neutral);
     adapter.readCommand(1, neutral);
@@ -47,9 +51,13 @@ describe('mobile gamepad routing contract', () => {
     const adapter = new GamepadAdapter();
     const first = pad(4);
     const extra = pad(7);
-    adapter.poll(gamepadMode('coop', true), { getGamepads: () => [first, extra] }, {
-      onPause: () => undefined,
-    });
+    adapter.poll(
+      gamepadMode('coop', true),
+      { getGamepads: () => [first, extra] },
+      {
+        onPause: () => undefined,
+      },
+    );
     expect(adapter.assigned).toHaveLength(1);
     expect(adapter.assigned[slot]?.index).toBe(4);
     adapter.readCommand(slot, neutral);

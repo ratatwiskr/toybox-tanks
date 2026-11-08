@@ -48,7 +48,8 @@ export function createMobileControls(host: MobileHost): MobileControls {
   const label = document.createElement('label');
   label.className = 'touch-setting';
   label.append(toggle, 'Touch P1');
-  label.title = 'Enable touch P1; in co-op the first gamepad controls P2. Turn off for two gamepads.';
+  label.title =
+    'Enable touch P1; in co-op the first gamepad controls P2. Turn off for two gamepads.';
   const fullscreen = document.createElement('button');
   fullscreen.type = 'button';
   fullscreen.id = 'fullscreenBtn';
@@ -226,7 +227,9 @@ export function createMobileControls(host: MobileHost): MobileControls {
     } catch {
       fullscreenFailed = true;
     }
-    fullscreen.title = fullscreenFailed ? 'Fullscreen unavailable; play in the browser viewport.' : '';
+    fullscreen.title = fullscreenFailed
+      ? 'Fullscreen unavailable; play in the browser viewport.'
+      : '';
     host.onGeometryChange();
   }
 
