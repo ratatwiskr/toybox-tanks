@@ -1,7 +1,7 @@
 import { CONFIG } from '../config';
 import { moveTank } from './collision';
 import { advanceShell, shoot } from './combat';
-import { updateEnemy } from './enemies';
+import { turnToward, updateEnemy } from './enemies';
 import { record } from './feedback';
 import { addMapBorder, MAPS, validateMap } from './maps';
 import type { Command, Faction, Mode, Tank, World } from './types';
@@ -171,7 +171,7 @@ export function stepWorld(world: World, dt: number, commands: readonly Command[]
     player.track += Math.hypot(mx, my) * dt * 12;
 
     if (command.aim !== undefined) {
-      player.angle = command.aim;
+      player.angle = turnToward(player.angle, command.aim, CONFIG.turretRotationSpeed * dt);
     } else {
       player.angle += command.turn * CONFIG.turretRotationSpeed * dt;
     }

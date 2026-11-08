@@ -103,7 +103,7 @@ describe('experimental solo touch gesture adapter', () => {
 
   it('clears held gestures and pending shots and requires a fresh begin', () => {
     const adapter = new TouchAdapter();
-    adapter.begin('move', 1, 50, 0, 50, 0);
+    adapter.begin('move', 1, 0, 0, 50, 0);
     adapter.begin('aim', 2, 0, 0, 50, 0);
     adapter.end(2, 0, 0, 100);
     adapter.clear();
@@ -136,23 +136,31 @@ describe('experimental solo touch gesture adapter', () => {
   it('retains the actual world angle after release and fires a subsequent tap', () => {
     const adapter = new TouchAdapter();
     const world = createWorld(0, 'solo');
+    const player = world.players[0];
+    if (player === undefined) {
+      throw new Error('Solo player missing');
+    }
+    const startAngle = player.angle;
     adapter.begin('aim', 1, 0, 0, 50, 0);
     adapter.move(1, 50, 0);
     stepWorld(world, CONFIG.fixedStep, [adapter.readCommand(neutral())]);
-    expect(world.players[0]?.angle).toBeCloseTo(0, 10);
+    const actualAngle = player.angle;
+    expect(actualAngle).toBeCloseTo(startAngle + CONFIG.turretRotationSpeed * CONFIG.fixedStep, 10);
+    expect(actualAngle).toBeLessThan(0);
     expect(world.shots).toBe(0);
     adapter.end(1, 50, 0, 100);
     stepWorld(world, CONFIG.fixedStep, [adapter.readCommand(neutral())]);
-    expect(world.players[0]?.angle).toBeCloseTo(0, 10);
+    expect(player.angle).toBeCloseTo(actualAngle, 10);
     expect(world.shots).toBe(0);
 
     adapter.begin('aim', 1, -30, -30, 50, 200);
     adapter.end(1, -30, -30, 250);
     stepWorld(world, CONFIG.fixedStep, [adapter.readCommand(neutral())]);
-    expect(world.players[0]?.angle).toBeCloseTo(0, 10);
+    expect(player.angle).toBeCloseTo(actualAngle, 10);
     expect(world.shots).toBe(1);
     for (let tick = 0; tick < 40; tick += 1) {
       stepWorld(world, CONFIG.fixedStep, [adapter.readCommand(neutral())]);
+      expect(player.angle).toBeCloseTo(actualAngle, 10);
     }
     expect(world.shots).toBe(1);
   });
