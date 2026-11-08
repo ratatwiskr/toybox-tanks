@@ -1,148 +1,110 @@
 # Toybox Tanks
 
 A small browser-based couch co-op tank game, migrated from a single-file HTML
-prototype to TypeScript with verified build and test guardrails.
+prototype to TypeScript. Play solo or with two local players:
+https://ratatwiskr.github.io/toybox-tanks/
 
-[Play in your browser](https://ratatwiskr.github.io/toybox-tanks/) — solo or local
-two-player co-op. No installation required.
+- Free movement, independently aimed turrets, and one-bounce shells.
+- Three handcrafted rooms with menu, pause, retry, room-clear, and replay flows.
+- Keyboard-first; optional two-gamepad input uses left stick movement, right
+  stick aim, A/right-trigger fire, and Start pause/resume.
+- Static hosted and self-contained single-HTML releases.
 
-- Two local players: free movement, independently aimed turrets, one-bounce shells.
-- Three handcrafted rooms with the original menu, pause, retry, clear, and replay loop.
-- Keyboard-first, with optional two-gamepad support: left stick move, right stick aim,
-  A/right-trigger fire, Start pause/resume.
-- Both a hosted release (`dist/`) and a self-contained `file://` release
-  (`dist-single/index.html`).
+## Status
 
-**Status:** Gate D (adapters, rendering, UI/runtime, test bridge, and releases) is complete
-and committed locally. The push is pending: run `git push origin main` from a host terminal.
-The simulation and presentation match the prototype's sentry AI, one-bounce shells,
-aim/bounce guide, effects, controls, and outcome rules. Visual approval remains pending for
-nine candidate screenshots. Gate E (harden and deliver) is next and is blocked on human
-decisions; see `docs/gate-e-handoff.md`. See `docs/progress.md` and `docs/handoff.md`.
+The TypeScript migration and automatic map-border refactor are implemented.
+Read current PR checks and `docs/progress.md` rather than treating historical
+local push instructions or session handoffs as current assignments. Gate E is
+not declared complete. Visual regression remains separate from candidate capture.
 
-## Requirements
+## Development and verification
 
-- Node `24.22.2` and npm `11.19.1` (pinned through Volta in `package.json`).
-- One npm lockfile (`package-lock.json`).
-- Playwright browsers installed locally for browser suites.
-
-## Setup
+Node `24.22.2` and npm `11.19.1` are pinned through Volta. Keep one npm lockfile.
+For an owner-authorized initial setup:
 
 ```sh
 npm ci
 npx playwright install chromium firefox webkit
 ```
 
-If Playwright browsers are stored outside the default location, set
-`PLAYWRIGHT_BROWSERS_PATH` for every browser command. On this machine the working path is:
+Agents must respect the no-install restriction in `AGENTS.md`; these setup
+commands are not blanket authorization to reinstall dependencies or browsers.
 
-```sh
-PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:e2e
-```
+- `npm run dev`: production-like development server without the test bridge.
+- `npm run dev:test`: development server with the deterministic test bridge.
+- `npm run typecheck`: focused TypeScript projects, including DOM-free simulation.
+- `npm run lint`: maintained tree, zero warnings.
+- `npm run format:check`: non-mutating Prettier check.
+- `npm run test:unit`: unit and architecture tests.
+- `npm run test:coverage`: unit coverage with explicit thresholds.
+- `npm run test:e2e`: Chromium browser suite.
+- `npm run test:visual`: unapproved candidate screenshot capture.
+- `npm run verify:fast`: format, lint, typecheck, and unit tests.
+- `npm run verify`: full sequential verification including release checks.
+- `npm run test:browsers`: hosted Chromium, Firefox, and WebKit release smoke.
 
-The repository launcher sets a different, non-existent path. Do not edit the launcher;
-override the variable on the command line instead.
-
-## Commands
-
-| Command                 | Purpose                                                                   |
-| ----------------------- | ------------------------------------------------------------------------- |
-| `npm run dev`           | Vite dev server on `http://127.0.0.1:5173` (no test bridge).              |
-| `npm run dev:test`      | Test-mode dev server with the deterministic bridge installed.             |
-| `npm run typecheck`     | All focused TypeScript projects, including the DOM-free sim check.        |
-| `npm run lint`          | Whole maintained tree, zero warnings.                                     |
-| `npm run format:check`  | Non-mutating Prettier check.                                              |
-| `npm run test:unit`     | Vitest unit and architecture/guardrail tests.                             |
-| `npm run test:coverage` | Unit coverage with explicit includes and thresholds.                      |
-| `npm run test:e2e`      | Chromium browser suite against the test-mode dev server.                  |
-| `npm run test:visual`   | Candidate screenshot capture (not an approved baseline suite).            |
-| `npm run build`         | Hosted production build in `dist/`.                                       |
-| `npm run build:single`  | Self-contained production HTML in `dist-single/`.                         |
-| `npm run build:test`    | Test bundle in `dist-test/` with the bridge installed.                    |
-| `npm run test:release`  | Build both releases and smoke them in Chromium.                           |
-| `npm run test:browsers` | Hosted release smoke in Chromium, Firefox, and WebKit.                    |
-| `npm run verify:fast`   | Format, lint, typecheck, and unit tests.                                  |
-| `npm run verify`        | Full local gate: fast checks, coverage, E2E, candidate capture, releases. |
-
-Run `npm run verify` before claiming a gate is complete. CI is authoritative; the Git
-hook is convenience feedback only.
+Run browser suites sequentially. In the documented local environment, prefix
+Playwright commands with `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright"`.
+Do not modify the launcher to work around its browser-path setting. CI is
+authoritative; hooks are convenience feedback. See `docs/verification.md`.
 
 ## Maps and configuration
 
-- Gameplay defaults live in `src/config.ts`. Keep them data-driven and validated.
-- Rooms live in `src/sim/maps.ts` as fixed-width interior grids: `#` wall, `.` floor,
-  `1`/`2` player spawns, `S` sentry. Author exactly `22 × 11` cells without an
-  outer arena border. The loader adds one solid wall cell outside every side,
-  retaining the original `24 × 13` arena and world coordinates.
-- The outermost authored row and column are playable interior cells, not reserved
-  border cells. Existing room geometry, spawns, and enemy order are preserved.
-- `validateMap()` rejects wrong interior dimensions, unknown symbols, missing or
-  duplicate spawns, missing sentries, unreachable floor, and mismatched sentry counts.
-- `sim/` must stay DOM- and Node-free. Add gameplay data to config/maps rather than
-  branching on rendering or input concerns.
+Gameplay defaults live in `src/config.ts`; rooms live in `src/sim/maps.ts`.
+Author exactly `22 × 11` interior cells: `#` wall, `.` floor, `1`/`2` player
+spawns, and `S` sentry. Do not draw an outer arena border. The loader adds one
+solid cell outside every side, preserving the original `24 × 13` arena, world
+coordinates, room geometry, and entity ordering. Outermost authored cells remain
+interior cells.
 
-See `docs/issue-6-handoff.md` for the auto-border validation handoff.
+`validateMap()` rejects wrong dimensions, unknown symbols, missing or duplicate
+spawns, missing sentries, mismatched enemy counts, and unreachable floor. Keep
+simulation DOM/Node-free and map errors stable and actionable.
 
-## Releases
+## Releases and test bridge
 
 ```sh
-npm run build         # hosted: dist/index.html + hashed assets
-npm run build:single  # standalone: dist-single/index.html
-npm run test:release  # rebuild and smoke both in Chromium
+npm run build
+npm run build:single
+npm run build:test
+npm run test:release
 ```
 
-`test:release` serves `dist/` through Vite preview and opens
-`dist-single/index.html` directly through `file://`. Both are production builds; the
-test bridge is not installed in either, and a `?test=1` query cannot enable it. The
-separate `build:test` output (`dist-test/`) is only for deterministic browser tests.
+The hosted build is `dist/`; the self-contained release is
+`dist-single/index.html`, playable through `file://` without external resources.
+Release tests rebuild and smoke both formats in Chromium.
 
-## Test bridge
+Only test-mode development and `dist-test/` install `window.__TOYBOX_TEST__`.
+Production builds never expose it, including with `?test=1`. The bridge provides
+scenario loading, bounded manual ticks, snapshots, events, rendering, and input
+clearing. Manual ticks own simulation time while RAF continues rendering. See
+`src/test-bridge.ts` and `tests/e2e/support/bridge.ts`.
 
-`npm run dev:test` enables the typed `window.__TOYBOX_TEST__` interface at compile time.
-It provides `loadScenario`, `advanceTicks`, `snapshot`, `events`, `render`, and
-`clearInput`; see `src/test-bridge.ts` and the shared e2e types in
-`tests/e2e/support/bridge.ts`. Loading a scenario or stepping ticks takes the simulation
-clock, so RAF continues rendering while manual ticks alone advance gameplay. Production
-`dev`/`build`/`build:single` outputs never install it.
+## Browser and visual limitations
 
-## Browser notes
+Local Firefox may fail before launch under the documented nono sandbox with
+`Sandbox: CanCreateUserNamespace() unshare(CLONE_NEWPID): EPERM` and
+`Could not find profile folder.` This is not a pass; CI exercises Firefox on a
+normal runner. Automated WebKit does not prove real Safari/iOS compatibility,
+and synthetic gamepad tests do not prove physical controller compatibility.
 
-- Chromium and WebKit pass the local smoke suites.
-- Firefox is currently blocked locally before page launch by the nono sandbox:
-  `Sandbox: CanCreateUserNamespace() unshare(CLONE_NEWPID): EPERM` /
-  `Could not find profile folder.` This is an environment limitation, not a test pass.
-  CI runs Firefox on a normal runner.
-- Automated WebKit is not physical Safari/iOS verification, and synthetic gamepad tests
-  are not physical controller verification.
+`test:visual` writes candidates to `test-results/visual-candidates/`, not approved
+regression baselines. Do not auto-accept screenshots or infer visual approval
+from passing tests. See `docs/adr/0001-visual-gate-pending.md`.
 
-## Visual review
-
-`npm run test:visual` writes candidate screenshots to `test-results/visual-candidates/`.
-They are **not** approved baselines and are not compared against committed snapshots.
-A human/vision review must approve candidates before a real visual regression suite is
-enabled. See `docs/adr/0001-visual-gate-pending.md` and `docs/gate-e-handoff.md`.
-
-Drafted high-fidelity art (floor, rug, block skins, border, tank/turret, projectiles, and
-sandbox-only props) is committed under
-`Perplexity-assets-w-rden-perks-und-etwa-cas-angriffe-zum-spiel-passen-aspekte/`. Nothing
-from it is loaded by the game yet. Adoption is a separate presentation-only task with
-owner decisions and visual review; see `docs/asset-integration-plan.md`.
+Supplied asset packs remain reference material, not runtime dependencies. Broader
+asset adoption is a separate task under `docs/asset-integration-plan.md`; do not
+change gameplay geometry to fit artwork.
 
 ## Project layout
 
-```text
-src/config.ts        gameplay constants
-src/sim/             DOM-free simulation state and rules
-src/render/          Canvas renderer (reads state only)
-src/input/           keyboard and gamepad adapters (emit commands)
-src/test-bridge.ts   typed test-only automation surface
-src/main.ts          application orchestration and UI
-tests/unit/          simulation, adapter, bridge, and validation tests
-tests/architecture/  ESLint guardrail tests
-tests/e2e/           browser smoke, bridge, and synthetic-gamepad tests
-tests/visual/        unapproved candidate capture
-tests/release/       hosted and single-file release smoke tests
-docs/                migration contract, architecture, verification, progress
-```
+- `src/config.ts`: gameplay constants.
+- `src/sim/`: explicit simulation state, maps, collision, and combat.
+- `src/render/`: read-only Canvas rendering.
+- `src/input/`: keyboard and gamepad command adapters.
+- `src/main.ts`: application orchestration and UI.
+- `tests/`: unit, architecture, browser, visual-candidate, and release checks.
+- `reference/`: immutable original prototypes.
+- `docs/`: architecture, verification, decisions, and progress.
 
-See `docs/architecture.md` and `docs/verification.md` for details.
+See `AGENTS.md`, `docs/architecture.md`, and `docs/verification.md` before editing.
