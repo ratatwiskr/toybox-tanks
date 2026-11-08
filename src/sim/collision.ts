@@ -1,5 +1,5 @@
 import { CONFIG } from '../config';
-import type { Shell, Tank, Wall, World } from './types';
+import type { Cork, Shell, Tank, Wall, World } from './types';
 
 export interface RayHit {
   readonly t: number;
@@ -11,6 +11,10 @@ export interface RayHit {
 export interface WallHit extends RayHit {
   readonly wall: Wall;
 }
+
+export type TerrainHit =
+  | (WallHit & { readonly kind: 'wall' })
+  | (WallHit & { readonly kind: 'cork'; readonly cork: Cork });
 
 // Ray against a shell-radius-expanded AABB. Corner ties are deliberately
 // reported as ambiguous so the caller can remove the shell instead of choosing
@@ -99,6 +103,50 @@ export function firstWall(
   return best;
 }
 
+export function isSolidCork(cork: Cork): boolean {
+  return !cork.destroyed && cork.hitsRemaining > 0;
+}
+
+// Shared by combat, sight, and the aim guide. Do not cache terrain across
+// queries: an earlier shell or muzzle sweep may clear cork in the same step.
+export function firstTerrain(
+  world: World,
+  x: number,
+  y: number,
+  dx: number,
+  dy: number,
+  radius = CONFIG.shellRadius,
+): TerrainHit | null {
+  const wall = firstWall(world, x, y, dx, dy, radius);
+  let best: TerrainHit | null = wall === null ? null : { ...wall, kind: 'wall' };
+
+  for (const cork of world.corks) {
+    if (!isSolidCork(cork)) {
+      continue;
+    }
+    const hit = rayBox(x, y, dx, dy, cork, radius);
+    if (hit === null) {
+      continue;
+    }
+
+    if (best === null || hit.t < best.t - 1e-7) {
+      best = { ...hit, kind: 'cork', wall: cork, cork };
+    } else if (Math.abs(hit.t - best.t) < 1e-7) {
+      if (best.kind === 'wall') {
+        // Mixed-material ties have no unique damage recipient. Resolve them
+        // conservatively without reflecting, damaging cork, or cork feedback.
+        best = { ...hit, kind: 'cork', wall: cork, cork, ambiguous: true };
+      } else if (hit.ambiguous || hit.nx !== best.nx || hit.ny !== best.ny) {
+        best.ambiguous = true;
+      }
+      // Coplanar cork/cork ties retain the first cell in stable world order,
+      // matching the existing same-normal wall tie policy.
+    }
+  }
+
+  return best;
+}
+
 export function rayCircle(x: number, y: number, dx: number, dy: number, tank: Tank): number | null {
   const ox = x - tank.x;
   const oy = y - tank.y;
@@ -141,6 +189,7 @@ export function reflect(
 // walls. Small fixed-time substeps keep overlap correction stable.
 export function moveTank(world: World, tank: Tank, dx: number, dy: number): void {
   const pieces = Math.max(1, Math.ceil(Math.max(Math.abs(dx), Math.abs(dy)) / 5));
+  const obstacles = [...world.walls, ...world.corks.filter(isSolidCork)];
 
   for (let piece = 0; piece < pieces; piece += 1) {
     for (const axis of ['x', 'y'] as const) {
@@ -150,7 +199,7 @@ export function moveTank(world: World, tank: Tank, dx: number, dy: number): void
       for (let iteration = 0; iteration < 3; iteration += 1) {
         let adjusted = false;
 
-        for (const wall of world.walls) {
+        for (const wall of obstacles) {
           const qx = Math.max(wall.x, Math.min(tank.x, wall.x + wall.w));
           const qy = Math.max(wall.y, Math.min(tank.y, wall.y + wall.h));
           const ox = tank.x - qx;
@@ -178,5 +227,5 @@ export function moveTank(world: World, tank: Tank, dx: number, dy: number): void
 }
 
 export function hasLOS(world: World, a: Tank, b: Tank): boolean {
-  return firstWall(world, a.x, a.y, b.x - a.x, b.y - a.y, CONFIG.shellRadius) === null;
+  return firstTerrain(world, a.x, a.y, b.x - a.x, b.y - a.y, CONFIG.shellRadius) === null;
 }

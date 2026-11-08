@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { MAPS } from '../../src/sim/maps';
 import { createTestBridge } from '../../src/test-bridge';
 import type { TestBridgeHost } from '../../src/test-bridge';
 import type { Command, World } from '../../src/sim/types';
@@ -86,7 +87,7 @@ describe('test bridge', () => {
     const state = harness();
     const bridge = createTestBridge(state.host);
 
-    expect(() => bridge.loadScenario('room', { room: 3 })).toThrow(/Room must be/);
+    expect(() => bridge.loadScenario('room', { room: MAPS.length })).toThrow(/Room must be/);
     expect(() => bridge.loadScenario('room', { room: -1 })).toThrow(/Room must be/);
     expect(() => bridge.advanceTicks(1.5)).toThrow(/integer/);
     expect(() => bridge.advanceTicks(100_001)).toThrow(/integer/);

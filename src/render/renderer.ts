@@ -1,6 +1,6 @@
 import { CONFIG } from '../config';
-import { firstWall, reflect } from '../sim/collision';
-import type { Effect, Shell, Tank, Wall, World } from '../sim/types';
+import { firstTerrain, isSolidCork, reflect } from '../sim/collision';
+import type { Cork, Effect, Shell, Tank, Wall, World } from '../sim/types';
 
 // Rendering only needs this narrow slice of the Canvas API. Keeping the surface
 // explicit lets unit tests prove rendering is read-only without a DOM.
@@ -148,6 +148,124 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
     ctx.fill();
   };
 
+  const drawCork = (cork: Cork): void => {
+    const damage = cork.hitsRemaining >= 3 ? 0 : cork.hitsRemaining === 2 ? 1 : 2;
+
+    // Cork outlines must not inherit the previous tile's crack stroke width.
+    ctx.lineWidth = 1;
+    rounded(cork.x + 2, cork.y + 5, 37, 37, 5, '#826c472a');
+    rounded(cork.x + 1, cork.y + 1, 38, 37, 5, '#bea374', '#826c47');
+    rounded(cork.x + 3, cork.y + 2, 34, 31, 4, undefined, '#e2cca0');
+
+    ctx.strokeStyle = '#a8845580';
+    ctx.lineWidth = 1.3;
+    for (let index = 0; index < 3; index += 1) {
+      const y = cork.y + 12 + index * 7;
+      ctx.beginPath();
+      ctx.moveTo(cork.x + 8, y);
+      ctx.lineTo(cork.x + 32, y);
+      ctx.stroke();
+    }
+
+    // Damage paths use tile-local 0..1 coordinates so they scale with the cork
+    // cell. Values stay at least half the crack stroke inside the 38x37 face.
+    const tilePoint = (x: number, y: number): readonly [number, number] => [
+      cork.x + x * cork.w,
+      cork.y + y * cork.h,
+    ];
+
+    const trace = (points: readonly (readonly [number, number])[]): void => {
+      const first = points[0];
+      if (first === undefined) {
+        return;
+      }
+      ctx.beginPath();
+      const start = tilePoint(first[0], first[1]);
+      ctx.moveTo(start[0], start[1]);
+      for (let index = 1; index < points.length; index += 1) {
+        const point = points[index];
+        if (point === undefined) {
+          continue;
+        }
+        const [x, y] = tilePoint(point[0], point[1]);
+        ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    };
+
+    const fillChip = (points: readonly (readonly [number, number])[]): void => {
+      const first = points[0];
+      if (first === undefined) {
+        return;
+      }
+      ctx.beginPath();
+      const start = tilePoint(first[0], first[1]);
+      ctx.moveTo(start[0], start[1]);
+      for (let index = 1; index < points.length; index += 1) {
+        const point = points[index];
+        if (point === undefined) {
+          continue;
+        }
+        const [x, y] = tilePoint(point[0], point[1]);
+        ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fill();
+    };
+
+    if (damage >= 1) {
+      ctx.strokeStyle = '#705a40';
+      ctx.lineWidth = 3;
+      trace([
+        [0.74, 0.28],
+        [0.86, 0.54],
+        [0.68, 0.68],
+        [0.8, 0.84],
+        [0.72, 0.88],
+      ]);
+      trace([
+        [0.86, 0.54],
+        [0.92, 0.34],
+      ]);
+      trace([
+        [0.68, 0.68],
+        [0.42, 0.74],
+      ]);
+    }
+
+    if (damage >= 2) {
+      trace([
+        [0.9, 0.26],
+        [0.82, 0.52],
+        [0.9, 0.68],
+        [0.78, 0.82],
+        [0.88, 0.88],
+      ]);
+      trace([
+        [0.22, 0.64],
+        [0.44, 0.76],
+        [0.34, 0.86],
+      ]);
+      trace([
+        [0.9, 0.24],
+        [0.86, 0.4],
+        [0.92, 0.48],
+      ]);
+
+      ctx.fillStyle = '#a2875e';
+      fillChip([
+        [0.4, 0.74],
+        [0.54, 0.8],
+        [0.44, 0.86],
+      ]);
+      fillChip([
+        [0.74, 0.58],
+        [0.86, 0.62],
+        [0.78, 0.72],
+      ]);
+    }
+  };
+
   const drawAim = (world: World, player: Tank): void => {
     if (!player.alive) {
       return;
@@ -155,7 +273,7 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
 
     const dx = Math.cos(player.angle);
     const dy = Math.sin(player.angle);
-    const hit = firstWall(world, player.x, player.y, dx * 350, dy * 350);
+    const hit = firstTerrain(world, player.x, player.y, dx * 350, dy * 350);
     const length = hit === null ? 110 : 350 * hit.t;
 
     ctx.strokeStyle = player.id === 'p1' ? '#17688980' : '#ae572980';
@@ -166,11 +284,11 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
     ctx.lineTo(player.x + dx * length, player.y + dy * length);
     ctx.stroke();
 
-    if (hit !== null && !hit.ambiguous) {
+    if (hit !== null && hit.kind === 'wall' && !hit.ambiguous) {
       const reflected = reflect(dx, dy, hit.nx, hit.ny);
       const x = player.x + dx * length + hit.nx * 0.05;
       const y = player.y + dy * length + hit.ny * 0.05;
-      const second = firstWall(world, x, y, reflected.x * 130, reflected.y * 130);
+      const second = firstTerrain(world, x, y, reflected.x * 130, reflected.y * 130);
       const secondLength = second === null ? 130 : 130 * second.t;
 
       ctx.beginPath();
@@ -392,6 +510,11 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
     for (const wall of world.walls) {
       ctx.strokeRect(wall.x, wall.y, wall.w, wall.h);
     }
+    for (const cork of world.corks) {
+      if (isSolidCork(cork)) {
+        ctx.strokeRect(cork.x, cork.y, cork.w, cork.h);
+      }
+    }
     for (const tank of [...world.players, ...world.enemies]) {
       ctx.strokeStyle = tank.alive ? '#003eff' : '#777';
       ctx.beginPath();
@@ -437,6 +560,11 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
       }
       for (const wall of world.walls) {
         drawWall(wall);
+      }
+      for (const cork of world.corks) {
+        if (isSolidCork(cork)) {
+          drawCork(cork);
+        }
       }
       for (const enemy of world.enemies) {
         drawTank(enemy, world);

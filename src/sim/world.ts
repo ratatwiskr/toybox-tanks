@@ -37,6 +37,7 @@ export function createEmptyWorld(mode: Mode): World {
     state: 'playing',
     time: 0,
     walls: [],
+    corks: [],
     players: [],
     enemies: [],
     shells: [],
@@ -74,6 +75,16 @@ export function createWorld(index: number, mode: Mode): World {
 
       if (cell === '#') {
         world.walls.push({ x: px, y: py, w: CONFIG.tile, h: CONFIG.tile });
+      } else if (cell === 'C') {
+        world.corks.push({
+          id: `c${String(x)},${String(y)}`,
+          x: px,
+          y: py,
+          w: CONFIG.tile,
+          h: CONFIG.tile,
+          hitsRemaining: 3,
+          destroyed: false,
+        });
       } else if (cell === '1' || (cell === '2' && mode === 'coop')) {
         world.players.push(
           createTank(`p${cell}`, 'player', px + CONFIG.tile / 2, py + CONFIG.tile / 2),
