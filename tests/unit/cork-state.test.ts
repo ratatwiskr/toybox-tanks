@@ -2,12 +2,13 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { CONFIG } from '../../src/config';
 import { addMapBorder, MAPS, validateMap } from '../../src/sim/maps';
+import type * as MapsModule from '../../src/sim/maps';
 import { createEmptyWorld, createWorld, stepWorld } from '../../src/sim/world';
 
 // Exercise the real loader with cork without prematurely shipping an invisible
 // cork room. Vitest isolates this fixture from the existing campaign tests.
 vi.mock('../../src/sim/maps', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('../../src/sim/maps')>();
+  const actual = await importOriginal<typeof MapsModule>();
   return {
     ...actual,
     MAPS: actual.MAPS.map((map, index) =>
