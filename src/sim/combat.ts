@@ -1,6 +1,6 @@
 import { CONFIG } from '../config';
-import { canHit, firstWall, rayCircle, reflect } from './collision';
-import type { WallHit } from './collision';
+import { canHit, firstTerrain, rayCircle, reflect } from './collision';
+import type { TerrainHit, WallHit } from './collision';
 import { poof, record } from './feedback';
 import type { Shell, Tank, World } from './types';
 
@@ -54,7 +54,7 @@ export function shoot(world: World, tank: Tank): boolean {
   world.shells.push(shell);
   tank.cooldown = tank.faction === 'player' ? CONFIG.firingCooldown : CONFIG.enemyFiringInterval;
   world.shots += 1;
-  // Sweep all the way out of the barrel, never spawn beyond a nearby wall.
+  // Sweep all the way out of the barrel, never spawn beyond nearby terrain.
   advanceShell(world, shell, 23);
   return true;
 }
@@ -78,6 +78,19 @@ export function shellWallContact(world: World, shell: Shell, hit: WallHit): bool
   return true;
 }
 
+function shellTerrainContact(world: World, shell: Shell, hit: TerrainHit): boolean {
+  if (hit.kind === 'wall') {
+    return shellWallContact(world, shell, hit);
+  }
+
+  shell.dead = true;
+  if (!hit.ambiguous) {
+    hit.cork.hitsRemaining = Math.max(0, hit.cork.hitsRemaining - 1);
+    hit.cork.destroyed = hit.cork.hitsRemaining === 0;
+  }
+  return false;
+}
+
 export function advanceShell(world: World, shell: Shell, distance: number): void {
   let remaining = distance;
   let contacts = 0;
@@ -93,7 +106,7 @@ export function advanceShell(world: World, shell: Shell, distance: number): void
 
     const dx = (shell.vx / speed) * remaining;
     const dy = (shell.vy / speed) * remaining;
-    const wall = firstWall(world, shell.x, shell.y, dx, dy);
+    const terrain = firstTerrain(world, shell.x, shell.y, dx, dy);
 
     let hitTank: Tank | null = null;
     let tankHitT = Infinity;
@@ -110,7 +123,7 @@ export function advanceShell(world: World, shell: Shell, distance: number): void
       }
     }
 
-    if (hitTank !== null && (wall === null || tankHitT < wall.t - 1e-7)) {
+    if (hitTank !== null && (terrain === null || tankHitT < terrain.t - 1e-7)) {
       shell.x += dx * tankHitT;
       shell.y += dy * tankHitT;
       damage(world, hitTank);
@@ -118,18 +131,18 @@ export function advanceShell(world: World, shell: Shell, distance: number): void
       break;
     }
 
-    if (wall === null) {
+    if (terrain === null) {
       shell.x += dx;
       shell.y += dy;
       remaining = 0;
       break;
     }
 
-    shell.x += dx * wall.t;
-    shell.y += dy * wall.t;
-    remaining *= 1 - wall.t;
+    shell.x += dx * terrain.t;
+    shell.y += dy * terrain.t;
+    remaining *= 1 - terrain.t;
 
-    if (!shellWallContact(world, shell, wall)) {
+    if (!shellTerrainContact(world, shell, terrain)) {
       break;
     }
   }
