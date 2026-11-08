@@ -70,12 +70,18 @@ hook is convenience feedback only.
 ## Maps and configuration
 
 - Gameplay defaults live in `src/config.ts`. Keep them data-driven and validated.
-- Rooms live in `src/sim/maps.ts` as fixed-width grids: `#` wall, `.` floor, `1`/`2`
-  player spawns, `S` sentry. Grids are `24 × 13` cells with a solid border.
-- `validateMap()` rejects wrong dimensions, unknown symbols, open borders, missing or
-  duplicate spawns, unreachable floor, and mismatched sentry counts.
+- Rooms live in `src/sim/maps.ts` as fixed-width interior grids: `#` wall, `.` floor,
+  `1`/`2` player spawns, `S` sentry. Author exactly `22 × 11` cells without an
+  outer arena border. The loader adds one solid wall cell outside every side,
+  retaining the original `24 × 13` arena and world coordinates.
+- The outermost authored row and column are playable interior cells, not reserved
+  border cells. Existing room geometry, spawns, and enemy order are preserved.
+- `validateMap()` rejects wrong interior dimensions, unknown symbols, missing or
+  duplicate spawns, missing sentries, unreachable floor, and mismatched sentry counts.
 - `sim/` must stay DOM- and Node-free. Add gameplay data to config/maps rather than
   branching on rendering or input concerns.
+
+See `docs/issue-6-handoff.md` for the auto-border validation handoff.
 
 ## Releases
 
