@@ -13,64 +13,71 @@ export interface MapValidation {
   readonly rows: readonly string[];
 }
 
-// Exactly CONFIG.columns × CONFIG.rows. # = solid wooden block; . = floor;
-// 1/2 = player spawns; S = stationary sentry. Every room has one 1 and one 2.
+// Authored grids cover only the playable interior. The loader adds the solid
+// one-cell arena border, so the rendered/collision arena stays CONFIG.columns ×
+// CONFIG.rows.
+export const MAP_INTERIOR_COLUMNS = CONFIG.columns - 2;
+export const MAP_INTERIOR_ROWS = CONFIG.rows - 2;
+
+// Exactly MAP_INTERIOR_COLUMNS × MAP_INTERIOR_ROWS. # = solid wooden block;
+// . = floor; 1/2 = player spawns; S = stationary sentry. Every room has one 1
+// and one 2. Do not draw the outer arena border; it is added automatically.
 export const MAPS: readonly MapData[] = [
   {
     name: 'First Bounce',
     hint: 'Try the outer rails: every shell gets one bounce.',
     expectedEnemies: 2,
-    grid: `########################
-#......................#
-#......................#
-#...S..##.....##...S...#
-#......##.....##.......#
-#......................#
-#......................#
-#.........####.........#
-#......................#
-#......................#
-#...1..............2...#
-#......................#
-########################`,
+    grid: `......................
+......................
+...S..##.....##...S...
+......##.....##.......
+......................
+......................
+.........####.........
+......................
+......................
+...1..............2...
+......................`,
   },
   {
     name: 'Block Party',
     hint: 'Take different routes. Corners are cover, not dead ends.',
     expectedEnemies: 3,
-    grid: `########################
-#......................#
-#..S......#..S.........#
-#....#....#........#...#
-#....#....#....#...#...#
-#....#....#....#...#...#
-#....#.........#...#...#
-#....#.........#.......#
-#........###...#.....S.#
-#......................#
-#..1..............2....#
-#......................#
-########################`,
+    grid: `......................
+..S......#..S.........
+....#....#........#...
+....#....#....#...#...
+....#....#....#...#...
+....#.........#...#...
+....#.........#.......
+........###...#.....S.
+......................
+..1..............2....
+......................`,
   },
   {
     name: 'Together Through',
     hint: 'Cover each other. Either surviving player can finish.',
     expectedEnemies: 4,
-    grid: `########################
-#......................#
-#..S..........S........#
-#.........#.....###..S.#
-#...###...#............#
-#.........#............#
-#.........#............#
-#..................#...#
-#.....###.....###..#...#
-#...........S......#...#
-#..1.................2.#
-#......................#
-########################`,
+    grid: `......................
+..S..........S........
+.........#.....###..S.
+...###...#............
+.........#............
+.........#............
+..................#...
+.....###.....###..#...
+...........S......#...
+..1.................2.
+......................`,
   },
 ];
+
+// Wrap the authored interior in the closed solid border used by the simulation.
+export function addMapBorder(rows: readonly string[]): string[] {
+  const border = '#'.repeat(CONFIG.columns);
+  return [border, ...rows.map((row) => `#${row}#`), border];
+}
 
 export function validateMap(
   data: Pick<MapData, 'grid'> & Partial<Pick<MapData, 'expectedEnemies'>>,
@@ -79,14 +86,14 @@ export function validateMap(
   const rows = data.grid.trim().split(/\r?\n/);
   const counts = { '1': 0, '2': 0, S: 0 };
 
-  if (rows.length !== CONFIG.rows) {
-    errors.push(`Expected ${String(CONFIG.rows)} rows, got ${String(rows.length)}.`);
+  if (rows.length !== MAP_INTERIOR_ROWS) {
+    errors.push(`Expected ${String(MAP_INTERIOR_ROWS)} interior rows, got ${String(rows.length)}.`);
   }
 
   rows.forEach((row, y) => {
-    if (row.length !== CONFIG.columns) {
+    if (row.length !== MAP_INTERIOR_COLUMNS) {
       errors.push(
-        `Row ${String(y + 1)}: expected ${String(CONFIG.columns)} cells, got ${String(row.length)}.`,
+        `Row ${String(y + 1)}: expected ${String(MAP_INTERIOR_COLUMNS)} interior cells, got ${String(row.length)}.`,
       );
     }
 
@@ -102,11 +109,6 @@ export function validateMap(
 
       if (cell === '1' || cell === '2' || cell === 'S') {
         counts[cell] += 1;
-      }
-
-      const isBorder = y === 0 || y === CONFIG.rows - 1 || x === 0 || x === CONFIG.columns - 1;
-      if (isBorder && cell !== '#') {
-        errors.push(`Open border at row ${String(y + 1)}, column ${String(x + 1)}.`);
       }
     }
   });
@@ -125,7 +127,8 @@ export function validateMap(
     errors.push(`Expected ${String(data.expectedEnemies)} sentries; found ${String(counts.S)}.`);
   }
 
-  // Every non-wall tile must be reachable from player 1, including the other spawn.
+  // Every non-wall interior tile must be reachable from player 1, including the
+  // other spawn. The automatic solid border cannot open a path out of the arena.
   if (errors.length === 0) {
     const visited = new Set<string>();
     const stack: Array<readonly [number, number]> = [];
