@@ -65,7 +65,7 @@ try {
   pauseReason = error instanceof Error ? error.message : String(error);
 }
 
-statusLine.textContent = 'Toybox Tanks · 3 tabletop rooms · Keyboard-first · No audio';
+statusLine.textContent = `Toybox Tanks · ${String(MAPS.length)} tabletop rooms · Keyboard-first · No audio`;
 
 function focusGame(): void {
   stage.focus({ preventScroll: true });
@@ -108,7 +108,7 @@ function overlayContent(state: GameState): OverlayContent {
     case 'menu':
       return {
         title: 'Small tanks.<br>Big teamwork.',
-        tag: 'Toybox Tanks · 3 tabletop rooms',
+        tag: `Toybox Tanks · ${String(MAPS.length)} tabletop rooms`,
         text: 'Move freely. Aim separately. Bounce once.<br>Clear the room together — only one of you needs to survive.',
         actions: button('Start two-player co-op', 'coop', true) + button('Solo practice', 'solo'),
         extra:
@@ -130,7 +130,7 @@ function overlayContent(state: GameState): OverlayContent {
       const nextMap = MAPS[world.room + 1];
       return {
         title: 'Room cleared!',
-        tag: `Room ${String(world.room + 1)} / 3`,
+        tag: `Room ${String(world.room + 1)} / ${String(MAPS.length)}`,
         text: `Both tanks are repaired for the next room.<br>Next up: ${nextMap?.name ?? 'the next room'}`,
         actions: button('Next room →', 'next', true) + button('Replay this room', 'retry'),
         extra: '',
@@ -147,8 +147,8 @@ function overlayContent(state: GameState): OverlayContent {
     case 'completed':
       return {
         title: 'A clean toybox sweep!',
-        tag: 'All 3 rooms complete',
-        text: 'You cleared First Bounce, Block Party, and Together Through.<br>The tabletop belongs to the team.',
+        tag: `All ${String(MAPS.length)} rooms complete`,
+        text: `You cleared ${MAPS.map((map) => map.name).join(', ')}.<br>The tabletop belongs to the team.`,
         actions: button('Replay all rooms', 'replay', true) + button('Main menu', 'menu'),
         extra: '',
       };
