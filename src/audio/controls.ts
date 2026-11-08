@@ -6,11 +6,20 @@ export function createAudioControls(
   audio: AudioSession,
   clearInput: () => void,
 ): () => void {
-  const controls = document.createElement('fieldset');
+  const tools = parent.querySelector<HTMLElement>('.tools');
+  if (tools === null) {
+    throw new Error('Missing toolbar for audio controls');
+  }
+  const controls = document.createElement('details');
   controls.className = 'audio-controls';
+  const summary = document.createElement('summary');
+  summary.textContent = 'Audio';
+  const panel = document.createElement('fieldset');
+  panel.className = 'audio-panel';
   const legend = document.createElement('legend');
-  legend.textContent = 'Audio';
-  controls.append(legend);
+  legend.textContent = 'Audio settings';
+  panel.append(legend);
+  controls.append(summary, panel);
   const enable = document.createElement('button');
   enable.type = 'button';
   enable.textContent = 'Enable audio';
@@ -18,7 +27,7 @@ export function createAudioControls(
   mute.type = 'button';
   mute.textContent = 'Mute audio';
   mute.setAttribute('aria-pressed', 'false');
-  controls.append(enable, mute);
+  panel.append(enable, mute);
   let muted = false;
 
   function slider(labelText: string, value: string): HTMLInputElement {
@@ -31,12 +40,17 @@ export function createAudioControls(
     input.step = '0.05';
     input.value = value;
     label.append(input);
-    controls.append(label);
+    panel.append(label);
     return input;
   }
 
   const music = slider('Music volume', '0.2');
   const effects = slider('Effects volume', '0.7');
+  const close = document.createElement('button');
+  close.type = 'button';
+  close.textContent = 'Close audio settings';
+  panel.append(close);
+
   function update(): void {
     audio.setLevels({ muted, music: music.valueAsNumber, effects: effects.valueAsNumber });
     mute.setAttribute('aria-pressed', String(muted));
@@ -61,8 +75,27 @@ export function createAudioControls(
     },
     options,
   );
+  close.addEventListener(
+    'click',
+    () => {
+      controls.open = false;
+      summary.focus({ preventScroll: true });
+    },
+    options,
+  );
   music.addEventListener('input', update, options);
   effects.addEventListener('input', update, options);
+  controls.addEventListener(
+    'keydown',
+    (event) => {
+      if (event.code === 'Escape') {
+        controls.open = false;
+        summary.focus({ preventScroll: true });
+        event.preventDefault();
+      }
+    },
+    options,
+  );
   for (const type of ['keydown', 'keyup', 'pointerdown']) {
     controls.addEventListener(
       type,
@@ -73,7 +106,7 @@ export function createAudioControls(
       options,
     );
   }
-  parent.append(controls);
+  tools.append(controls);
   return () => {
     abort.abort();
     controls.remove();

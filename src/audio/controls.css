@@ -1,18 +1,52 @@
 .audio-controls {
+  position: relative;
+  align-self: center;
+  z-index: 20;
+}
+.audio-controls > summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 5px 9px;
+  border: 1px solid #bca784;
+  border-radius: 10px;
+  background: #fffaf0;
+  color: var(--ink);
+  font-size: 12px;
+  cursor: pointer;
+  list-style: none;
+}
+.audio-controls > summary::-webkit-details-marker {
+  display: none;
+}
+.audio-controls > summary:focus-visible {
+  outline: 3px solid #167aad;
+  outline-offset: 3px;
+}
+.audio-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.6rem 1rem;
-  margin: 0.75rem 0;
+  width: min(440px, calc(100vw - 24px));
+  max-height: calc(100dvh - 64px);
+  overflow: auto;
+  margin: 0;
   padding: 0.6rem 0.8rem;
-  border: 1px solid currentColor;
+  border: 1px solid #bca784;
   border-radius: 0.5rem;
+  background: #fff8e9;
+  box-shadow: 0 6px 20px #362a2240;
 }
-.audio-controls label {
+.audio-panel label {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
 }
-.audio-controls input[type='range'] {
+.audio-panel input[type='range'] {
   width: 7rem;
 }
