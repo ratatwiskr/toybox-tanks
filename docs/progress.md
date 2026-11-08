@@ -1,11 +1,72 @@
 # Toybox Tanks — progress
 
-Updated: 2026-11-07  
+Updated: 2026-11-08  
 Current gate: **E — harden and deliver (remote checkpoint reconciled; verification blocked)**  
 Previous gate: **D — complete according to the recorded implementation checkpoint; pushed**  
 Next handoff: `docs/gate-e-handoff.md` (its push-pending statements are superseded below)  
 Verification details: `docs/verification.md`  
 Visual asset plan: `docs/asset-integration-plan.md`
+
+## Cork crack overflow fix — 2026-11-08
+
+Working tree: base commit `4b7b691e3ba9f522cc1e1367eb9588f9597b2363`
+(`feature/destructible-cork-blocks`) plus uncommitted changes. No commit, push, or PR
+was made. Environment: Node `v24.22.2`, npm `11.19.1`, Playwright browsers from
+`$HOME/.cache/ms-playwright`.
+
+### Changes
+
+- `src/render/renderer.ts`: damaged cork crack/chip paths now use tile-local `0..1`
+  coordinates mapped through `cork.x + nx * cork.w` and `cork.y + ny * cork.h`.
+  Every damage stroke stays at least half of its 3 px stroke inside the existing
+  roughly 38×37 cork face. The intentional drop shadow, intact face and stripes,
+  damage-stage escalation, destroyed-cork skipping, read-only rendering, and aim
+  behavior are unchanged. Rendering remains procedural; SVG integration stays
+  deferred.
+- `tests/unit/renderer.test.ts`: added a recording-context regression test using one
+  real Cork Keep cork at `hitsRemaining: 2` and `hitsRemaining: 1`. It asserts every
+  crack point (including half the recorded stroke width) and every chip point lies
+  inside the cork face, asserts the heavier stage has more cracks and adds chips, and
+  asserts the world snapshot is unchanged after rendering.
+- `tests/unit/test-bridge.test.ts` and `tests/unit/world.test.ts`: refreshed stale
+  pre-Cork-Keep room-count assertions to use `MAPS.length`; the old tests still treated
+  room index 2 as the final room. No gameplay or guardrail was weakened.
+
+### Checks actually run
+
+| Command                                                                                                                                                          | Exit | Result                                                                                                                                                                           |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npx vitest run tests/unit/renderer.test.ts tests/unit/test-bridge.test.ts tests/unit/maps.test.ts tests/unit/cork-combat.test.ts tests/unit/cork-state.test.ts` | 0    | 5 files, 44 tests passed.                                                                                                                                                        |
+| `npm run verify:fast`                                                                                                                                            | 0    | Prettier, ESLint `--max-warnings 0`, all six typecheck projects, and 13 files / 118 unit and architecture tests passed.                                                          |
+| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run verify`                                                                                           | 0    | Coverage 96.42/94.75/100/96.3 (st/branch/fn/lines); Chromium e2e 6/6; visual candidate capture 1/1 (unapproved); release Chromium 4/4. `dist/` and `dist-single/` rebuilt.       |
+| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:browsers`                                                                                    | 1    | Chromium release smoke 2/2 and WebKit 2/2 passed; Firefox 0/2 blocked before page launch (environment, not a test failure). Log: `/tmp/toybox-tanks.uyIa0a9V/test-browsers.log`. |
+| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npx playwright test --project=webkit`                                                                     | 0    | WebKit e2e 6/6 passed.                                                                                                                                                           |
+
+Firefox blocker, exact: `Sandbox: CanCreateUserNamespace() unshare(CLONE_NEWPID): EPERM`
+followed by `Could not find profile folder.` This is the documented nono sandbox
+limitation; CI must exercise Firefox on a normal runner. Do not record this as a local
+Firefox pass.
+
+### Build artifacts and visual inspection
+
+- Hosted build: `dist/index.html` plus `dist/assets/index-*.js` and
+  `dist/assets/index-*.css`.
+- Single-file build: `dist-single/index.html`.
+- Generated unapproved inspection PNGs for intact, isolated `hitsRemaining: 2`,
+  isolated `hitsRemaining: 1`, and adjacent damaged Cork Keep tiles under
+  `/tmp/toybox-tanks.uyIa0a9V/cork-inspect/`.
+- Deterministic pixel analysis found zero crack/chip-colored pixels outside any cork
+  face in the isolated and adjacent variants; intact cork had no crack/chip pixels.
+  `hitsRemaining: 2` showed cracks only; `hitsRemaining: 1` showed more cracks plus
+  chips. The implementing model cannot consume image input, so this was pixel/ASCII
+  inspection rather than aesthetic approval. The PNGs remain candidates for human
+  review; no snapshot baseline was added or approved.
+
+### Remaining
+
+- Human visual approval of cork damage states remains pending.
+- Firefox local execution remains blocked by the nono sandbox.
+- The changes are uncommitted and unpushed.
 
 ## Remote checkpoint reconciliation — 2026-11-07
 

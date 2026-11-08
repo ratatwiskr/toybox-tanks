@@ -275,8 +275,8 @@ describe('simulation', () => {
     expect(world.state).toBe('defeat');
   });
 
-  it('completes the third room and freezes combat and time', () => {
-    const world = createWorld(2, 'coop');
+  it('completes the final room and freezes combat and time', () => {
+    const world = createWorld(MAPS.length - 1, 'coop');
     for (const enemy of world.enemies) {
       enemy.alive = false;
     }
@@ -306,7 +306,7 @@ describe('simulation', () => {
   });
 
   it('replaying after completion returns a fresh first room', () => {
-    const completed = createWorld(2, 'coop');
+    const completed = createWorld(MAPS.length - 1, 'coop');
     for (const enemy of completed.enemies) {
       enemy.alive = false;
     }

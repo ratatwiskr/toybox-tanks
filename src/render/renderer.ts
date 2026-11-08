@@ -165,58 +165,102 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
       ctx.stroke();
     }
 
+    // Damage paths use tile-local 0..1 coordinates so they scale with the cork
+    // cell. Values stay at least half the crack stroke inside the 38x37 face.
+    const tilePoint = (x: number, y: number): readonly [number, number] => [
+      cork.x + x * cork.w,
+      cork.y + y * cork.h,
+    ];
+
+    const trace = (points: readonly (readonly [number, number])[]): void => {
+      const first = points[0];
+      if (first === undefined) {
+        return;
+      }
+      ctx.beginPath();
+      const start = tilePoint(first[0], first[1]);
+      ctx.moveTo(start[0], start[1]);
+      for (let index = 1; index < points.length; index += 1) {
+        const point = points[index];
+        if (point === undefined) {
+          continue;
+        }
+        const [x, y] = tilePoint(point[0], point[1]);
+        ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    };
+
+    const fillChip = (points: readonly (readonly [number, number])[]): void => {
+      const first = points[0];
+      if (first === undefined) {
+        return;
+      }
+      ctx.beginPath();
+      const start = tilePoint(first[0], first[1]);
+      ctx.moveTo(start[0], start[1]);
+      for (let index = 1; index < points.length; index += 1) {
+        const point = points[index];
+        if (point === undefined) {
+          continue;
+        }
+        const [x, y] = tilePoint(point[0], point[1]);
+        ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fill();
+    };
+
     if (damage >= 1) {
       ctx.strokeStyle = '#705a40';
       ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.moveTo(cork.x + 30, cork.y + 12);
-      ctx.lineTo(cork.x + 38, cork.y + 25);
-      ctx.lineTo(cork.x + 28, cork.y + 37);
-      ctx.lineTo(cork.x + 44, cork.y + 47);
-      ctx.lineTo(cork.x + 38, cork.y + 69);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(cork.x + 38, cork.y + 25);
-      ctx.lineTo(cork.x + 56, cork.y + 16);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(cork.x + 28, cork.y + 37);
-      ctx.lineTo(cork.x + 13, cork.y + 42);
-      ctx.stroke();
+      trace([
+        [0.74, 0.28],
+        [0.86, 0.54],
+        [0.68, 0.68],
+        [0.8, 0.84],
+        [0.72, 0.88],
+      ]);
+      trace([
+        [0.86, 0.54],
+        [0.92, 0.34],
+      ]);
+      trace([
+        [0.68, 0.68],
+        [0.42, 0.74],
+      ]);
     }
 
     if (damage >= 2) {
-      ctx.beginPath();
-      ctx.moveTo(cork.x + 48, cork.y + 12);
-      ctx.lineTo(cork.x + 41, cork.y + 26);
-      ctx.lineTo(cork.x + 54, cork.y + 38);
-      ctx.lineTo(cork.x + 43, cork.y + 48);
-      ctx.lineTo(cork.x + 54, cork.y + 69);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(cork.x + 11, cork.y + 35);
-      ctx.lineTo(cork.x + 24, cork.y + 42);
-      ctx.lineTo(cork.x + 18, cork.y + 55);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(cork.x + 67, cork.y + 13);
-      ctx.lineTo(cork.x + 63, cork.y + 22);
-      ctx.lineTo(cork.x + 76, cork.y + 27);
-      ctx.stroke();
+      trace([
+        [0.9, 0.26],
+        [0.82, 0.52],
+        [0.9, 0.68],
+        [0.78, 0.82],
+        [0.88, 0.88],
+      ]);
+      trace([
+        [0.22, 0.64],
+        [0.44, 0.76],
+        [0.34, 0.86],
+      ]);
+      trace([
+        [0.9, 0.24],
+        [0.86, 0.4],
+        [0.92, 0.48],
+      ]);
 
       ctx.fillStyle = '#a2875e';
-      ctx.beginPath();
-      ctx.moveTo(cork.x + 23, cork.y + 52);
-      ctx.lineTo(cork.x + 30, cork.y + 55);
-      ctx.lineTo(cork.x + 25, cork.y + 63);
-      ctx.closePath();
-      ctx.fill();
-      ctx.beginPath();
-      ctx.moveTo(cork.x + 62, cork.y + 30);
-      ctx.lineTo(cork.x + 69, cork.y + 33);
-      ctx.lineTo(cork.x + 65, cork.y + 40);
-      ctx.closePath();
-      ctx.fill();
+      fillChip([
+        [0.4, 0.74],
+        [0.54, 0.8],
+        [0.44, 0.86],
+      ]);
+      fillChip([
+        [0.74, 0.58],
+        [0.86, 0.62],
+        [0.78, 0.72],
+      ]);
     }
   };
 
