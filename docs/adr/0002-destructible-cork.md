@@ -1,131 +1,96 @@
 # ADR 0002: Destructible cork and a fourth campaign room
 
 Date: 2026-11-08
-Status: Owner-approved design; implementation and verification pending.
+Status: Accepted; procedural rendering decision supersedes the original SVG plan.
 
-## Authority and branch
+## Decision and scope
 
-Related issues: #3, #5, #6, #7, #8, #9, #10, #11. Enemy research #12
-remains separate. This record satisfies the contract-recording deliverable of
-#7, but does not assert its verification criteria passed or close any issue.
+Add destructible cork and append Cork Keep as the fourth campaign room. Preserve
+the original three room layouts and order. Campaign completion follows the fourth
+room; replay starts at the first. This is an intentional gameplay extension, not
+a behavior-preserving change to the original prototype.
 
-The owner requested implementation and approved the decisions below in the
-2026-11-08 conversation. The owner explicitly replaced the earlier demo-only
-restriction in #7 and the roadmap comment with option B: append a dedicated
-fourth campaign room using cork. The first three layouts and their order stay
-unchanged. Campaign completion follows the fourth room; replay starts at room 1.
-
-Work is stacked on `feature/auto-add-outer-solid-walls-to-maps`, not directly
-on `main`. `feature/destructible-cork-blocks` was created at
-`f9f736900aabdaf9f388f0ac29772b00cf685ea9`. Do not merge into main as part
-of implementation. A stacked PR may target the border branch; retargeting or
-rebasing after its merge is a separate operation.
+Related issues: #3, #5, #6, #7, #8, #9, #10, #11. Enemy research #12 remains
+separate. This record does not automatically close any issue.
 
 ## Gameplay contract
 
-- `C` denotes an interior cork tile. The automatically generated outer border
-  stays indestructible solid wall. Each cork cell has independent durability.
-- A fresh cork tile requires exactly three qualifying shell contacts to remove.
-- Intact cork blocks tanks, shells, and sentry line of sight. Destroyed cork is
-  open floor for all three systems; damage does not shrink the collider.
+- `C` denotes an interior cork tile. The automatic outer border remains solid,
+  indestructible wall. Each cork cell has independent three-hit durability.
+- Intact cork blocks tanks, shells, sentry sight, and aim guides. Damage does not
+  shrink its collider. Destroyed cork is open floor for all of these systems.
 - Player and enemy shells both damage cork and are consumed on qualifying
-  contact. No friendly-fire or shell-shell collision rules change.
-- Muzzle travel is swept, as before; contact in that 23 px path damages cork.
-- A shell that already used its one solid-wall bounce still damages cork, then
-  is consumed. Cork never reflects a shell or adds to the bounce count.
-- Resolve the earliest swept contact against terrain and eligible tanks. Keep
-  conservative ambiguous-corner handling: ambiguous cork/solid-wall contact
-  removes the shell without decrementing cork durability.
-- Preserve bounded projectile processing and existing deterministic shell order.
-  Each qualifying contact decrements once. Destruction is immediate in world
-  state; subsequent operations in that fixed step observe cleared floor. Do not
-  reorder the simulation or introduce retroactive movement or targeting.
-- Visual deterioration and disappearance are the cork-hit feedback. Do not add
-  cork-hit events, sparks, particles, sounds, or damage numbers.
-- Preserve ordinary solid-wall reflection, remaining travel, tank-hit behavior,
-  sentry targeting/telegraph rules, shell caps, cooldowns, and outcome priority.
-- Aim guides must stop at intact cork without displaying a reflected
-  continuation. Cleared cork no longer blocks the guide.
+  contact. Cork never reflects shells. Already-bounced shells still damage cork.
+- Sweep muzzle travel and the complete projectile path. Resolve earliest terrain
+  or eligible tank contact; preserve terrain priority at exact tank/terrain ties.
+- Preserve conservative ambiguous-contact termination. Ambiguous cork contacts
+  consume the shell without damage. Coplanar cork seams retain stable cell order.
+- Each qualifying contact decrements durability once. Destruction is immediate;
+  subsequent operations in that simulation step observe the cleared terrain.
+  Preserve bounded processing and deterministic operation order.
+- Cork deterioration and disappearance provide hit feedback. No new cork-hit
+  particles, sound, damage numbers, or feedback events are required.
+- Preserve solid-wall reflection, remaining travel, tank-hit behavior, targeting
+  and telegraph rules, shell limits, cooldowns, no friendly fire, and defeat
+  priority. Aim guides stop at intact cork without a reflected continuation.
 
 ## Map validation and reset
 
-Keep the auto-border branch's fixed authored interior dimensions and all
-existing dimension, symbol, spawn, sentry, and error-reporting checks.
+Keep fixed interior dimensions and existing symbol, spawn, enemy-count, and
+helpful error checks. Initial reachability treats intact cork as blocking and is
+informational: destruction may be required. Acceptance requires every non-wall
+interior tile to be reachable when cork is treated as cleared floor. This is
+tile-topology validation, not proof of balance or tactical solvability.
 
-Initial reachability treats intact cork as blocking, but an initially blocked
-route is permitted. Post-destruction reachability treats cork as floor and
-must reach every non-wall interior tile from player 1. This is a tile-topology
-validation policy, not proof that a room is balanced or tactically solvable.
+Cork belongs to explicit world state, separate from permanent walls, with stable
+cell identity, position, remaining durability, and a consistent destroyed flag.
+Room creation, retry, room transitions, replay, and full reset must not retain
+previous cork damage. Pause and rendering must not advance durability.
 
-Store cork in explicit resettable world state, separate from permanent walls,
-with stable cell identity, position, and remaining durability. Keep any explicit
-destroyed flag consistent with zero remaining durability. Room creation, retry,
-next-room loading, replay, and full reset must never retain old cork damage.
-Pausing or rendering must not advance durability. Simulation stays DOM/Node-free.
+## Presentation decision
 
-The new fourth room uses the same map loader, validator, combat rules, and
-progression path as existing rooms. It must let players observe all three
-damage states, clear a route or sightline, and retain solid-wall bank-shot
-opportunities. Its exact layout/name are implementation choices subject to
-validation and playtesting, not preapproved balance or aesthetic acceptance.
-Do not add a selector, editor, runtime map import, or a second campaign engine.
+Retain procedural Canvas cork rendering in `src/render/renderer.ts`. The owner
+chose this approach after the original SVG integration proposal. This section
+supersedes that proposal; agents must not implement an SVG adapter as unfinished
+work for this feature.
 
-## Narrow asset integration decision
+- Three remaining hits: intact cork. Two: cracked. One: heavily cracked.
+- Zero remaining hits or destroyed cork: no cork and no cork shadow.
+- Rendering reads world state only. Damage artwork does not change collision
+  geometry. Keep crack/chip paths within the cork face and initialize outline
+  widths independently of previously rendered tiles.
+- The supplied `block-cork-1..3` artwork remains unintegrated reference material.
+  Keep original asset packs untouched. Broader asset integration remains a
+  separate decision under `docs/asset-integration-plan.md`.
 
-Use the crafted cork definitions in `toybox-assets.js` under:
+## Acceptance and evidence
 
-```text
-Perplexity-assets-w-rden-perks-und-etwa-cas-angriffe-zum-spiel-passen-aspekte+handoff/
-```
+On 2026-11-08 the owner reported that cork playtesting in the VS Code internal
+browser worked well. This is owner-reported playtest evidence, not a claim that
+all damage states, transitions, release formats, browsers, or devices were tested.
 
-Map remaining hits 3, 2, 1 to `block-cork-1`, `block-cork-2`,
-`block-cork-3` respectively. Zero hits renders no cork or cork shadow.
+The owner explicitly deferred visual regression and comprehensive visual
+coverage of cork states to a separate issue. Those are not unfinished
+implementation tasks for PR #15. Do not invent an issue number or automatically
+approve screenshot baselines.
 
-The owner approved extracting these three definitions into typed presentation
-data and adapting the art to the actual square tile footprint. Preserve the
-source artwork's material, crack states, and attribution/provenance. Fit art
-to gameplay geometry, never gameplay geometry to art. Damage changes art,
-not the collision footprint. Keep the original supplied asset packs untouched.
+At inspected PR head `4ea53013cfe5a2d632dc3198dd88e0f9cb3e0032`, GitHub reported
+the `verify` job successful:
+https://github.com/ratatwiskr/toybox-tanks/actions/runs/42470914415
 
-Implement only the small cork adapter needed here, not the entire asset plan.
-Bundle SVG markup as source data; preload/decode once into a bounded static
-cache using embedded data URIs. No eval, asset globals, per-frame decoding,
-runtime asset-file requests, CDN, or external resource dependency. Required
-asset failure must produce a useful stable startup error, not invisible cover
-or a silently invented replacement. Rendering reads world state only.
+This is historical evidence for that revision, not a pass for later documentation
+changes or a rebased branch. Require fresh CI for the final revision. Current
+checks and evidence belong in `docs/progress.md`; this ADR records the decision,
+not an active implementation handoff or a declaration that Gate E is complete.
 
-The unrelated floor, wall, vehicle, projectile, palette, and arena-framing
-decisions in `docs/asset-integration-plan.md` remain deferred. This is explicit
-approval of the cork-only integration approach, not of final screenshots.
+## Delivery constraints
 
-## Delivery and evidence
+Preserve static hosting and the self-contained single-HTML `file://` release.
+Keep simulation DOM/Node-free. Do not change CI, dependencies, the lockfile,
+immutable prototype references, visual-baseline policy, or deployment settings
+as part of documentation cleanup.
 
-Both the statically hosted build and the self-contained single HTML remain
-required. The existing Vite configuration uses relative base paths and enables
-`viteSingleFile()` in single mode. Static inspection supports this packaging
-approach; only builds and browser execution prove the resulting artifacts work.
-
-The inspected workflow deploys Pages only for main, after verification. Work
-on this feature branch must not change deployment policy or publish over the
-current game. Do not change workflows, dependencies, the lockfile, guardrails,
-visual baselines, immutable HTML references, or repository settings for this task.
-
-Relevant implementation modules are `src/sim/maps.ts`, `types.ts`, `world.ts`,
-`collision.ts`, `combat.ts`, `src/render/renderer.ts`, the narrow cork asset
-adapter, application startup, and the test bridge where necessary. Tests must
-cover map/state, swept and muzzle contact, bounced shells, ambiguous contacts,
-same-step ordering, movement, sight, aim guides, art mapping/loading, renderer
-read-only behavior, all reset paths, and four-room completion/replay.
-
-Run focused tests, `npm run verify:fast`, `npm run verify`,
-`npm run test:browsers`, and the applicable hosted/file:// release checks
-sequentially under `docs/verification.md`. Record tested SHA, environment,
-commands, exit statuses, artifacts, and unverified criteria in
-`docs/progress.md`. Do not report historical results as current results.
-
-At contract preparation, only branch creation and source inspection were
-performed. No gameplay or test code was changed and no Node, build, lint,
-unit, browser, or release command was executed. The current session has no
-Node/Playwright execution tool. All executable checks are NOT RUN; this is
-not release evidence. Gate E, human visual acceptance, and physical gamepad
-verification remain outstanding.
+PR #15 was developed on PR #14. Updating its base after #14 merges is a separate
+repository operation; this ADR does not authorize merging, rebasing, retargeting,
+or deployment. Physical gamepad and real Safari/iOS compatibility remain separate
+from synthetic gamepad and automated WebKit evidence.
