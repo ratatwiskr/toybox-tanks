@@ -7,23 +7,46 @@ https://ratatwiskr.github.io/toybox-tanks/
 - Four rooms: First Bounce, Block Party, Together Through, and Cork Keep.
 - Destructible three-hit cork in the fourth room; permanent wooden walls retain
   ordinary bank-shot behavior.
-- Keyboard-first, with optional two-gamepad input.
+- Keyboard controls and optional two-gamepad input.
 - Static hosted and self-contained single-HTML releases.
 
 ## Status and scope
 
-The TypeScript migration is implemented and PR #14's automatic map borders are
-merged. The cork feature and fourth room from PR #15 are reconstructed on
-`feature/destructible-cork-blocks-main`, starting at main commit `d5aa53f`.
-The original feature branch remains preserved; check current PR state before
-assuming the replacement has merged. See `docs/progress.md` for evidence and
-ADR 0002 for the cork decision. Historical migration handoffs are not active
-assignments. Gate E is not declared complete. Procedural cork is intentional;
-SVG integration is not pending work.
+The TypeScript migration, PR #14's automatic map borders, and the cork feature
+with Cork Keep are implemented. Replacement PR #19 was squash-merged into main
+as `5bec29e3ba4a2779286da406dba0ce113e94dba7` on 2026-11-08. Original PR #15
+was closed without merging; its conflicted stack was replaced, not left as
+pending implementation. See `docs/progress.md` for provenance and evidence.
+
+Procedural cork is intentional; ADR 0002 records the decision. SVG integration
+is not pending work. Historical migration/reconstruction handoffs are not active
+assignments. Gate E is not declared complete.
 
 The owner reported successful cork playtesting in the VS Code internal browser.
-Visual regression and comprehensive visual coverage of cork states belong to a
-separate issue; no screenshot baselines are approved here.
+Visual regression and comprehensive visual coverage of cork states are separate
+work; no screenshot baselines are approved here.
+
+## Experimental mobile and tablet controls (PR #17)
+
+This feature branch includes landscape touch controls and optional whole-game
+fullscreen. Do not assume the production URL includes PR #17 before it merges
+and its main deployment passes. The separate playtest publisher is
+https://github.com/ratatwiskr/toybox-tanks-playtest.
+
+- Solo: Touch P1 uses the left pad to move and the right pad to drag-aim. Lift to
+  retain heading without firing; a short tap fires once in the current direction.
+- Mixed co-op: enable Touch P1; the first assigned gamepad controls P2.
+- Two-controller co-op: disable Touch P1; the gamepads use the ordinary P1/P2 slots.
+- Gamepads: left stick moves, right stick aims, A/right trigger fires, Start pauses.
+  Press a controller button if the browser has not exposed it yet.
+- Portrait pauses mobile play. Rotate back and explicitly Resume. Fullscreen is
+  optional; normal browser viewport play remains supported by the layout.
+- Pads use device-edge side space. Disabling touch reclaims that space.
+
+The owner reported successful mobile play before the final pad-position change.
+The exact physical-test SHA/browser/device were not supplied. This is not proof
+of every tablet/controller combination. Current verification and remaining
+acceptance work are recorded in `docs/progress.md`.
 
 ## Development and verification
 
@@ -95,7 +118,7 @@ Never change collision geometry to fit artwork.
 - `src/config.ts`: gameplay constants.
 - `src/sim/`: DOM/Node-free state, maps, collision, and combat.
 - `src/render/`: read-only Canvas rendering.
-- `src/input/`: keyboard and gamepad command adapters.
+- `src/input/`: keyboard, gamepad and touch command adapters plus mobile DOM wiring.
 - `src/main.ts`: application orchestration and UI.
 - `tests/`: unit, architecture, browser, visual-candidate, and release checks.
 - `reference/`: immutable original prototypes.
