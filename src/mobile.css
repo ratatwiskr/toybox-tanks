@@ -1,0 +1,193 @@
+.touch-setting {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.touch-setting input {
+  width: 18px;
+  height: 18px;
+}
+.touch-controls {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+.touch-controls[hidden],
+.rotate-hint[hidden] {
+  display: none;
+}
+.touch-pad {
+  position: absolute;
+  bottom: max(10px, env(safe-area-inset-bottom, 0px));
+  width: clamp(76px, 25dvh, 126px);
+  aspect-ratio: 1;
+  border: 2px solid #fff8e9b3;
+  border-radius: 50%;
+  background: #17465a40;
+  color: #fff;
+  text-shadow: 0 1px 2px #17242c;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: auto;
+}
+.touch-move {
+  left: max(12px, env(safe-area-inset-left, 0px));
+}
+.touch-aim {
+  right: max(12px, env(safe-area-inset-right, 0px));
+}
+.touch-pad.engaged {
+  border-color: #fff;
+  background: #17465a66;
+}
+.touch-caption {
+  position: absolute;
+  inset: 9px 4px auto;
+  text-align: center;
+  font-size: 10px;
+  pointer-events: none;
+}
+.touch-thumb {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 28%;
+  aspect-ratio: 1;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  background: #fff8e966;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.rotate-hint {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  text-align: center;
+  font-size: 22px;
+  background: #fff8e9;
+}
+.app.compact {
+  max-width: none;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  padding: max(4px, env(safe-area-inset-top, 0px))
+    max(6px, env(safe-area-inset-right, 0px))
+    max(4px, env(safe-area-inset-bottom, 0px))
+    max(6px, env(safe-area-inset-left, 0px));
+  display: grid;
+  grid-template-rows: 44px 36px minmax(0, 1fr);
+  gap: 4px;
+  overflow: hidden;
+}
+.compact header {
+  margin: 0;
+  gap: 6px;
+}
+.compact .brand {
+  font-size: 18px;
+}
+.compact .tools {
+  align-items: center;
+  gap: 5px;
+}
+.compact .tools button,
+.compact .touch-setting {
+  min-height: 44px;
+  padding: 5px 9px;
+  font-size: 12px;
+}
+.compact .eyebrow,
+.compact .foot,
+.compact .status,
+.compact .keys,
+.compact #debugBtn,
+.compact #device1,
+.compact #aim1,
+.compact #aim2,
+.compact #modeInfo {
+  display: none;
+}
+.compact .hud {
+  margin: 0;
+  gap: 4px;
+}
+.compact .card {
+  padding: 2px 7px;
+  border-radius: 6px;
+  min-width: 0;
+}
+.compact .pname,
+.compact .hp,
+.compact .room strong {
+  font-size: 12px;
+}
+.compact .sub {
+  font-size: 9px;
+  margin: 0;
+}
+.compact.mobile-solo .p2 {
+  display: none;
+}
+.compact.mobile-solo .hud {
+  grid-template-columns: 1fr 2fr;
+}
+.compact .stage-wrap {
+  min-height: 0;
+  align-items: center;
+}
+.compact .stage {
+  width: min(
+    100%,
+    calc(
+      (100dvh - 96px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) * 16 /
+        9
+    )
+  );
+  flex: none;
+  border-radius: 3px;
+  box-shadow: none;
+}
+.compact .overlay {
+  z-index: 10;
+  padding: 6px;
+}
+.compact .dialog {
+  max-width: min(95%, 620px);
+  padding: 10px 16px;
+  border-radius: 12px;
+}
+.compact .dialog h1 {
+  font-size: 24px;
+  margin: 4px 0;
+}
+.compact .dialog p {
+  margin: 6px 0;
+  font-size: 12px;
+}
+.compact .buttons {
+  margin: 8px 0;
+  gap: 8px;
+}
+.compact .buttons button {
+  min-height: 44px;
+}
+.app:fullscreen {
+  background: #dfcbaa;
+}
+@media (max-width: 600px) {
+  .compact .brand {
+    display: none;
+  }
+  .compact header {
+    justify-content: center;
+  }
+}
