@@ -108,10 +108,10 @@ function clearInputs(): void {
 
 function pollGamepads(): void {
   const previous = gamepads.assigned.map((pad) => `${String(pad.index)}:${pad.id}`);
-  let startRequested = false;
+  const startRequest = { pending: false };
   gamepads.poll(gamepadMode(world.mode, mobile.enabled), gamepadSource, {
     onPause: () => {
-      startRequested = true;
+      startRequest.pending = true;
     },
   });
   const next = gamepads.assigned.map((pad) => `${String(pad.index)}:${pad.id}`);
@@ -123,7 +123,7 @@ function pollGamepads(): void {
   }
   if (lost && mobile.compact && world.mode === 'coop') {
     pauseGame('Controller disconnected — reconnect, release controls, then resume.');
-  } else if (startRequested && !(changed && mobile.compact && world.mode === 'coop')) {
+  } else if (startRequest.pending && !(changed && mobile.compact && world.mode === 'coop')) {
     togglePause();
   }
 }

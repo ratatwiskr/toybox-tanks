@@ -12,6 +12,17 @@ async function ticks(page: Page, count = 1): Promise<BridgeSnapshot> {
   }, count);
 }
 
+async function frames(page: Page): Promise<void> {
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => resolve());
+        });
+      }),
+  );
+}
+
 test.beforeEach(async ({ page }) => {
   await page.setViewportSize({ width: 900, height: 440 });
   await page.addInitScript(() => {
@@ -43,7 +54,10 @@ test('landscape native Chromium touch delivery moves and aims together, then tap
   await session.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 2 });
   const left = { x: move.x + move.width / 2, y: move.y + move.height / 2, id: 1 };
   const right = { x: aim.x + aim.width / 2, y: aim.y + aim.height / 2, id: 2 };
-  await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [left, right] });
+  await session.send('Input.dispatchTouchEvent', {
+    type: 'touchStart',
+    touchPoints: [left, right],
+  });
   await session.send('Input.dispatchTouchEvent', {
     type: 'touchMove',
     touchPoints: [
@@ -118,6 +132,18 @@ for (const touch of [true, false]) {
       window.addEventListener('test-pad-reconnect', () => {
         first.connected = true;
       });
+      window.addEventListener('test-pad-start-down', () => {
+        const start = first.buttons[9];
+        if (start !== undefined) {
+          start.pressed = true;
+        }
+      });
+      window.addEventListener('test-pad-start-up', () => {
+        const start = first.buttons[9];
+        if (start !== undefined) {
+          start.pressed = false;
+        }
+      });
     });
     await page.goto('/');
     await page.locator('#touchToggle').setChecked(touch);
@@ -155,5 +181,16 @@ for (const touch of [true, false]) {
     await page.evaluate(() => window.dispatchEvent(new Event('test-pad-aim')));
     const rearmed = await ticks(page, 2);
     expect(rearmed.players[1]?.angle).not.toBe(gated.players[1]?.angle);
+    await page.evaluate(() => window.dispatchEvent(new Event('test-pad-start-down')));
+    await expect(page.locator('#overlay')).toBeVisible();
+    await frames(page);
+    expect((await ticks(page)).state).toBe('paused');
+    await page.evaluate(() => window.dispatchEvent(new Event('test-pad-start-up')));
+    await frames(page);
+    await page.evaluate(() => window.dispatchEvent(new Event('test-pad-start-down')));
+    await expect(page.locator('#overlay')).toBeHidden();
+    await frames(page);
+    expect((await ticks(page)).state).toBe('playing');
+    await page.evaluate(() => window.dispatchEvent(new Event('test-pad-start-up')));
   });
 }
