@@ -2,6 +2,36 @@
 
 Updated: 2026-11-08
 
+## Audio issue 16: initial implementation draft, not verified
+
+Asset intake baseline: ca6940073b7a946a354efd563c39109aaef89a03 on
+feature/16-enable-initial-game-audio. The owner moved audio to src/assets/audio
+and added separate room_clear/game_complete copies of the respawn clip.
+
+This draft wires real asset imports, per-step structured simulation results,
+application-owned browser playback, bounded reusable effect voices, music,
+activation retry, mute/volume controls, resets and pause/focus cleanup. Existing
+textual feedback/test-bridge event history is retained. Defeat audio is explicitly
+deferred because no suitable clip is supplied; provenance/licensing is unresolved.
+
+Unit tests are authored for semantic mapping, actual combat events, rejected
+fire/invulnerability, separate step batches, outcome priority, activation failure,
+volume/mute, pause/reset and disposal. They have not been executed here.
+No formatter, compiler, lint, browser, release or audible check was run by the
+remote author. No CI, dependency, threshold or visual-baseline changes are made.
+Browser voice-boundary tests, lifecycle race checks, subpath/offline asset proof,
+release size measurements and real solo/co-op listening remain pending.
+See docs/audio.md. Do not mark issue 16 complete on the basis of this draft.
+
+Owner feedback on 2026-11-08: the initial local format check passed, then lint
+reported six errors (the temporary helper script, async lifecycle narrowing and
+an async mock without await). Commit f1c1994a54c4fb3106cd85da83ed90f1b8028f9f
+adds the playback/simulation batch with source/test lint fixes and excludes the
+helper script. The owner subsequently reported no remaining local formatting or
+lint fixes. No fresh full verification log, exact locally tested revision or
+audible result was supplied; do not infer those checks passed for this commit.
+This follow-up adds the uploaded application/test-bridge wiring and audio docs.
+
 ## Merged baseline: borders and cork
 
 PR #14 is squash-merged into main as
