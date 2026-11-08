@@ -1,7 +1,9 @@
 import './styles.css';
+import './mobile.css';
 import { CONFIG } from './config';
 import { GamepadAdapter, type GamepadSource } from './input/gamepad';
 import { KeyboardAdapter } from './input/keyboard';
+import { createMobileControls, gamepadMode, gamepadSlot } from './input/mobile';
 import { createRenderer } from './render/renderer';
 import { MAPS } from './sim/maps';
 import type { Command, GameState, Mode, World } from './sim/types';
@@ -34,6 +36,10 @@ const debugButton = requireElement('debugBtn');
 const menuButton = requireElement('menuBtn');
 const statusLine = requireElement('status');
 const debugOutput = requireElement('debug');
+const tools = menuButton.parentElement;
+if (tools === null) {
+  throw new Error('Missing game toolbar');
+}
 
 const roomName = requireElement('roomName');
 const roomInfo = requireElement('roomInfo');
@@ -65,6 +71,25 @@ try {
   pauseReason = error instanceof Error ? error.message : String(error);
 }
 
+const mobile = createMobileControls({
+  app,
+  stage,
+  tools,
+  focusGame,
+  onSettingsChange: () => {
+    clearInputs();
+    pauseGame('Controls changed — resume when ready.');
+    lastShownState = '';
+    setOverlay();
+    updateHUD();
+  },
+  onGeometryChange: () => {
+    clearInputs();
+    renderer.resize();
+    setOverlay();
+  },
+});
+
 statusLine.textContent = `Toybox Tanks · ${String(MAPS.length)} tabletop rooms · Keyboard-first · No audio`;
 
 function focusGame(): void {
@@ -78,14 +103,36 @@ function ownsFocus(): boolean {
 function clearInputs(): void {
   keyboard.clear();
   gamepads.clear();
+  mobile.clear();
 }
 
 function pollGamepads(): void {
-  gamepads.poll(world.mode, gamepadSource, { onPause: togglePause });
+  const previous = gamepads.assigned.map((pad) => `${String(pad.index)}:${pad.id}`);
+  const startRequest = { pending: false };
+  gamepads.poll(gamepadMode(world.mode, mobile.enabled), gamepadSource, {
+    onPause: () => {
+      startRequest.pending = true;
+    },
+  });
+  const next = gamepads.assigned.map((pad) => `${String(pad.index)}:${pad.id}`);
+  const changed =
+    previous.length !== next.length || previous.some((id, index) => id !== next[index]);
+  const lost = previous.some((id) => !next.includes(id));
+  if (changed) {
+    clearInputs();
+  }
+  if (lost && mobile.compact && world.mode === 'coop') {
+    pauseGame('Controller disconnected — reconnect, release controls, then resume.');
+  } else if (startRequest.pending && !(changed && mobile.compact && world.mode === 'coop')) {
+    togglePause();
+  }
 }
 
 function readCommand(index: number): Command {
-  return gamepads.readCommand(index, keyboard.readCommand(index));
+  const fallback = keyboard.readCommand(index);
+  const slot = gamepadSlot(index, world.mode, mobile.enabled);
+  const command = slot === null ? fallback : gamepads.readCommand(slot, fallback);
+  return index === 0 && mobile.enabled ? mobile.readCommand(command) : command;
 }
 
 function button(label: string, action: string, primary = false): string {
@@ -94,6 +141,15 @@ function button(label: string, action: string, primary = false): string {
 
 const controlHTML =
   '<div class="keys"><div><b>● BLUE / P1</b><kbd>W A S D</kbd> move<br><kbd>Q</kbd> / <kbd>E</kbd> turn turret · <kbd>F</kbd> fire</div><div><b>■ ORANGE / P2</b><kbd>↑ ← ↓ →</kbd> move<br><kbd>,</kbd> / <kbd>.</kbd> turn turret · <kbd>Enter</kbd> fire</div></div>';
+
+function controlsHTML(): string {
+  if (!mobile.compact) {
+    return controlHTML;
+  }
+  return mobile.enabled
+    ? '<p>Touch P1: left pad move; right pad drag to aim, lift to retain, tap to fire.<br>Co-op: first gamepad controls P2. Turn Touch P1 off for two gamepads.</p>'
+    : '<p>Gamepads: left stick move, right stick aim, A / RT fire, Start pause.<br>Press a controller button if it has not appeared yet.</p>';
+}
 
 interface OverlayContent {
   readonly title: string;
@@ -110,9 +166,11 @@ function overlayContent(state: GameState): OverlayContent {
         title: 'Small tanks.<br>Big teamwork.',
         tag: `Toybox Tanks · ${String(MAPS.length)} tabletop rooms`,
         text: 'Move freely. Aim separately. Bounce once.<br>Clear the room together — only one of you needs to survive.',
-        actions: button('Start two-player co-op', 'coop', true) + button('Solo practice', 'solo'),
+        actions: mobile.compact
+          ? button('Solo practice', 'solo', true) + button('Start two-player co-op', 'coop')
+          : button('Start two-player co-op', 'coop', true) + button('Solo practice', 'solo'),
         extra:
-          controlHTML +
+          controlsHTML() +
           '<p class="tiny">Two hits per player · three active shells each · no friendly fire.<br>Dashed paths show your aim and first bounce. Muzzle glow means a sentry is about to fire.</p>',
       };
     case 'paused':
@@ -124,14 +182,14 @@ function overlayContent(state: GameState): OverlayContent {
           button('Resume', 'resume', true) +
           button('Restart this room', 'retry') +
           button('Main menu', 'menu'),
-        extra: controlHTML,
+        extra: controlsHTML(),
       };
     case 'cleared': {
       const nextMap = MAPS[world.room + 1];
       return {
         title: 'Room cleared!',
         tag: `Room ${String(world.room + 1)} / ${String(MAPS.length)}`,
-        text: `Both tanks are repaired for the next room.<br>Next up: ${nextMap?.name ?? 'the next room'}`,
+        text: `${world.mode === 'solo' ? 'Your tank is repaired' : 'Both tanks are repaired'} for the next room.<br>Next up: ${nextMap?.name ?? 'the next room'}`,
         actions: button('Next room →', 'next', true) + button('Replay this room', 'retry'),
         extra: '',
       };
@@ -139,8 +197,8 @@ function overlayContent(state: GameState): OverlayContent {
     case 'defeat':
       return {
         title: 'A tiny setback',
-        tag: 'Both tanks disabled',
-        text: 'The whole team gets a fresh start in this room.<br>No lives to lose. Try a different angle.',
+        tag: world.mode === 'solo' ? 'Tank disabled' : 'Both tanks disabled',
+        text: 'A fresh start in this room.<br>No lives to lose. Try a different angle.',
         actions: button('Retry room · R', 'retry', true) + button('Main menu', 'menu'),
         extra: '',
       };
@@ -166,6 +224,11 @@ function overlayContent(state: GameState): OverlayContent {
 }
 
 function setOverlay(): void {
+  mobile.sync(world.mode, world.state);
+  if (world.state === 'playing' && !mobile.canPlay) {
+    pauseGame('Rotate to landscape, then resume.');
+    return;
+  }
   if (lastShownState === world.state) {
     return;
   }
@@ -257,7 +320,7 @@ function pauseGame(reason = ''): void {
 }
 
 function resumeGame(): void {
-  if (world.state === 'paused') {
+  if (world.state === 'paused' && mobile.canPlay) {
     world.state = 'playing';
     pauseReason = '';
     clearInputs();
@@ -359,11 +422,14 @@ function updateHUD(): void {
         ).join(' ');
 
     const keyboardHint = index === 0 ? 'WASD · Q/E · F' : 'Arrows · ,/. · Enter';
-    const pad = gamepads.assigned[index];
+    const slot = gamepadSlot(index, world.mode, mobile.enabled);
+    const pad = slot === null ? undefined : gamepads.assigned[slot];
     deviceElement.textContent =
-      pad === undefined
-        ? `${keyboardHint} · keyboard`
-        : `${keyboardHint} + Pad ${String(pad.index + 1)}`;
+      index === 0 && mobile.enabled
+        ? 'Touch P1 + keyboard'
+        : pad === undefined
+          ? `${keyboardHint} · keyboard · no gamepad`
+          : `${keyboardHint} + Pad ${String(pad.index + 1)}`;
     deviceElement.title = pad?.id ?? 'Keyboard';
     aimElement.textContent = player.alive
       ? `Turret ${directionLabel(player.angle)} · shells ${String(activeShells(world, player.id))}/${String(CONFIG.activeShellLimit)}`
@@ -447,6 +513,7 @@ keyboard.attach({
 });
 
 const resizeObserver = new ResizeObserver(() => {
+  mobile.clear();
   renderer.resize();
 });
 resizeObserver.observe(canvas);
@@ -462,6 +529,7 @@ function frame(timestamp: number): void {
   previousTime = now;
 
   pollGamepads();
+  setOverlay();
 
   if (!manualClock && world.state === 'playing') {
     accumulator += Math.min(CONFIG.maxFrameTime, Math.max(0, raw));

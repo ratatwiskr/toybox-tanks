@@ -7,19 +7,23 @@ controls, readable one-bounce combat, toy-like presentation, and forgiving
 cooperation take priority over infrastructure or extra content.
 
 The TypeScript migration is implemented. PR #14's automatic map borders are
-squash-merged as `d5aa53f`. The cork feature and fourth room from PR #15 are
-reconstructed on `feature/destructible-cork-blocks-main` from that main revision.
-The original branch is preserved. Inspect current GitHub state before assuming
-the replacement has merged. Read `docs/progress.md` for evidence. Old migration
-and session handoffs are historical context, not permission to repeat completed
-work or push main.
+squash-merged as `d5aa53f`. The cork feature and Cork Keep fourth room are also
+merged: replacement PR #19 was squash-merged as `5bec29e` on 2026-11-08. Original
+PR #15 is closed without merging; it is historical provenance, not an active
+stack to rebase or a pending implementation. Do not repeat the reconstruction,
+open another replacement PR, or reopen #15 as routine cleanup.
+
+PR #17 is the separate mobile/tablet input work on feature/solo-touch-controls.
+Do not infer that it is merged because cork is merged. Read docs/progress.md and
+the actual current PR/head for evidence. Old migration and session handoffs are
+historical context, not permission to repeat completed work or push main.
 
 ADR 0002 records the accepted cork mechanic and procedural rendering decision.
 Do not implement its superseded SVG proposal. The owner reported successful cork
 playtesting in the VS Code internal browser on 2026-11-08. Visual regression and
-comprehensive visual coverage of cork states are a separate issue, not pending
-implementation work for PR #15. No screenshot baselines are approved by this.
-Gate E is not declared complete.
+comprehensive visual coverage of cork states are separate work, not unfinished
+cork implementation. No screenshot baselines are approved by this. Gate E is
+not declared complete.
 
 ## Before editing
 

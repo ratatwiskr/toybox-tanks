@@ -72,7 +72,8 @@ describe('simulation', () => {
     expect(player.angle).toBeCloseTo(turned, 10);
 
     stepWorld(world, CONFIG.fixedStep, [{ x: 0, y: 0, turn: 0, fire: false, aim: 0 }]);
-    expect(player.angle).toBe(0);
+    expect(player.angle).toBeCloseTo(turned + CONFIG.turretRotationSpeed * CONFIG.fixedStep, 10);
+    expect(player.angle).toBeLessThan(0);
   });
 
   it('blocks tanks at walls', () => {
@@ -428,5 +429,100 @@ describe('simulation', () => {
 
     expect(world.shots).toBe(1);
     expect(world.shells).toHaveLength(1);
+  });
+});
+
+describe('bounded directional player aiming', () => {
+  function fixture() {
+    const world = createEmptyWorld('coop');
+    const player = createTank('p1', 'player', 300, 300);
+    const partner = createTank('p2', 'player', 500, 300);
+    const enemy = createTank('s0', 'enemy', 800, 100);
+    enemy.cooldown = 999;
+    world.players = [player, partner];
+    world.enemies = [enemy];
+    return { world, player, partner };
+  }
+
+  const neutral = { x: 0, y: 0, turn: 0, fire: false };
+  const maxTurn = CONFIG.turretRotationSpeed * CONFIG.fixedStep;
+
+  it('caps each co-op player at the configured turn rate in opposite directions', () => {
+    const { world, player, partner } = fixture();
+    player.angle = 0;
+    partner.angle = 0;
+    stepWorld(world, CONFIG.fixedStep, [
+      { ...neutral, aim: Math.PI / 2 },
+      { ...neutral, aim: -Math.PI / 2 },
+    ]);
+    expect(player.angle).toBeCloseTo(maxTurn, 10);
+    expect(partner.angle).toBeCloseTo(-maxTurn, 10);
+    expect(world.shots).toBe(0);
+  });
+
+  it.each([1, -1])('takes the shortest path across the angle seam in direction %s', (sign) => {
+    const { world, player } = fixture();
+    player.angle = sign * (Math.PI - maxTurn);
+    stepWorld(world, CONFIG.fixedStep, [{ ...neutral, aim: -sign * (Math.PI - maxTurn) }]);
+    expect(player.angle).toBeCloseTo(sign * Math.PI, 10);
+  });
+
+  it.each([1, -1])('reaches a nearby target without overshooting in direction %s', (sign) => {
+    const { world, player } = fixture();
+    player.angle = 0;
+    const target = (sign * maxTurn) / 2;
+    for (let tick = 0; tick < 3; tick += 1) {
+      stepWorld(world, CONFIG.fixedStep, [{ ...neutral, aim: target }]);
+      expect(player.angle).toBeCloseTo(target, 10);
+    }
+  });
+
+  it('retains the actual intermediate heading after directional input is released', () => {
+    const { world, player } = fixture();
+    player.angle = 0;
+    stepWorld(world, CONFIG.fixedStep, [{ ...neutral, aim: Math.PI / 2 }]);
+    expect(player.angle).toBeCloseTo(maxTurn, 10);
+    for (let tick = 0; tick < 10; tick += 1) {
+      stepWorld(world, CONFIG.fixedStep, [neutral]);
+      expect(player.angle).toBeCloseTo(maxTurn, 10);
+    }
+  });
+
+  it('keeps keyboard turning incremental at the configured speed', () => {
+    const { world, player } = fixture();
+    player.angle = 0;
+    stepWorld(world, CONFIG.fixedStep, [{ ...neutral, turn: -1 }]);
+    expect(player.angle).toBeCloseTo(-maxTurn, 10);
+    stepWorld(world, CONFIG.fixedStep, [{ ...neutral, turn: 1 }]);
+    expect(player.angle).toBeCloseTo(0, 10);
+  });
+
+  it('uses a repeatable bounded direction for an exactly opposite target', () => {
+    const first = fixture();
+    const second = fixture();
+    first.player.angle = 0;
+    second.player.angle = 0;
+    const command = { ...neutral, aim: Math.PI };
+    stepWorld(first.world, CONFIG.fixedStep, [command]);
+    stepWorld(second.world, CONFIG.fixedStep, [command]);
+    expect(first.player.angle).toBeCloseTo(maxTurn, 10);
+    expect(second.player.angle).toBe(first.player.angle);
+  });
+
+  it('fires immediately along the actual barrel angle after bounded rotation', () => {
+    const { world, player } = fixture();
+    player.angle = 0;
+    stepWorld(world, CONFIG.fixedStep, [{ ...neutral, aim: Math.PI / 2, fire: true }]);
+    expect(player.angle).toBeCloseTo(maxTurn, 10);
+    expect(world.shots).toBe(1);
+    expect(world.shells).toHaveLength(1);
+    const shell = world.shells[0];
+    if (shell === undefined) {
+      throw new Error('Expected the player shot');
+    }
+    expect(shell.owner).toBe(player.id);
+    expect(shell.vx).toBeCloseTo(Math.cos(maxTurn) * CONFIG.shellSpeed, 10);
+    expect(shell.vy).toBeCloseTo(Math.sin(maxTurn) * CONFIG.shellSpeed, 10);
+    expect(Math.atan2(shell.vy, shell.vx)).toBeCloseTo(player.angle, 10);
   });
 });
