@@ -62,7 +62,7 @@ export function createAudioControls(
     'click',
     () => {
       void audio.unlock().then((ready) => {
-        enable.textContent = ready ? 'Audio enabled · retry' : 'Enable audio · retry';
+        enable.textContent = ready ? 'Audio context ready · retry' : 'Enable audio · retry';
       });
     },
     options,

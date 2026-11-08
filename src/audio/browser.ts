@@ -75,6 +75,8 @@ export function createBrowserPlayback(): Playback {
     async unlock(): Promise<boolean> {
       if (disposed) return false;
       try {
+        // Retry media playback before any await can leave the caller's gesture.
+        playMusic();
         context ??= new AudioContext();
         const active = context;
         if (gain === null) {
@@ -101,7 +103,6 @@ export function createBrowserPlayback(): Playback {
         ).then(() => undefined);
         await loading;
         if (!isActive(active)) return false;
-        playMusic();
         return true;
       } catch (error) {
         warn('audio activation failed; use Enable audio to retry', error);

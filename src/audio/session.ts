@@ -28,11 +28,12 @@ export function createAudioSession(playback: Playback) {
   }
 
   function syncMusic(): void {
+    // Media-element music permission is independent of Web Audio SFX readiness.
     playback.music(
       state === 'playing'
-        ? ready && !levels.muted
-          ? 'play'
-          : 'pause'
+        ? levels.muted
+          ? 'pause'
+          : 'play'
         : state === 'paused'
           ? 'pause'
           : 'stop',
@@ -55,7 +56,6 @@ export function createAudioSession(playback: Playback) {
         ready = false;
       }
       if (isDisposed()) return false;
-      syncMusic();
       return ready;
     },
     setState,
