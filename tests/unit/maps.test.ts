@@ -53,6 +53,19 @@ const LEGACY_GRIDS = [
 #..1.................2.#
 #......................#
 ########################`,
+  `########################
+#......................#
+#..S................S..#
+#......................#
+#...##..........##.....#
+#...##...CCC....##.....#
+#........CSC...........#
+#...##...CCC....##.....#
+#...##..........##.....#
+#..S................S..#
+#......................#
+#...1..............2...#
+########################`,
 ] as const;
 
 function replaceCell(grid: string, x: number, y: number, cell: string): string {
@@ -107,13 +120,15 @@ describe('authored maps', () => {
       'First Bounce',
       'Block Party',
       'Together Through',
+      'Cork Keep',
     ]);
     expect(MAPS.map((map) => map.hint)).toEqual([
       'Try the outer rails: every shell gets one bounce.',
       'Take different routes. Corners are cover, not dead ends.',
       'Cover each other. Either surviving player can finish.',
+      'Break the cork to reach the guarded tower.',
     ]);
-    expect(MAPS.map((map) => map.expectedEnemies)).toEqual([2, 3, 4]);
+    expect(MAPS.map((map) => map.expectedEnemies)).toEqual([2, 3, 4, 5]);
 
     for (const [index, map] of MAPS.entries()) {
       const checked = validateMap(map);

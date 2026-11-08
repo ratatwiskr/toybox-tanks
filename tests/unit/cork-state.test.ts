@@ -84,6 +84,24 @@ describe('cork map validation', () => {
     expect(bordered[CONFIG.rows - 1]).toBe('#'.repeat(CONFIG.columns));
     expect(bordered.every((row) => row[0] === '#' && row[CONFIG.columns - 1] === '#')).toBe(true);
   });
+
+  it('keeps the fourth room initially blocked but clears it after cork destruction', () => {
+    const corkKeep = MAPS[3];
+    if (corkKeep === undefined) {
+      throw new Error('Cork Keep missing');
+    }
+
+    const checked = validateMap(corkKeep);
+    expect(checked.ok, checked.errors.join('; ')).toBe(true);
+    expect(checked.initiallyReachable).toBe(false);
+
+    const cleared = validateMap({
+      ...corkKeep,
+      grid: checked.rows.map((row) => row.replaceAll('C', '.')).join('\n'),
+    });
+    expect(cleared.ok, cleared.errors.join('; ')).toBe(true);
+    expect(cleared.initiallyReachable).toBe(true);
+  });
 });
 
 describe('resettable cork world state', () => {

@@ -20,7 +20,7 @@ export const MAP_INTERIOR_ROWS = CONFIG.rows - 2;
 
 // Authored grids contain only the interior. # = wood; C = three-hit cork;
 // . = floor; 1/2 = player spawns; S = stationary sentry. The border is automatic.
-// Cork enters the campaign only after collision and rendering are integrated.
+// Cork appears in the fourth campaign room.
 export const MAPS: readonly MapData[] = [
   {
     name: 'First Bounce',
@@ -69,6 +69,22 @@ export const MAPS: readonly MapData[] = [
 ...........S......#...
 ..1.................2.
 ......................`,
+  },
+  {
+    name: 'Cork Keep',
+    hint: 'Break the cork to reach the guarded tower.',
+    expectedEnemies: 5,
+    grid: `......................
+..S................S..
+......................
+...##..........##.....
+...##...CCC....##.....
+........CSC...........
+...##...CCC....##.....
+...##..........##.....
+..S................S..
+......................
+...1..............2...`,
   },
 ];
 
