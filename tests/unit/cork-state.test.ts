@@ -82,9 +82,7 @@ describe('cork map validation', () => {
     expect(bordered[1]?.slice(0, 4)).toBe('#CC.');
     expect(bordered[0]).toBe('#'.repeat(CONFIG.columns));
     expect(bordered[CONFIG.rows - 1]).toBe('#'.repeat(CONFIG.columns));
-    expect(bordered.every((row) => row[0] === '#' && row[CONFIG.columns - 1] === '#')).toBe(
-      true,
-    );
+    expect(bordered.every((row) => row[0] === '#' && row[CONFIG.columns - 1] === '#')).toBe(true);
   });
 });
 
