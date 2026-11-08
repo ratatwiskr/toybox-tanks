@@ -3,6 +3,12 @@
 A small browser-based couch co-op tank game. Play solo or with two local players:
 https://ratatwiskr.github.io/toybox-tanks/
 
+Testing version (latest published playtest, may differ from main):
+https://ratatwiskr.github.io/toybox-tanks-playtest/
+
+The testing site shows the last selected branch deployment, not necessarily the
+latest commit. Its `playtest-source.json` records the deployed source revision.
+
 - Free movement, independently aimed turrets, and one-bounce shells.
 - Four rooms: First Bounce, Block Party, Together Through, and Cork Keep.
 - Destructible three-hit cork in the fourth room; permanent wooden walls retain
@@ -43,10 +49,10 @@ https://github.com/ratatwiskr/toybox-tanks-playtest.
   optional; normal browser viewport play remains supported by the layout.
 - Pads use device-edge side space. Disabling touch reclaims that space.
 
-The owner reported successful mobile play before the final pad-position change.
-The exact physical-test SHA/browser/device were not supplied. This is not proof
-of every tablet/controller combination. Current verification and remaining
-acceptance work are recorded in `docs/progress.md`.
+On 2026-11-08 the owner reported that the latest mobile state playtested well,
+including acceptance of the revised layout. Exact tested SHA/browser/device were
+not supplied. This is not proof of every tablet/controller combination. Current
+verification and remaining acceptance work are recorded in `docs/progress.md`.
 
 ## Development and verification
 

@@ -65,50 +65,71 @@ directional turret aiming, shared input cleanup, landscape compact layout,
 portrait pause with explicit Resume, optional whole-app fullscreen, mixed touch
 P1/gamepad P2 routing and ordinary two-gamepad routing when touch is disabled.
 
-The latest gameplay/layout checkpoint inspected is
-`3d04d57aabd3a41f6853d1454a5c76e003e43f87`: larger device-edge pads with
-reserved side space, preserving the complete arena and reclaiming space when
-touch is disabled. Earlier `f0a970f` fixes callback narrowing in Start handling
-and authors Start press/hold/release regressions.
+Gameplay/layout checkpoint `3d04d57aabd3a41f6853d1454a5c76e003e43f87` adds
+larger device-edge pads with reserved side space, preserving the complete arena
+and reclaiming space when touch is disabled. Earlier f0a970f fixes callback
+narrowing in Start handling and authors Start press/hold/release regressions.
 
-### Current CI evidence
+### CI evidence before the final input-test batch
 
-The verify job succeeded for `3d04d57aabd3a41f6853d1454a5c76e003e43f87`,
-finishing 2026-11-08 19:43:35 UTC:
+The verify job succeeded for layout source
+`3d04d57aabd3a41f6853d1454a5c76e003e43f87` at 19:43:35 UTC:
 https://github.com/ratatwiskr/toybox-tanks/actions/runs/42516282744/job/128839896358
 
-This is an observed job conclusion, not a local command run or detailed log
-audit. The workflow's verification gate includes full verify and cross-browser
-release smoke. Production deploy-pages and pages-smoke were skipped on the PR,
-not passed. Earlier failures and fixes remain in Git history; no gate was waived.
+Documentation reconciliation head `32e747246ddc90863f837d2cfee6ad1c154632e8`
+also passed verify at 2026-11-08 20:13:24 UTC:
+https://github.com/ratatwiskr/toybox-tanks/actions/runs/42518873045/job/128847765341
 
-This documentation update is later than that source checkpoint. Inspect its
-fresh CI rather than claiming the earlier result verifies every subsequent head.
+These are observed job conclusions, not local command runs or detailed log audits.
+The verification job includes full verify and cross-browser release smoke.
+Production deploy-pages and pages-smoke were skipped on the PR, not passed.
+Earlier failures and fixes remain in Git history; no gate was waived.
+
+### Final input-safety tests: authored, not yet verified
+
+This subsequent test/documentation batch adds:
+
+- tests/e2e/input-ownership.spec.ts: app-level movement and projectile ownership
+  for mixed and two-controller co-op; ignored extra pads; held-input routing
+  transition; pause/restart/cancel cleanup; fresh gesture recovery; unsampled tap
+  discarded across pause. Browser inputs are mocked only at navigator/CDP edges.
+- tests/unit/touch-shot-limit.test.ts: a shell-cap rejected tap is consumed, does
+  not retry when capacity becomes available, and a deliberate fresh tap can fire.
+- A direct README link to the latest published testing site, explicitly distinct
+  from the latest source commit or production main.
+
+No gameplay source, test bridge, dependencies, thresholds or CI policy are
+changed by this batch. Tests assert observable poses, shot counts and owner IDs;
+they do not spy on internal adapter calls or add production hooks.
+
 No local formatter, compiler, lint, unit, browser or release command was executed
-while preparing this documentation reconciliation.
+for this batch. Fresh final-head CI is required; the earlier green result does
+not verify these new tests. Fix genuine failures without weakening assertions.
 
 ### Physical playtest evidence
 
-The owner reported that mobile play works great, then requested larger controls
-closer to the device edges. That feedback predates the `3d04d57` layout change.
-The exact tested source SHA, browser and device were not supplied. Do not infer
-physical verification of the new pad layout, every lifecycle case, mixed tablet
-co-op, two physical controllers or Safari/iOS from that report.
+The owner first reported mobile play works great and requested device-edge pads.
+After that adjustment, the owner explicitly reported the latest mobile state
+playtested fine and accepted the layout on 2026-11-08. The exact tested source
+SHA, browser and device were not supplied. Treat mobile layout/feel as owner-
+accepted, not as proof of all lifecycle cases, tablet/controller combinations
+or real Safari/iOS compatibility. No repeated layout acceptance is requested
+solely because tests/docs are added without runtime changes.
 
 ### Remaining before merge recommendation
 
-- Finish critical browser input-cleanup cases recorded in the mobile handoff:
-  cancellation/capture loss and stale release across pause/reset; add shell-cap
-  rejected-tap coverage beside cooldown coverage. Keep existing checks intact.
-- Republish the final verified branch through toybox-tanks-playtest and perform
-  a short device check of the new pad positions, arena size and action reachability.
-- Reconcile the PR checklist and mobile handoff with actual final-head evidence.
-  Record physical tablet/controller limitations explicitly, not as certified.
+- Require fresh green CI on the final test/documentation head and inspect any
+  failure. Current tests remain an execution claim only after actual results.
+- Reconcile the PR checklist and mobile handoff with final-head evidence. This
+  progress section supersedes older descriptions of the input-test gaps above,
+  but authored tests must not be described as passing before execution.
+- Physical mixed tablet/two-controller verification and fullscreen/browser-
+  specific edge cases remain explicitly limited, not certified by synthetic tests.
 - Mark ready and merge only with explicit approval after final checks. Then
   inspect main verification, production deployment and published-site smoke.
 
-No production merge/deployment, branch deletion, issue closure, screenshot
-approval or change to verification policy is performed by this documentation
-cleanup. Exact procedures: docs/verification.md. Architecture: docs/architecture.md.
-Local Firefox sandbox launch failures are blocked, never passed. Automated
-WebKit and synthetic gamepads/pointers do not certify physical devices.
+No merge/deployment, branch deletion, issue closure, screenshot approval or
+verification-policy change is performed by this update. Exact procedures:
+docs/verification.md. Architecture: docs/architecture.md. Local Firefox sandbox
+launch failures are blocked, never passed. Automated WebKit and synthetic
+gamepads/pointers do not certify physical devices.
