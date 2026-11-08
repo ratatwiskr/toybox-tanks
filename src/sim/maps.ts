@@ -113,12 +113,7 @@ function reachableCells(rows: readonly string[], corkBlocks: boolean): Set<strin
     const [x, y] = next;
     const key = `${String(x)},${String(y)}`;
     const cell = rows[y]?.[x];
-    if (
-      visited.has(key) ||
-      cell === undefined ||
-      cell === '#' ||
-      (corkBlocks && cell === 'C')
-    ) {
+    if (visited.has(key) || cell === undefined || cell === '#' || (corkBlocks && cell === 'C')) {
       continue;
     }
 
@@ -138,9 +133,7 @@ export function validateMap(
   let initiallyReachable = false;
 
   if (rows.length !== MAP_INTERIOR_ROWS) {
-    errors.push(
-      `Expected ${String(MAP_INTERIOR_ROWS)} interior rows, got ${String(rows.length)}.`,
-    );
+    errors.push(`Expected ${String(MAP_INTERIOR_ROWS)} interior rows, got ${String(rows.length)}.`);
   }
 
   rows.forEach((row, y) => {
@@ -192,11 +185,7 @@ export function validateMap(
     rows.forEach((row, y) => {
       for (let x = 0; x < row.length; x += 1) {
         const cell = row[x];
-        if (
-          cell !== undefined &&
-          cell !== '#' &&
-          !cleared.has(`${String(x)},${String(y)}`)
-        ) {
+        if (cell !== undefined && cell !== '#' && !cleared.has(`${String(x)},${String(y)}`)) {
           errors.push(`Unreachable floor at row ${String(y + 1)}, column ${String(x + 1)}.`);
         }
       }
