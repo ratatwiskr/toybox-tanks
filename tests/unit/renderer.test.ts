@@ -56,6 +56,7 @@ function snapshot(world: World): World {
     state: world.state,
     time: world.time,
     walls: world.walls.map((wall) => ({ ...wall })),
+    corks: world.corks.map((cork) => ({ ...cork })),
     players: world.players.map((tank) => ({ ...tank })),
     enemies: world.enemies.map((tank) => ({ ...tank })),
     shells: world.shells.map((shell) => ({ ...shell })),
@@ -70,6 +71,15 @@ function snapshot(world: World): World {
 describe('renderer contract', () => {
   it('reads world state without mutating it', () => {
     const world = createWorld(0, 'coop');
+    world.corks.push({
+      id: 'c-test',
+      x: 400,
+      y: 200,
+      w: 40,
+      h: 40,
+      hitsRemaining: 2,
+      destroyed: false,
+    });
     world.shells.push({
       id: 7,
       owner: 'p1',
