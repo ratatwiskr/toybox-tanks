@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { CONFIG } from '../../src/config';
 import { firstWall, moveTank } from '../../src/sim/collision';
 import { addMapBorder, MAPS, validateMap } from '../../src/sim/maps';
+import type * as MapsModule from '../../src/sim/maps';
 import type { Wall } from '../../src/sim/types';
 import { createWorld } from '../../src/sim/world';
 
@@ -20,7 +21,7 @@ const edges = vi.hoisted(() => [
 // Replace authored data only in this test module. Keep the real validation,
 // border construction, world loading, and collision implementations.
 vi.mock('../../src/sim/maps', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('../../src/sim/maps')>();
+  const actual = await importOriginal<typeof MapsModule>();
 
   return {
     ...actual,
