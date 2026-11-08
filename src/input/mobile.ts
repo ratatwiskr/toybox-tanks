@@ -67,8 +67,7 @@ export function createMobileControls(host: MobileHost): MobileControls {
   rotate.className = 'rotate-hint';
   rotate.textContent = 'Rotate to landscape to play. Resume when you are ready.';
   rotate.hidden = true;
-  host.stage.append(layer);
-  host.app.append(rotate);
+  host.app.append(layer, rotate);
 
   let active = false;
   let fullscreenFailed = false;
@@ -266,6 +265,7 @@ export function createMobileControls(host: MobileHost): MobileControls {
       layer.hidden = !active;
       host.app.classList.toggle('compact', compact());
       host.app.classList.toggle('mobile-solo', mode === 'solo');
+      host.app.classList.toggle('touch-enabled', toggle.checked);
       rotate.hidden = canPlay();
       fullscreen.disabled = !document.fullscreenEnabled && document.fullscreenElement !== host.app;
       fullscreen.textContent =
