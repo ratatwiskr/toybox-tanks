@@ -11,17 +11,16 @@ export interface MapValidation {
   readonly ok: boolean;
   readonly errors: readonly string[];
   readonly rows: readonly string[];
+  // Informational, not an error: destruction may be needed to open a route.
+  readonly initiallyReachable: boolean;
 }
 
-// Authored grids cover only the playable interior. The loader adds the solid
-// one-cell arena border, so the rendered/collision arena stays CONFIG.columns ×
-// CONFIG.rows.
 export const MAP_INTERIOR_COLUMNS = CONFIG.columns - 2;
 export const MAP_INTERIOR_ROWS = CONFIG.rows - 2;
 
-// Exactly MAP_INTERIOR_COLUMNS × MAP_INTERIOR_ROWS. # = solid wooden block;
-// . = floor; 1/2 = player spawns; S = stationary sentry. Every room has one 1
-// and one 2. Do not draw the outer arena border; it is added automatically.
+// Authored grids contain only the interior. # = wood; C = three-hit cork;
+// . = floor; 1/2 = player spawns; S = stationary sentry. The border is automatic.
+// Cork enters the campaign only after collision and rendering are integrated.
 export const MAPS: readonly MapData[] = [
   {
     name: 'First Bounce',
@@ -73,10 +72,45 @@ export const MAPS: readonly MapData[] = [
   },
 ];
 
-// Wrap the authored interior in the closed solid border used by the simulation.
 export function addMapBorder(rows: readonly string[]): string[] {
   const border = '#'.repeat(CONFIG.columns);
   return [border, ...rows.map((row) => `#${row}#`), border];
+}
+
+function reachableCells(rows: readonly string[], corkBlocks: boolean): Set<string> {
+  const visited = new Set<string>();
+  const stack: Array<readonly [number, number]> = [];
+
+  rows.forEach((row, y) => {
+    const x = row.indexOf('1');
+    if (x >= 0) {
+      stack.push([x, y]);
+    }
+  });
+
+  while (stack.length > 0) {
+    const next = stack.pop();
+    if (next === undefined) {
+      break;
+    }
+
+    const [x, y] = next;
+    const key = `${String(x)},${String(y)}`;
+    const cell = rows[y]?.[x];
+    if (
+      visited.has(key) ||
+      cell === undefined ||
+      cell === '#' ||
+      (corkBlocks && cell === 'C')
+    ) {
+      continue;
+    }
+
+    visited.add(key);
+    stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+  }
+
+  return visited;
 }
 
 export function validateMap(
@@ -85,6 +119,7 @@ export function validateMap(
   const errors: string[] = [];
   const rows = data.grid.trim().split(/\r?\n/);
   const counts = { '1': 0, '2': 0, S: 0 };
+  let initiallyReachable = false;
 
   if (rows.length !== MAP_INTERIOR_ROWS) {
     errors.push(`Expected ${String(MAP_INTERIOR_ROWS)} interior rows, got ${String(rows.length)}.`);
@@ -103,10 +138,9 @@ export function validateMap(
         continue;
       }
 
-      if (!'#.12S'.includes(cell)) {
+      if (!'#C.12S'.includes(cell)) {
         errors.push(`Unknown symbol "${cell}" at row ${String(y + 1)}, column ${String(x + 1)}.`);
       }
-
       if (cell === '1' || cell === '2' || cell === 'S') {
         counts[cell] += 1;
       }
@@ -122,55 +156,30 @@ export function validateMap(
   if (counts.S < 1) {
     errors.push('At least one sentry is required.');
   }
-
   if (data.expectedEnemies !== undefined && counts.S !== data.expectedEnemies) {
     errors.push(`Expected ${String(data.expectedEnemies)} sentries; found ${String(counts.S)}.`);
   }
 
-  // Every non-wall interior tile must be reachable from player 1, including the
-  // other spawn. The automatic solid border cannot open a path out of the arena.
   if (errors.length === 0) {
-    const visited = new Set<string>();
-    const stack: Array<readonly [number, number]> = [];
+    const initial = reachableCells(rows, true);
+    initiallyReachable = rows.every((row, y) =>
+      Array.from(row).every(
+        (cell, x) => cell === '#' || cell === 'C' || initial.has(`${String(x)},${String(y)}`),
+      ),
+    );
 
-    rows.forEach((row, y) => {
-      const x = row.indexOf('1');
-      if (x >= 0) {
-        stack.push([x, y]);
-      }
-    });
-
-    while (stack.length > 0) {
-      const next = stack.pop();
-      if (next === undefined) {
-        break;
-      }
-
-      const [x, y] = next;
-      const key = `${String(x)},${String(y)}`;
-      const row = rows[y];
-      if (visited.has(key) || row === undefined) {
-        continue;
-      }
-
-      const cell = row[x];
-      if (cell === undefined || cell === '#') {
-        continue;
-      }
-
-      visited.add(key);
-      stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
-    }
-
+    // Acceptance requires all non-wall cells, including cork cells, to be
+    // reachable after destruction. An initial cork-blocked route is allowed.
+    const cleared = reachableCells(rows, false);
     rows.forEach((row, y) => {
       for (let x = 0; x < row.length; x += 1) {
         const cell = row[x];
-        if (cell !== undefined && cell !== '#' && !visited.has(`${String(x)},${String(y)}`)) {
+        if (cell !== undefined && cell !== '#' && !cleared.has(`${String(x)},${String(y)}`)) {
           errors.push(`Unreachable floor at row ${String(y + 1)}, column ${String(x + 1)}.`);
         }
       }
     });
   }
 
-  return { ok: errors.length === 0, errors, rows };
+  return { ok: errors.length === 0, errors, rows, initiallyReachable };
 }

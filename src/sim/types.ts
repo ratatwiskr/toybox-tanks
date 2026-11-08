@@ -52,6 +52,12 @@ export interface Wall {
   readonly h: number;
 }
 
+export interface Cork extends Wall {
+  readonly id: string;
+  hitsRemaining: number;
+  destroyed: boolean;
+}
+
 export interface Effect {
   readonly x: number;
   readonly y: number;
@@ -67,6 +73,7 @@ export interface World {
   state: GameState;
   time: number;
   walls: Wall[];
+  corks: Cork[];
   players: Tank[];
   enemies: Tank[];
   shells: Shell[];
