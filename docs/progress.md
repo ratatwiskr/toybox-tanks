@@ -1,295 +1,72 @@
-# Toybox Tanks — progress
+# Toybox Tanks — current progress
 
-Updated: 2026-11-07  
-Current gate: **E — harden and deliver (remote checkpoint reconciled; verification blocked)**  
-Previous gate: **D — complete according to the recorded implementation checkpoint; pushed**  
-Next handoff: `docs/gate-e-handoff.md` (its push-pending statements are superseded below)  
-Verification details: `docs/verification.md`  
-Visual asset plan: `docs/asset-integration-plan.md`
+Updated: 2026-11-08
 
-## Remote checkpoint reconciliation — 2026-11-07
+## Current checkpoint
 
-The authenticated GitHub connector resolved remote `main` to
-`a754b1ba1ec3e78fdb7e85b7fd3ad6467f91ed52` (`record push pending in gate e handoff`).
-The remote commit listing also contains `7f3b448` (Gate E handoff/asset plan) and
-`2cfbba8` (Gate D). These commits have already been pushed. No repeat push is needed
-for them. This supersedes the push-pending statements in `AGENTS.md`,
-`docs/gate-e-handoff.md`, and the historical checkpoint retained below. It does not
-prove that CI ran or passed.
+PR #14 is squash-merged into main as
+`d5aa53f8df4d73210e43d5edb2896f96bca152dc`. It supplies automatic solid borders
+for 22 × 11 authored interiors, retaining the original 24 × 13 arena.
 
-This session performed read-only repository inspection before preparing this
-documentation-only change. It did not change gameplay, tests, dependencies, the
-lockfile, CI configuration, visual baselines, or remote protection settings.
+The reviewed cork feature from PR #15 source
+`c19927abd793f871dd9c6212f87ab85fa9f48e00` is reconstructed on
+`feature/destructible-cork-blocks-main`, created from that main revision. This
+avoids replaying the inherited #14 history after its squash merge. The original
+feature branch and PR #15 are preserved; inspect GitHub before assuming either
+has been closed or the replacement has merged.
 
-### Checks actually performed in this session
+Application and test files are copied from the pinned source without intentional
+behavior changes. Reconciled documentation is carried forward with branch-status
+updates. Main's border test remains unchanged. Do not restore `.issues/6.md`,
+`docs/issue-6-handoff.md`, or `docs/cork-rendering-handoff.md`.
 
-- GitHub `get_commit` for `main`: successful; resolved SHA recorded above.
-- GitHub file reads at that SHA: successful for the inspected documentation and
-  configuration. This is source inspection, not command execution.
-- `.github/workflows/verify.yml`: statically confirmed checkout, Node setup,
-  `npm ci`, browser installation, `npm run verify`, `npm run test:browsers`, and
-  artifact upload. `Full verification` and `Cross-browser release smoke` are
-  steps in the single `verify` job, not two independent jobs.
-- `package.json`: statically confirmed sequential verification scripts, a
-  separate browser matrix command, and development dependencies only.
-- `vitest.config.ts`: statically confirmed unit/architecture discovery separate
-  from browser suites, `passWithNoTests: false`, explicit simulation/config
-  coverage includes, and 85/85/85/80 statement/line/function/branch floors.
-- `.husky/pre-commit`: statically confirmed `npx lint-staged`. Hook execution in
-  an isolated Git fixture was not performed.
-- Direct web fetch of the repository Actions page: failed to retrieve content.
-  This is not evidence of a failed CI run or a private repository.
+## Implemented scope
 
-No shell commands were executed in this session; there are no new process exit
-statuses or test results. The available GitHub connector has no Actions-run,
-artifact-download, or branch-protection tools, and this session has no shell or
-Playwright execution tool. CI results and protection settings remain unknown.
-The historical local results below are retained as prior-session evidence only.
+- Three-hit independent cork cells, initial versus cleared reachability, and
+  resettable world state separate from permanent walls.
+- Shared cork-aware movement, swept/muzzle shell contact, sight, and aim queries.
+- Conservative ambiguous contacts, stable same-step destruction, and unchanged
+  solid-wall bounce and faction-hit rules.
+- Procedural intact/cracked/heavily cracked cork, no destroyed cork/shadow,
+  bounded crack paths, and render-order-independent outline widths.
+- Original three layouts/order preserved; Cork Keep appended as room four.
+  Completion follows room four and replay starts at room one.
 
-### Remaining Gate E work
+## Decisions and acceptance
 
-1. Inspect the Actions run for the current source revision and record its URL,
-   tested SHA, `verify` job conclusion, and both verification-step results.
-   If it fails, preserve logs and artifacts before making a targeted fix.
-2. Retrieve or regenerate the nine visual candidates and obtain explicit
-   approve/reject decisions per scene. No visual review or approval occurred
-   in this session. Choose a baseline policy only after review.
-3. Obtain clean-install evidence from the appropriate CI run or a separately
-   authorized fresh-clone run. The existing no-install restriction is unchanged.
-4. Run the remaining Gate E checks in an execution-capable environment, including
-   full verification and the isolated Husky fixture. Static inspection here is
-   not a complete architecture audit or substitute for execution.
-5. Read and verify branch protection with owner-capable tools. Do not infer it
-   from the workflow and do not modify it without specific approval.
-6. Update the older status summaries after evidence is available, then produce
-   the delivery report. Gate E is not complete. Asset integration stays a
-   separate task; no assets or deferred mechanics are authorized by this note.
+Retain procedural cork. SVG integration is not pending work. ADR 0002 records
+the durable mechanic and presentation decision. Broader assets remain separate.
 
-## Historical implementation checkpoint
+On 2026-11-08 the owner reported successful cork playtesting in the VS Code
+internal browser. The exact tested SHA and exhaustive scenario list were not
+specified. Do not extend this evidence to every state, reset, browser, release
+format, physical controller, or real Safari/iOS device.
 
-The remainder of this file preserves the previous implementation report. Its
-push-pending and no-CI-until-push statements are historical and superseded by the
-remote checkpoint above. Its recorded tests were not rerun in this session.
+Visual regression and comprehensive visual coverage of cork states belong to a
+separate issue, not unfinished cork implementation. No issue number or approved
+screenshot baseline is invented here. Candidate capture is not visual regression.
+Gate E is not declared complete.
 
-## Gate D status
+## Verification
 
-Gate D is complete and committed as `2cfbba8`. The push to `origin/main` is still pending:
-the nono sandbox has no GitHub credential helper or SSH key access, so run
-`git push origin main` from a host terminal before relying on CI. Input parity, rendering
-parity, UI/runtime composition, the typed test bridge, deterministic automation, and
-release isolation are all in place.
+Historical PR #15 implementation head
+`4ea53013cfe5a2d632dc3198dd88e0f9cb3e0032` had a successful `verify` job:
+https://github.com/ratatwiskr/toybox-tanks/actions/runs/42470914415
 
-Gate D work completed:
+That does not prove the reconstructed branch passes. Reconstruction used GitHub
+reads and writes; no local formatter, lint, compiler, unit, browser, or release
+commands were executed. Verify copied blob identities and the final PR diff,
+then require fresh green CI on the replacement head. The workflow runs
+`npm run verify` and `npm run test:browsers`; deployment and published-Pages
+smoke run separately on main. Do not weaken checks to obtain green CI.
 
-- `src/input/gamepad.ts`: optional two-gamepad adapter with deadzones, normalized sticks,
-  keyboard-vs-stick precedence, absolute right-stick aim, A/right-trigger fire, Start edge
-  detection, disconnect cleanup, neutral gating after focus/pause/restart, and solo
-  assignment limited to one pad. Synthetic pads use structural types, so unit tests never
-  need a real controller.
-- `src/main.ts`: polls pads each frame, merges pad and keyboard commands, clears both
-  adapters on focus loss/pause/room reset, shows assigned pad labels in the HUD, and adds a
-  manual test clock so RAF renders without racing explicit ticks.
-- `src/render/renderer.ts`: restores the prototype's dashed aim line, first-bounce
-  continuation and marker, and spark/poof effect drawing. Rendering still never mutates
-  gameplay.
-- `src/test-bridge.ts`: typed `window.__TOYBOX_TEST__` with `loadScenario`, `advanceTicks`,
-  `snapshot`, `events`, `render`, and `clearInput`; scenario validation, bounded tick
-  counts, mutually exclusive command sources, and copied snapshots. Installed only when the
-  build-time `__TEST_BUILD__` constant is true.
-- `vite.config.ts`, `package.json`, and `playwright.config.ts`: `dev:test`/`build:test`,
-  isolated `dist-test/` output, and a test-mode dev server for browser suites. Production
-  `dist/` and `dist-single/` contain no bridge code and cannot enable it with `?test=1`.
-- Unit coverage: `tests/unit/gamepad.test.ts` (10 tests) and
-  `tests/unit/test-bridge.test.ts` (9 tests).
-- Browser coverage: `tests/e2e/bridge.spec.ts` (scenario/time ownership, real keyboard
-  sampling during explicit ticks, outcome/error states, render non-mutation) and
-  `tests/e2e/gamepad.spec.ts` (synthetic pad move/aim/fire/pause/resume/disconnect). Release
-  specs prove bridge absence in both production artifacts. The candidate visual spec now
-  captures nine stable scenes.
+Exact procedures: `docs/verification.md`. Architecture: `docs/architecture.md`.
+Local Firefox sandbox launch failures are not passes. Automated WebKit and
+synthetic gamepads do not establish physical-device compatibility.
 
-WebKit throttles `requestAnimationFrame` under Playwright, so the synthetic-gamepad spec
-waits for real animation frames when the adapter must observe a Start release or a neutral
-sample. Fixed sleeps were replaced; the adapter's neutral gate and Start edge detection were
-not weakened.
+## Next repository steps
 
-Visual approval remains pending: `test:visual` writes nine unapproved candidates to
-`test-results/visual-candidates/`. Firefox remains blocked locally by the nono sandbox and
-is exercised in CI.
-
-## Visual asset integration (drafted, not started)
-
-Two content-identical copies of a drafted asset pack (plus their zips, about 8 MB total)
-are committed at the repository root under
-`Perplexity-assets-w-rden-perks-und-etwa-cas-angriffe-zum-spiel-passen-aspekte/` and its
-`+handoff` twin. They contain a warm-wood floor, an optional rug, 60 block variants, an
-arena border kit, player/enemy tank and turret art, projectiles, and sandbox-only
-catapult/chick/cork/roof studies.
-
-None of it is integrated. The plan in `docs/asset-integration-plan.md` records the verified
-API revision (`ToyboxAssets` v0.1 has no `prepareLayers`), the renderer mapping, the
-conflicts that need decisions (enemy palette, projectile colors, wall-cell framing, border
-padding), and five reviewable phases: inventory, adapter, floor, walls/border, existing
-tanks/shells, then a sandbox for future content. Asset work must stay presentation-only and
-must not change simulation, collision, controls, or releases.
-
-## Gate C status
-
-Gate C is complete and locally verified. The simulation now matches the prototype's
-gameplay rules: enemy sentry AI, one-bounce shells with remaining travel, ambiguous-corner
-removal, muzzle sweeping, damage/invulnerability, feedback effects/events, shell caps and
-cooldowns, and terminal outcome semantics. `sim/` remains DOM- and Node-free.
-
-Gate C is committed as `891fee4` (`WIP gate c`) and was re-verified unchanged on
-2026-11-07 with the full local gate. The visual regression gate is still **pending
-human/vision approval**: candidate screenshots are captured, not approved. Firefox
-remains blocked locally by the nono sandbox; Chromium and WebKit pass.
-
-Gate C work completed:
-
-- `src/sim/types.ts`: added `Effect` and the prototype's `effects`/`events` world state.
-- `src/sim/collision.ts`: extracted ray/AABB and ray/circle collision, earliest-wall
-  selection, reflection, tank movement/correction, hit eligibility, and line of sight.
-- `src/sim/combat.ts`: extracted damage, firing, muzzle sweep, wall contact, and bounded
-  one-bounce shell advancement with remaining travel.
-- `src/sim/enemies.ts`: extracted sentry target selection, line-of-sight gating, turning,
-  telegraph, cancel, and firing.
-- `src/sim/feedback.ts`: prototype event log and spark/poof effect creation.
-- `src/sim/world.ts`: now owns entity creation, room loading, outcome commits, and the
-  fixed-step simulation loop.
-- `src/render/renderer.ts`: accepts a narrow `RenderCanvas`/`RenderContext` surface so a
-  headless unit test can prove rendering never mutates world state. Production behavior is
-  unchanged.
-- `tests/unit/collision.test.ts`, `combat.test.ts`, `enemies.test.ts`,
-  `world.test.ts`, `renderer.test.ts`, and the existing map/config tests: **59 tests**
-  including all 18 prototype self-checks plus muzzle sweep, telegraph/cancel, target
-  switching, completion/replay, reset equivalence, bounded event/effect state, automatic
-  sentry updates, and renderer non-mutation.
-- `tsconfig.unit.json` includes `DOM` solely for the renderer contract test. The
-  `tsconfig.sim.json` project remains DOM-free with `types: []`.
-- `src/main.ts`: removed Gate B skeleton/status copy; player-facing text now matches the
-  prototype menu.
-
-## Gate B summary
-
-Gate A remains committed as `25296e7`; Gate B is committed as `1c12fcf`. Gate B delivered
-the strict toolchain, guardrails, skeleton, browser/release suites, Husky hook, CI
-workflow, and documentation. Its verification details remain in this file's history and in
-`docs/verification.md`. Gate C did not change package dependencies, the lockfile, CI, or
-the launcher.
-
-## Gate C verification
-
-All runs are from `/home/toast/dev/toybox-tanks`. Local Playwright commands used
-`PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright"`.
-
-| Command                                                                                      | Exit | Result                                                                                                      |
-| -------------------------------------------------------------------------------------------- | ---- | ----------------------------------------------------------------------------------------------------------- |
-| `npm run format:check`                                                                       | 0    | All matched files use Prettier.                                                                             |
-| `npm run lint`                                                                               | 0    | ESLint passed with `--max-warnings 0`.                                                                      |
-| `npm run typecheck`                                                                          | 0    | `app`, `sim`, `tooling`, `unit`, `e2e`, and `fixtures` projects passed.                                     |
-| `npm run test:unit`                                                                          | 0    | 8 files, 59 tests passed (53 unit + 6 architecture guardrails).                                             |
-| `npm run test:coverage`                                                                      | 0    | 59 tests passed; coverage 96.07/93.36/100/95.93 (st/branch/fn/lines) over `src/config.ts` and `src/sim/**`. |
-| `npm run build`                                                                              | 0    | Hosted `dist/` built.                                                                                       |
-| `npm run build:single`                                                                       | 0    | Single-file `dist-single/index.html` built.                                                                 |
-| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:e2e`                     | 0    | Chromium: 2/2 passed (real keyboard movement, pause/resume/retry, solo).                                    |
-| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:visual`                  | 0    | Candidate capture: 1/1 passed. **Not approved baselines.**                                                  |
-| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:release`                 | 0    | Chromium release smoke: 2/2 passed (`dist/` preview + `dist-single/index.html` via `file://`).              |
-| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run verify`                       | 0    | Full local gate passed sequentially.                                                                        |
-| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npx playwright test --project=webkit` | 0    | WebKit e2e: 2/2 passed.                                                                                     |
-
-Browser suites must not be run concurrently in this repo: they share
-`test-results/.playwright-artifacts-*`, and a parallel visual/release invocation produced
-false `ENOENT ... browserContext.close` errors. Running them sequentially (as `verify`
-does) passes.
-
-## Gate D verification
-
-All runs are from `/home/toast/dev/toybox-tanks`. Local Playwright commands used
-`PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright"`, and browser suites were run
-sequentially.
-
-| Command                                                                                      | Exit | Result                                                                                                                         |
-| -------------------------------------------------------------------------------------------- | ---- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `npm run format:check`                                                                       | 0    | All matched files use Prettier.                                                                                                |
-| `npm run lint`                                                                               | 0    | ESLint passed with `--max-warnings 0`.                                                                                         |
-| `npm run typecheck`                                                                          | 0    | `app`, `sim`, `tooling`, `unit`, `e2e`, and `fixtures` projects passed.                                                        |
-| `npm run test:unit`                                                                          | 0    | 10 files, 78 tests passed (72 unit + 6 architecture guardrails).                                                               |
-| `npm run test:coverage`                                                                      | 0    | 78 tests passed; coverage 96.07/93.36/100/95.93 (st/branch/fn/lines) over `src/config.ts` and `src/sim/**`.                    |
-| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:e2e`                     | 0    | Chromium: 6/6 passed (bridge scenarios/manual ticks, real keyboard sampling, synthetic gamepad, real-time smoke, solo).        |
-| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npx playwright test --project=webkit` | 0    | WebKit e2e: 6/6 passed, including the synthetic gamepad flow with frame-based synchronization.                                 |
-| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:visual`                  | 0    | Candidate capture: 1/1 passed; nine unapproved PNGs. **Not approved baselines.**                                               |
-| `npm run build`                                                                              | 0    | Hosted `dist/` built; `__TOYBOX_TEST__` count in bundled JS: 0.                                                                |
-| `npm run build:test`                                                                         | 0    | Test build in `dist-test/`; bridge present.                                                                                    |
-| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:release`                 | 0    | Chromium release: 4/4 passed (hosted + single-file, normal smoke + bridge absence with `?test=1`).                             |
-| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run verify`                       | 0    | Full local gate passed sequentially.                                                                                           |
-| `npm run test:browsers` locally                                                              | n/a  | Not run locally: Firefox still fails before launch in the nono sandbox. Chromium/WebKit evidence is above; CI runs the matrix. |
-
-The WebKit regression was a test-synchronization issue, not an adapter bug: WebKit throttles
-`requestAnimationFrame` under Playwright, so a fixed sleep could contain no poll frame and
-the adapter never observed a Start release. The spec now waits for real frames before
-re-pressing Start. Neutral gating and edge detection are unchanged.
-
-## Task checklist
-
-- [x] Read `docs/handoff.md`, `docs/kickoff.md`, `docs/session-handoff.md` completely.
-- [x] Inspect the existing repository and preserve existing user changes.
-- [x] Copy the source prototype byte-for-byte to `reference/toybox-tanks.original.html`.
-- [x] Record and re-verify SHA-256 hashes.
-- [x] Reproduce the prototype in Chromium through `file://` and record checks/state/errors.
-- [x] Capture startup/menu, gameplay, and pause evidence.
-- [x] Write `docs/baseline.md`.
-- [x] Write `docs/backlog.md`.
-- [x] Write root `AGENTS.md` from the handoff template, adapted to this repository.
-- [x] Confirm no application source was changed during Gate A.
-- [ ] Gate A owner review.
-- [x] Gate B: toolchain, guardrails, minimal skeleton (committed as `1c12fcf`; visual gate
-      pending; Firefox local blocker).
-- [x] Gate C: behavior-preserving simulation extraction (complete, committed as `891fee4`,
-      re-verified).
-- [x] Gate D: adapters, rendering, UI, runtime, automation, releases (complete, committed;
-      push pending; visual approval still pending).
-- [ ] Gate E: harden and deliver (see `docs/gate-e-handoff.md`).
-- [ ] Optional follow-on: integrate the drafted visual assets
-      (`docs/asset-integration-plan.md`), starting with phase 0.
-
-## Known blockers and limitations
-
-1. **Visual approval pending.** `test:visual` captures unapproved candidates in
-   `test-results/visual-candidates/`. No snapshots are approved and no comparison suite is
-   enabled. A human/vision review is required before `test:visual` becomes an approved
-   regression gate.
-2. **Firefox locally blocked.** Prior runs failed before page launch with
-   `Sandbox: CanCreateUserNamespace() unshare(CLONE_NEWPID): EPERM` /
-   `Could not find profile folder.` Chromium and WebKit pass the hosted smoke. This is the
-   known nono process-isolation limitation; CI runs Firefox on a normal runner. Gate D did
-   not claim a local Firefox pass.
-3. **Launcher browser path mismatch.** `_start_opencode_with_nono.sh` points
-   `PLAYWRIGHT_BROWSERS_PATH` at a non-existent directory. The launcher stays unchanged;
-   prefix local Playwright commands with `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright"`.
-4. **No installs or untracked remote changes.** Gate D added no dependencies, lockfile
-   changes, package upgrades, browser downloads, or branch-protection changes. The Gate D
-   commit and the handoff/plan commit were made on explicit user authorization; no visual
-   baselines were committed.
-5. **Push pending.** `git push origin main` failed inside nono with
-   `fatal: could not read Username for 'https://github.com'`. No credential helper is
-   configured and `~/.ssh` is not readable. `origin/main` is still at `891fee4`; local
-   `main` is two commits ahead (`2cfbba8`, `7f3b448`). The owner must push from a host
-   terminal.
-6. **CI for Gate D is unverified.** The only recorded CI run covers Gate C (`891fee4`) and
-   passed, including the full browser matrix. No CI run exists for Gate D until the push
-   succeeds; do not reuse the Gate C result.
-7. **Gate E remains.** Gate D covers adapters, full rendering parity, UI/runtime, the
-   test-only bridge, deterministic automation, and release isolation. Gate E still owns
-   hardening, final delivery, cross-browser CI evidence, and visual-baseline approval.
-8. **Asset integration is a separate task.** Drafted art is committed but unused. Do not
-   wire it into gameplay without the phase 0 decisions and visual approval described in
-   `docs/asset-integration-plan.md`.
-
-## Next action
-
-Follow `docs/gate-e-handoff.md`. In order: push the two local commits from a host terminal,
-confirm the CI run for Gate D, review the nine visual candidates and record approve/reject
-decisions, choose a visual-baseline policy, run or explicitly authorize clean-install
-verification, and set branch protection with owner access. Only then decide between
-finishing Gate E delivery and starting asset integration phase 0. Do not approve visual
-baselines, weaken tests, or fabricate a local Firefox pass.
+Open the replacement PR against main and inspect its full diff and current CI.
+Do not merge or deploy as part of reconstruction. Close the original PR only
+with explicit approval after the replacement is established. Historical session
+reports remain in Git history; old push/rebase handoffs are not active tasks.
