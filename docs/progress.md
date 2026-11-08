@@ -62,6 +62,33 @@ Firefox pass.
   inspection rather than aesthetic approval. The PNGs remain candidates for human
   review; no snapshot baseline was added or approved.
 
+### Follow-up: cork outline `lineWidth` leak — 2026-11-08
+
+Playtest found that a damaged cork left `ctx.lineWidth = 3` behind, so the next
+tile's outer border and pale `#e2cca0` inner outline inherited that width. A tile's
+apparent edging therefore depended on the damage state of the previously rendered
+cork rather than its own state.
+
+- `src/render/renderer.ts`: `drawCork` now sets `ctx.lineWidth = 1` immediately
+  before drawing the cork body. Both outlines use width 1 in every damage state;
+  crack thickness, damage stages, colors, shadows, and gameplay are unchanged.
+- `tests/unit/renderer.test.ts`: the recording context now captures `roundRect`
+  geometry and outline stroke width. New tests assert that (1) both cork outlines
+  are width 1 at `hitsRemaining` 3, 2, and 1; (2) a target cork's outline signature
+  is identical whether the preceding cork is intact, cracked, or heavily cracked;
+  (3) reversing cork render order does not change any cork's outline; and (4)
+  rendering leaves the world snapshot unchanged. All three outline tests were
+  confirmed to fail when the explicit initialization is removed.
+
+| Command                                                                | Exit | Result                                                                                                                                                                     |
+| ---------------------------------------------------------------------- | ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npx vitest run tests/unit/renderer.test.ts`                           | 0    | 6 tests passed.                                                                                                                                                            |
+| `npm run verify:fast`                                                  | 0    | Prettier, ESLint `--max-warnings 0`, all six typecheck projects, and 13 files / 121 unit and architecture tests passed.                                                    |
+| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run verify` | 0    | Coverage 96.42/94.75/100/96.3 (st/branch/fn/lines); Chromium e2e 6/6; visual candidate capture 1/1 (unapproved); release Chromium 4/4. `dist/` and `dist-single/` rebuilt. |
+
+Logs: `/tmp/toybox-tanks.uyIa0a9V/verify-fast-cork-linewidth.log` and
+`/tmp/toybox-tanks.uyIa0a9V/verify-cork-linewidth.log`.
+
 ### Remaining
 
 - Human visual approval of cork damage states remains pending.

@@ -151,6 +151,8 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
   const drawCork = (cork: Cork): void => {
     const damage = cork.hitsRemaining >= 3 ? 0 : cork.hitsRemaining === 2 ? 1 : 2;
 
+    // Cork outlines must not inherit the previous tile's crack stroke width.
+    ctx.lineWidth = 1;
     rounded(cork.x + 2, cork.y + 5, 37, 37, 5, '#826c472a');
     rounded(cork.x + 1, cork.y + 1, 38, 37, 5, '#bea374', '#826c47');
     rounded(cork.x + 3, cork.y + 2, 34, 31, 4, undefined, '#e2cca0');

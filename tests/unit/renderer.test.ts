@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { createRenderer } from '../../src/render/renderer';
 import type { RenderCanvas, RenderContext } from '../../src/render/renderer';
-import type { World } from '../../src/sim/types';
+import type { Cork, World } from '../../src/sim/types';
 import { createWorld } from '../../src/sim/world';
 
 class StubContext implements RenderContext {
@@ -27,7 +27,7 @@ class StubContext implements RenderContext {
   bezierCurveTo(): void {}
   arc(): void {}
   ellipse(): void {}
-  roundRect(): void {}
+  roundRect(_x: number, _y: number, _w: number, _h: number, _r?: number): void {}
   translate(): void {}
   rotate(): void {}
   setTransform(): void {}
@@ -49,8 +49,16 @@ class StubCanvas implements RenderCanvas {
   }
 }
 
+interface RecordedRect {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+}
+
 interface RecordedPath {
   readonly points: readonly { readonly x: number; readonly y: number }[];
+  readonly rect: RecordedRect | null;
   readonly style: string;
   readonly lineWidth: number;
 }
@@ -59,9 +67,11 @@ class RecordingContext extends StubContext {
   readonly strokes: RecordedPath[] = [];
   readonly fills: RecordedPath[] = [];
   private points: Array<{ x: number; y: number }> = [];
+  private rect: RecordedRect | null = null;
 
   override beginPath(): void {
     this.points = [];
+    this.rect = null;
   }
 
   override moveTo(x: number, y: number): void {
@@ -72,9 +82,14 @@ class RecordingContext extends StubContext {
     this.points.push({ x, y });
   }
 
+  override roundRect(x: number, y: number, width: number, height: number): void {
+    this.rect = { x, y, width, height };
+  }
+
   override stroke(): void {
     this.strokes.push({
       points: [...this.points],
+      rect: this.rect,
       style: typeof this.strokeStyle === 'string' ? this.strokeStyle : '',
       lineWidth: this.lineWidth,
     });
@@ -83,6 +98,7 @@ class RecordingContext extends StubContext {
   override fill(): void {
     this.fills.push({
       points: [...this.points],
+      rect: this.rect,
       style: typeof this.fillStyle === 'string' ? this.fillStyle : '',
       lineWidth: this.lineWidth,
     });
@@ -146,6 +162,50 @@ function snapshot(world: World): World {
     shots: world.shots,
     bounces: world.bounces,
   };
+}
+
+function corkKeepCorks(states: readonly (1 | 2 | 3)[]): Cork[] {
+  const world = createWorld(3, 'coop');
+  return world.corks.slice(0, states.length).map((cork, index) => ({
+    ...cork,
+    hitsRemaining: states[index] ?? 3,
+  }));
+}
+
+function renderCorks(corks: readonly Cork[]): {
+  readonly context: RecordingContext;
+  readonly corks: readonly Cork[];
+} {
+  const world = createWorld(3, 'coop');
+  world.corks = corks.map((cork) => ({ ...cork }));
+
+  const before = snapshot(world);
+  const canvas = new RecordingCanvas();
+  createRenderer(canvas).render(world);
+
+  expect(snapshot(world)).toEqual(before);
+
+  return { context: canvas.recording, corks: world.corks };
+}
+
+function corkOutlinePaths(context: RecordingContext, cork: Cork): readonly RecordedPath[] {
+  return context.strokes.filter(
+    (path) =>
+      path.rect !== null &&
+      path.rect.x >= cork.x &&
+      path.rect.x <= cork.x + 3 &&
+      path.rect.y >= cork.y &&
+      path.rect.y <= cork.y + 2 &&
+      (path.style === '#826c47' || path.style === '#e2cca0'),
+  );
+}
+
+function outlineSignature(context: RecordingContext, cork: Cork): string {
+  return corkOutlinePaths(context, cork)
+    .map((path) =>
+      JSON.stringify([path.style, path.lineWidth, path.rect?.width, path.rect?.height]),
+    )
+    .join('|');
 }
 
 describe('renderer contract', () => {
@@ -235,5 +295,48 @@ describe('renderer contract', () => {
     );
     expect(chipPaths(twoHitsRemaining.context)).toHaveLength(0);
     expect(chipPaths(oneHitRemaining.context).length).toBeGreaterThan(0);
+  });
+
+  it('draws both cork outlines with an explicit width of 1 in every damage state', () => {
+    for (const hitsRemaining of [3, 2, 1] as const) {
+      const { context, corks } = renderCorks(corkKeepCorks([hitsRemaining]));
+      const cork = corks[0];
+      if (cork === undefined) {
+        throw new Error('Cork Keep cork missing');
+      }
+
+      const outlines = corkOutlinePaths(context, cork);
+      expect(outlines.map((path) => path.style)).toEqual(['#826c47', '#e2cca0']);
+      expect(outlines.map((path) => path.lineWidth)).toEqual([1, 1]);
+    }
+  });
+
+  it('keeps cork outlines identical regardless of the preceding tile damage', () => {
+    for (const targetHits of [3, 2, 1] as const) {
+      const signatures = ([3, 2, 1] as const).map((previousHits) => {
+        const { context, corks } = renderCorks(corkKeepCorks([previousHits, targetHits]));
+        const target = corks[1];
+        if (target === undefined) {
+          throw new Error('Cork Keep target cork missing');
+        }
+        return outlineSignature(context, target);
+      });
+
+      expect(signatures[1]).toBe(signatures[0]);
+      expect(signatures[2]).toBe(signatures[0]);
+    }
+  });
+
+  it('keeps each cork outline independent of tile render order', () => {
+    const corks = corkKeepCorks([3, 2, 1]);
+    const forward = renderCorks(corks);
+    const reversed = renderCorks([...corks].reverse());
+
+    const forwardSignatures = new Map(
+      forward.corks.map((cork) => [cork.id, outlineSignature(forward.context, cork)]),
+    );
+    for (const cork of reversed.corks) {
+      expect(outlineSignature(reversed.context, cork)).toBe(forwardSignatures.get(cork.id));
+    }
   });
 });
