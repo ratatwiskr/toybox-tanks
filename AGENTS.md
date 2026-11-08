@@ -1,157 +1,122 @@
 # Toybox Tanks — agent instructions
 
-## Mission
+## Mission and current scope
 
-Maintain a small browser-based couch-co-op tank game. Preserve reliable controls,
-readable one-bounce combat, original toy-like presentation, and forgiving local
-cooperation. Prefer a finished small game over speculative infrastructure.
+Maintain a small browser-based couch-co-op tank game. Reliable local two-player
+controls, readable one-bounce combat, toy-like presentation, and forgiving
+cooperation take priority over infrastructure or extra content.
 
-The current assignment is a behavior-preserving migration of the supplied HTML
-prototype to TypeScript with verified build/test guardrails. See `docs/handoff.md`
-(the canonical migration contract) and `docs/progress.md` for the active stage.
-Do not implement backlog features from `docs/backlog.md` without a separate task.
+The TypeScript migration is implemented. Automatic map borders are PR #14;
+destructible cork and a fourth campaign room are PR #15. Inspect the checkout
+and current GitHub state rather than assuming merge or push status. Read
+`docs/progress.md` for current evidence. Old migration/session handoffs are
+historical context, not permission to repeat completed work or push main.
 
-## Current repository stage
+ADR 0002 records the accepted cork mechanic and procedural rendering decision.
+Do not implement its superseded SVG proposal. The owner reported successful cork
+playtesting in the VS Code internal browser on 2026-11-08. Visual regression and
+comprehensive visual coverage of cork states are a separate issue, not pending
+implementation work for PR #15. No screenshot baselines are approved by this.
+Gate E is not declared complete.
 
-At the time of writing, the repository is at **Gate D (adapters, full rendering parity,
-UI/runtime, test bridge, and releases — complete and committed locally; push pending)**.
-Gates A, B, and C are committed as `25296e7`, `1c12fcf`, and `891fee4`; Gate D is `2cfbba8`
-and the Gate E handoff/asset plan is `7f3b448`. Both local commits are **not pushed**:
-`origin/main` is still at `891fee4`, and nono has no GitHub credential helper or readable
-SSH key, so the owner must push from a host terminal. The simulation
-matches the prototype's gameplay rules (sentry AI, one-bounce shells with remaining travel,
-corners, muzzle sweeping, damage/invulnerability, effects/events, shell caps/cooldowns, and
-terminal outcomes), and Gate D adds the gamepad adapter, aim/bounce/effect rendering, the
-typed test-only bridge, deterministic manual ticks, and release proof that the bridge is
-absent. The suite has 78 unit/architecture tests plus Chromium and WebKit browser coverage.
-The visual regression gate is still **pending human approval**: `test:visual` captures nine
-unapproved candidates only. Firefox is blocked locally by the nono sandbox and is exercised
-in CI instead. Gate E (harden and deliver) is next and is blocked on human decisions; follow
-`docs/gate-e-handoff.md`. Read `docs/progress.md` for the authoritative checkpoint and
-`docs/verification.md` for exact checks.
+## Before editing
 
-Drafted high-fidelity art is committed at the repository root under
-`Perplexity-assets-w-rden-perks-und-etwa-cas-angriffe-zum-spiel-passen-aspekte/` (and its
-`+handoff` twin). **None of it is integrated.** Adopting it is a separate, presentation-only
-task described in `docs/asset-integration-plan.md`; it requires the phase 0 decisions and
-human visual approval. Never change simulation, collision, controls, world size, or release
-behavior to fit the art.
-
-Always check `docs/progress.md` before assuming the stage; it is the authoritative
-checkpoint.
-
-## Read before editing
-
-- Read this file and any more-specific `AGENTS.md` affecting files you will change.
-- Read `docs/handoff.md`, `docs/session-handoff.md`, `docs/baseline.md`,
-  `docs/progress.md`, `docs/gate-e-handoff.md`, and `docs/backlog.md`. Read
-  `docs/architecture.md`, `docs/asset-integration-plan.md`, and relevant tests once they
-  exist.
-- Inspect the actual repository and existing user changes; do not overwrite them.
-- `reference/toybox-tanks.original.html` is the immutable behavioral/visual reference.
-  Do not edit, reformat, overwrite, or use it as runtime. `reference/toybox-tanks.html`
-  is the same supplied prototype and must also be preserved.
-- Do not create `docs/migration-handoff.md`; the canonical handoff is `docs/handoff.md`.
-  `toybox-tanks-opencode-handoff.md` is a byte-identical archive.
-- Make the smallest coherent change for the current stage. Update `docs/progress.md`.
+- Read this file, applicable nested instructions, `docs/progress.md`,
+  `docs/architecture.md`, `docs/verification.md`, relevant ADRs, and tests.
+- Consult `docs/handoff.md`, baseline, and historical migration documents when
+  needed to understand original behavior, not as current task queues.
+- Inspect existing user changes and preserve them. Make the smallest coherent
+  change for the explicitly assigned task; update progress with actual evidence.
+- `reference/toybox-tanks.original.html` and `reference/toybox-tanks.html` are
+  immutable references. Do not edit, reformat, overwrite, or load them as runtime.
+- Do not create `docs/migration-handoff.md`; `docs/handoff.md` is the original
+  migration contract and `toybox-tanks-opencode-handoff.md` its archive.
+- Do not implement backlog or asset-plan items without a separate assignment.
 
 ## Product invariants
 
-- Local two-player co-op is primary; solo creates exactly one real player.
-- Free 2D movement; independently aimed turret; aim persists after release.
-- Player shells hit enemies only; enemy shells hit players only; no shell-shell hits.
-- One wall bounce; second contact removes the shell. Use swept collision, earliest
-  impact, remaining travel, surface separation, and bounded processing.
-- Walls block tanks; tanks do not block or push tanks.
-- Three active player shells and two HP per room by default; preserve config.
-- Temporary post-hit invulnerability has clear feedback. Preserve the prototype's
-  observable contact-consumption behavior for invulnerable tanks.
-- Disabled players remain visible; one survivor can clear; next room restores both.
-- Same-tick defeat precedes victory. Commit outcome once and clear combat shells.
-- Restart resets all simulation and input-adapter state.
-- Preserve the three original maps and the full menu/pause/retry/clear/replay loop.
-- Keep fixed logical coordinates, aspect ratio, DPR-aware rendering, and readability.
-- Preserve keyboard activation of overlay buttons while preventing game-key defaults.
+- Local two-player co-op is primary; solo has exactly one actual player.
+- Free 2D movement, normalized diagonals, independent turret aim, persistent
+  direction after release, and fixed logical coordinates with aspect/DPR handling.
+- Player shells hit enemies only; enemy shells hit players only. No friendly
+  fire, shell-shell collision, or tank-tank blocking/pushing.
+- Ordinary shells get one permanent-wall bounce; the next contact removes them.
+  Sweep complete paths and muzzle travel, resolve earliest impact, preserve
+  remaining travel and surface separation, and bound processing. Keep conservative
+  ambiguous-corner termination. Cork absorbs qualifying contacts instead of
+  reflecting; preserve its separate three-hit contract from ADR 0002.
+- Preserve default shell limits, cooldowns, two HP per room, invulnerability,
+  visible feedback, and original invulnerable-tank contact behavior.
+- Disabled players stay visible; one survivor can finish; next room restores both.
+- Same-tick defeat wins over victory. Commit outcomes once, stop combat, and
+  clear shells. Restart resets all world and input-adapter state, including
+  IDs, timers, effects, and cross-device release gates.
+- Preserve the original three layouts/order and the appended fourth room.
+  Preserve menu, solo/co-op, pause, retry, transition, completion, and replay.
+- Preserve focus-loss/hidden-tab pause and input clearing, keyboard overlay
+  activation, and prevention of game-key browser defaults.
 
-## Architecture
+## Architecture and maps
 
-- `sim/` is DOM/Node-free gameplay code with explicit state, commands, and time.
-- No real-time reads, global randomness, device polling, drawing, or scheduling inside
-  simulation. Inject seeded randomness only if gameplay needs it.
-- Input produces commands; renderer reads state; app/runtime owns orchestration.
-- Rendering does not mutate gameplay. No alternate combat rules in UI or tests.
-- Keep maps/settings data-driven and validated. Reject invalid startup maps safely.
-- Small modules/plain data/functions; no ECS, DI framework, engine rewrite, networking,
-  generic plugin architecture, or speculative systems.
+- Simulation is DOM/Node-free with explicit world state, time, and commands. No
+  real-time reads, scheduling, device polling, drawing, or global randomness.
+  Inject reproducible randomness only when needed and reset it with the world.
+- Fixed simulation steps stay separate from rendering; bound catch-up work and
+  accumulated time after interruptions. Do not promise cross-platform float
+  determinism. Same supported-runtime inputs must reproduce state.
+- Input adapters emit commands; rendering only reads state; application code
+  orchestrates. No second combat/progression implementation in UI or tests.
+- Maps/config stay data-driven and validated. Author 22 × 11 interior grids and
+  generate the permanent border. Cork destruction must consistently affect
+  movement, shells, sight, and aim guides. Reject invalid startup maps safely.
+- Prefer small modules and plain data/functions. No engine/framework swap, ECS,
+  DI framework, networking, generic plugin system, or speculative infrastructure.
+- Preserve hosted and offline single-HTML releases without external resources.
+  Keep test bridges out of all production builds, even with `?test=1`.
 
-## Verification commands
+## Verification and guardrails
 
-The command names below are the required script contract from `docs/handoff.md`
-section 7. They are wired and exercised in Gate B. Do not claim a command passed until
-it has actually been run in the current state.
+- Focused tests while iterating; `npm run verify:fast`, `npm run verify`, and
+  `npm run test:browsers` as required by `docs/verification.md`. Run browser
+  suites sequentially. CI is authoritative, not the Git hook.
+- Never claim an unrun, skipped, or blocked check passed. Record tested SHA or
+  exact working-tree context, environment, commands, exits, artifacts, and limits.
+  Historical results do not prove a later head or rebased branch passes.
+- No `any`, broad casts, unchecked non-null assertions, ignored type errors,
+  ESLint disables, broad excludes, weakened assertions/coverage, or disabled
+  checks to make work pass. Explain any narrowly scoped exception for review.
+- Never silently change validation scripts, CI, guardrail configuration,
+  dependencies, lockfiles, or visual baselines. Obtain specific approval.
+- No automatic screenshot acceptance. An implementing model that cannot inspect
+  images must not approve aesthetics. Candidate capture is not visual regression.
+- Test critical collisions, hit assignment, simultaneous deaths, map errors,
+  reset independence, and reproducible sequences. Coverage alone is insufficient.
+- Use real keyboard/realtime smoke as well as controlled stepping. A Canvas
+  tank is not a DOM node; use structured state for mechanics and images for visuals.
+- Synthetic gamepads are not hardware verification. Automated WebKit is not
+  real Safari/iOS/device verification.
 
-- `npm run verify:fast` — formatting, lint, typecheck, unit/architecture checks.
-- `npm run verify` — complete local gate including coverage, browser/visual, and
-  release checks; consult `package.json` for the exact composition.
-- `npm run test:browsers` — hosted Chromium/Firefox/WebKit smoke matrix.
-- `npm run dev` — development server on loopback.
-- Use focused tests while iterating; run the required complete gates before claiming
-  completion. CI is authoritative, not the local Git hook.
-
-Environment specifics:
+## Environment and permissions
 
 - Node `24.22.2`, npm `11.19.1`, pinned via Volta; one npm lockfile.
-- Do **not** run `npm install`, `npm ci`, package updates, browser downloads, or OS
-  package installs. Dependencies and Playwright browsers are owner-installed.
-- `_start_opencode_with_nono.sh` sets a non-existent `PLAYWRIGHT_BROWSERS_PATH`; do not
-  modify the launcher. Prefix local Playwright commands with
-  `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright"`.
-- Firefox currently fails locally before page launch with
-  `Sandbox: CanCreateUserNamespace() unshare(CLONE_NEWPID): EPERM` /
-  `Could not find profile folder.` Report that exact blocker; do not weaken the sandbox.
-- Do not commit, push, alter remotes, or change branch protection unless explicitly
-  authorized.
+- Do not run `npm install`, `npm ci`, package updates, browser downloads, or OS
+  installs without separate authorization. Dependencies/browsers are owner-installed.
+- The local launcher sets a non-existent browser path. Do not edit it; prefix
+  Playwright commands with `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright"`.
+- Local Firefox may fail before launch with
+  `Sandbox: CanCreateUserNamespace() unshare(CLONE_NEWPID): EPERM` and
+  `Could not find profile folder.` Report the blocker; do not weaken the sandbox.
+- Keep browser/server work bounded and on loopback. Respect sandbox restrictions;
+  investigate a denied operation narrowly rather than seeking broad access.
+- Do not auto-stage unrelated changes, commit, push, rewrite history, alter
+  remotes, rebase, retarget, merge, deploy, or change branch protection without
+  explicit authorization. Check actual branch state before repository actions.
+- Final reports distinguish changes, deliberate behavior changes, checks actually
+  run, artifacts, pending work, and limitations.
 
-## Guardrails are requirements
+## Deferred work
 
-- No `any`, broad casts, unchecked non-null assertions, ignored type errors, ESLint
-  disables, broad excludes, weakened assertions/coverage, or disabled checks to make a
-  task pass. A reviewed, narrowly scoped exception is different.
-- Never silently alter validation scripts, CI, guardrail config, or screenshot
-  baselines. Explain and obtain approval when a policy change is needed.
-- Do not auto-accept visual snapshots. First baselines require human/vision review.
-  An implementing model that cannot see images must not approve aesthetics.
-- Do not add runtime/development packages without a concrete need; preserve the one npm
-  lockfile and compatible pinned versions.
-- Do not auto-stage unrelated changes, rewrite history, commit, or push unless
-  explicitly authorized by user/repository policy.
-
-## Test discipline
-
-- Prefer discrete invariants and geometric tolerances over fragile long float
-  snapshots. Tests fail on no tests and produce meaningful failures.
-- Deterministic browser hooks exist only in test builds; production must not expose
-  them, even with a test-looking URL parameter.
-- In test mode, manual ticks are the sole simulation clock. Also test real keyboard
-  input and ordinary real-time RAF scheduling.
-- A Canvas tank is not a DOM node. Use structured state/events for mechanics,
-  screenshots for visual evidence, and human/vision review for aesthetics.
-- Mocked gamepads do not prove physical controller compatibility. Automated WebKit does
-  not prove physical Safari/iOS/device support.
-
-## Environment and reporting
-
-- Respect sandbox restrictions. A harness denial notice may be a false positive; verify
-  with `nono why --self --path <path> --op <read|write>` before escalating. Never weaken
-  security or request broad access when a narrow missing permission can be identified.
-- Keep browser/server setup bounded, local, and reproducible; use loopback.
-- Record exact commands, exit status, remaining failures, and next task in
-  `docs/progress.md`. Never report an unavailable/skipped test as passed.
-- Final report: changes, behavior parity, justified fixes, checks actually run,
-  artifacts, blockers, pending visual approval, and known limitations.
-
-## Deferred scope
-
-Moving AI, fading tracks, rockets, contact/remote mines, cork destruction, audio, and
-new rooms are backlog, not permission to expand this migration. Preserve clear
-cooperative play and existing bank shots when implementing future tasks.
+Moving AI, fading tracks, rockets, mines, audio, additional rooms, and broader
+asset integration require separate tasks. Cork and room four are implemented
+feature scope, not deferred migration work. Supplied artwork stays untouched;
+never adjust gameplay geometry to fit it. See the asset plan for future decisions.
