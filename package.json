@@ -17,6 +17,7 @@
     "capture:visual": "PLAYWRIGHT_BROWSERS_PATH=\"$HOME/.cache/ms-playwright\" playwright test --config=playwright.catalogue.config.ts",
     "compare:visual": "PLAYWRIGHT_BROWSERS_PATH=\"$HOME/.cache/ms-playwright\" playwright test --config=playwright.review.config.ts",
     "report:visual": "playwright show-report playwright-report/visual-review --host 127.0.0.1",
+    "approve:visual": "playwright test --config=playwright.approval.config.ts",
     "typecheck": "tsc -p tsconfig.app.json && tsc -p tsconfig.sim.json && tsc -p tsconfig.tooling.json && tsc -p tsconfig.unit.json && tsc -p tsconfig.e2e.json && tsc -p tsconfig.fixtures.json",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint --fix",
