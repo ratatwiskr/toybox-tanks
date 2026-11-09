@@ -4,6 +4,8 @@ import { dirname } from 'node:path';
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 
+import type { ScenarioName } from '../../src/test-bridge';
+
 // Candidate captures only. These screenshots are NOT approved baselines and are
 // not compared against committed snapshots. A human/vision review must approve
 // them before any visual regression suite can be introduced.
@@ -16,7 +18,7 @@ async function capture(page: Page, name: string): Promise<string> {
   return path;
 }
 
-async function loadScene(page: Page, scenario: string): Promise<void> {
+async function loadScene(page: Page, scenario: ScenarioName): Promise<void> {
   await page.evaluate((name) => {
     const bridge = window.__TOYBOX_TEST__;
     if (bridge === undefined) {
