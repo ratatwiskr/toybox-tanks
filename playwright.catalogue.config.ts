@@ -14,13 +14,16 @@ if (!/^\d+$/.test(portText) || !Number.isInteger(port) || port < 1024 || port > 
 }
 const baseURL = `http://127.0.0.1:${String(port)}`;
 
-// Opt-in entry point for the existing visual tooling, not a verification gate.
-export default defineConfig(base, {
+// Replace projects explicitly; defineConfig(base, overrides) merges named projects.
+export default defineConfig({
+  ...base,
   fullyParallel: false,
   workers: 1,
+  retries: 0,
+  globalSetup: './tests/visual/catalogue.setup.ts',
   outputDir: 'test-results/catalogue',
   reporter: [['list'], ['html', { outputFolder: 'playwright-report/catalogue', open: 'never' }]],
-  use: { baseURL },
+  use: { ...base.use, baseURL },
   projects: [
     {
       ...visual,

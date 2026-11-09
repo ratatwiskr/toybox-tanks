@@ -1,54 +1,55 @@
-# Issue 18, slice 1: explicit local revision render catalogue
+# Issue 18, slice 1: capture-only revision catalogue
 
-## Owner-approved scope
+## Revised owner direction
 
-Provide stable-path, Git-trackable screenshots for human comparison of game
-revisions before introducing automated visual-baseline checks. Keep existing
-verification and baseline policy intact. Related issue: #18; do not close it with
-this slice. Branch starts from main dd2ac51c4eee1d9d92dbbb43c4a0d816b1be3a9e.
+Capture and overwrite current-state screenshots locally with one command. Do
+not block bulk capture on repeated-image equality or reference comparison.
+Automated visual regression belongs to a later iteration with a separate
+reviewed reference set. #18 stays open.
 
-Full application and arena crop for every campaign starting state, the existing
-representative UI/combat/outcome views, and focused synthetic cork/feedback
-fixtures. Use normal room initialization for campaign views; curated object
-placement through the existing test-only bridge for focused views. No new
-campaign content, editor, renderer, dependency, install or remote access.
+## Implemented approach, pending execution
 
-## Implementation and owner execution
+- `npm run capture:visual` selects only the catalogue project.
+- Port 5183 by default; validated `TOYBOX_CAPTURE_PORT` override.
+- Global setup removes only owned generated files in the dedicated catalogue
+  directory and writes an initial pending manifest/gallery.
+- Capture each scene once, retain its images/status and continue after failures.
+- Report expected/actual files and captured/failed/pending scenes; return nonzero
+  for incomplete captures or source changes during capture.
+- Retain controlled fixtures, production renderer, fixed environment, read-only
+  rendering checks, zero-tick campaign starts and runtime-error detection.
+- Preserve full/arena/detail coverage, metadata/hashes and stable Git paths.
+- Never stage, commit, install, change approved references or refresh implicitly.
 
-The opt-in entry point is `playwright.catalogue.config.ts`. Exact local command,
-outputs, provenance, gallery and Git review are documented in
-`docs/visual-catalogue/README.md`. The owner triggers captures with already-installed
-tooling. Capture must not run implicitly during ordinary verification or commits.
-The local agent does not need GitHub access; the owner pushes and relays CI.
+Full usage and cleanup semantics: `docs/visual-catalogue/README.md`. The local
+agent needs no GitHub access; the owner pushes and relays CI results.
 
-## Checklist
+## Evidence and limitations
 
-- [ ] Run formatter on changed files, then focused fixture/bridge/renderer tests.
-- [ ] Run `npm run verify:fast`; preserve all strict checks.
-- [ ] Run applicable full/browser/release gates sequentially per docs/verification.md.
-- [ ] In particular, verify test-only fixture strings/hooks are absent from hosted
-      and single-HTML production artifacts, and runtime bridge remains absent.
-- [ ] Owner runs the explicit local capture with installed Chromium.
-- [ ] Repeated independent captures match; every campaign room has zero-tick
-      starting state; full/arena/detail crops and purposes are sensible.
-- [ ] Open the offline gallery and inspect all images, especially empty destroyed
-      slot, isolated cracks, intact-after-damaged outlines and reflected aim.
-- [ ] Review/stage PNGs and matching manifest explicitly, not as approved baselines.
-- [ ] Record exact revision/dirty tree, environment, commands, exits, artifacts and
-      limitations in docs/progress.md after actual execution.
+Owner logs show that the dedicated-port server starts and the isolated project
+runs. The previous implementation failed on differing menu PNG hashes. This
+rework removes that repeat-image gate at the owner's explicit request; it does
+not diagnose or claim to repair the underlying pixel variation. The remote
+branch did not contain the owner's local diagnostic-loop edits when inspected.
+Preserve that local diff before integrating this replacement.
 
-## Evidence at implementation preparation
+No formatter, Node, TypeScript, lint, unit, browser, capture or release command
+was executed in this API session. Fresh CI and owner-local capture are required.
+No successful bulk capture, aesthetic approval or regression gate is claimed.
 
-The branch and source files were inspected through GitHub. No Node, formatter,
-linter, compiler, Vitest, Playwright, browser, capture or release command was run
-in this API session. No installation, screenshot capture, aesthetic acceptance,
-baseline approval or merge is claimed. CI feedback and owner-local captures are
-pending. Existing historical green results do not verify this new implementation.
+## Verification checklist
 
-## Stop conditions
+- [ ] Format changed files and run `npm run verify:fast`.
+- [ ] Run applicable full/browser/release gates sequentially, preserving all checks.
+- [ ] Verify only catalogue tests are discovered by the local capture config.
+- [ ] Owner captures all current scenes with one command.
+- [ ] Confirm a failed scene is reported without hiding other scene captures.
+- [ ] Confirm a subsequent run removes stale owned PNGs, not unrelated files.
+- [ ] Confirm production/file:// releases contain no test hooks or fixtures.
+- [ ] Review generated images and matching manifest; keep reference approval separate.
+- [ ] Record source context, environment, commands, exits, artifacts and limits in
+      docs/progress.md after actual verification.
 
-Report missing dependencies/browser, port conflicts, sandbox restrictions,
-nonrepeatable captures, stale scene paths or incompatible capture environments.
-Do not install, weaken assertions, change CI, add tolerances, auto-approve PNGs or
-alter release/gameplay behavior to make capture work. This first slice does not
-implement all of the original issue's automated-regression acceptance criteria.
+Do not alter gameplay, artwork, dependencies, CI, thresholds or existing tests
+to make capture pass. Report missing tools, port/sandbox failures and partial
+captures honestly. No automatic baseline approval or issue closure.

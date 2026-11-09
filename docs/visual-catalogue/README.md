@@ -1,82 +1,99 @@
-# Local revision render catalogue
+# Local screenshot catalogue: capture, overwrite, review
 
-First slice of #18: reproducible screenshots for human revision review, not
-approved automated-test baselines. This document and the generated `current/`
-PNG, HTML and JSON files are intended for Git tracking. No PNGs have been
-captured or approved by the implementation commit.
+This is the capture-only first slice of #18. Images document what the game
+rendered; they are not approved visual-regression references. No repeat-image
+comparison, reference comparison, pixel tolerance or automatic approval runs.
 
-## Explicit local capture
+## One command
 
-Use the existing owner-installed dependencies and Chromium. From the repository
-root, with port 5173 free:
+From the repository root, using already-installed dependencies and Chromium:
 
 ```sh
-PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" \
-  ./node_modules/.bin/playwright test --config=playwright.catalogue.config.ts
+npm run capture:visual
 ```
 
-This does not install anything or need GitHub access. The local configuration
-reuses the existing Playwright visual project and test-mode app, starts a fresh
-loopback server, and does not reuse an unrelated running checkout. Ordinary
-`verify`, `test:visual`, commits and CI do not refresh this catalogue.
+The command is isolated to the catalogue project. It starts a fresh test-mode
+server on loopback port 5183 and does not reuse another running checkout.
+Override an occupied capture port explicitly:
 
-Open `docs/visual-catalogue/current/index.html` directly in a browser. Its assets
-are relative and work offline. Inspect and explicitly stage the generated
-catalogue files when you want to preserve this revision's render in Git. The
-capture command never stages, commits, pushes or approves screenshots.
+```sh
+TOYBOX_CAPTURE_PORT=5193 npm run capture:visual
+```
 
-## Coverage and semantics
+No installation, GitHub access, manual cleanup, staging or commit is performed.
+Ordinary verification, CI and commits do not refresh these images.
 
-- Existing menu, co-op, active-shot, disabled-player, pause, cleared, defeat,
-  completed and resized views.
-- Every current campaign map, discovered from `MAPS`, initialized through the
-  existing room bridge with co-op defaults and zero simulation ticks. Stable IDs
-  derive from map names rather than campaign positions. Renaming maps is an
-  intentional catalogue-path change requiring review.
-- Curated synthetic cork atlas (3/2/1/0 hits), isolated damage, adjacent mixed
-  stages, reversed iteration, blocked/cleared/reflected aiming, and combat feedback.
-- Every scene has full-viewport and arena crops. Synthetic scenes also have a
-  fixed logical detail crop. Labels/purposes are in the gallery, not painted over
-  gameplay. The destroyed atlas slot is the fourth slot and intentionally empty.
-- Arena captures are screen-space crops of the normal application, including any
-  overlay covering the arena. They are not alternate rendering or enlarged game
-  geometry. All crops use the production renderer at actual playing scale.
+## Fresh output and partial failures
 
-Two independent page loads must produce identical PNG bytes and copied state
-within the same capture environment. Simulation is owned by the test bridge;
-fonts and rendering frames are awaited without sleeps. Actual gamepads are
-neutralized for capture. Rendering/capture must not change copied gameplay state.
-These checks establish capture repeatability, not aesthetic correctness or
-behavioral transitions. Existing gameplay and renderer tests remain separate.
+Once global setup starts, it removes only directly contained generated scene PNGs,
+gallery and manifest files from `docs/visual-catalogue/current/`. It never recursively
+deletes that directory, other reports, source files or future reference images.
+Commit or back up any uncommitted captures you need before starting another run.
+Git history remains the archive of committed captures. Do not run two captures
+concurrently in the same checkout.
 
-## Provenance and review
+A fresh gallery and manifest initially mark all expected scenes pending. Each
+scene is captured once. Its PNGs and status are written immediately, and capture
+continues after an individual scene failure. Partial images remain available
+under a FAILED scene, never mislabeled as a complete capture.
 
-`manifest.json` records source HEAD, dirty source status, a fingerprint of tracked
-and nonignored untracked source files, browser/tool/runtime/OS settings, each
-scene's purpose/state/viewport and image SHA-256 hashes. The catalogue directory
-is excluded from source provenance to avoid captures making themselves dirty.
-There is no volatile capture timestamp. A dirty capture describes the recorded
-working tree, not an unqualified claim about HEAD. Ignored files and environment
-remain outside the source-tree hash; use normal repository inputs.
+Open `docs/visual-catalogue/current/index.html` directly in a browser. It shows
+CAPTURED, FAILED and PENDING scenes with errors and available images. The manifest
+lists expected filenames, actual image hashes, copied world state and source/
+environment provenance. A successful run has `finished: true` and `complete: true`.
+Scene/runtime failures return a nonzero exit after attempting the other scenes.
+If interrupted, the last persisted status remains incomplete. A configuration or
+server failure before global setup may leave the previous catalogue untouched;
+a CLI failure is never proof of a fresh complete capture.
 
-New captures overwrite stable PNG paths. Compare them with the committed version
-using your Git-aware image viewer; ordinary textual `git diff` only reports PNGs
-as binary. Commit the manifest with the images. The HTML gallery is current-state
-review, not a custom before/after/diff engine. Git history is the revision archive.
+Playwright's own output cleanup applies to temporary test artifacts, not this
+Git-tracked catalogue. No `git clean` is necessary.
 
-All scenes are captured and checked in ignored staging output before publication.
-A capture/stability failure leaves the previous catalogue untouched. A filesystem
-failure during publication leaves no complete manifest; rerun before reviewing.
-Unexpected stale PNGs cause failure instead of silently deleting old scene evidence.
-Review removals/renames, remove the stale files explicitly, then rerun capture.
+## Coverage and capture controls
 
-Use the same local environment when comparing revisions. Different OS/browser/font
-settings can cause pixel differences and must be disclosed, not hidden with broad
-tolerances. No cross-machine identity or successful local run is claimed yet.
+The catalogue retains the nine representative application views, every campaign
+map's real co-op starting state, and synthetic cork/feedback fixtures. Campaign
+views use normal initialization with zero ticks. Cork fixtures cover all four
+stages including an empty destroyed slot, isolated damage, mixed adjacency,
+reversed draw order, blocked/cleared/reflected aiming and frozen combat feedback.
 
-## Deferred
+Every scene has full-view and arena PNGs; synthetic fixtures also have a detail
+crop. Labels stay in the gallery, outside gameplay. Arena crops include overlays
+where normally visible. Stable map paths derive from map names, not room indices.
 
-Automated comparison against approved images, baseline promotion/approval policy,
-visual failure thresholds, mutation demonstrations and broader device coverage
-remain later slices of #18. Committing this revision catalogue approves none of
-those images as baselines and does not complete the existing visual gate.
+Simulation time, placements and effects remain controlled through the existing
+test-only bridge and production renderer. Viewport, DPR and browser preferences
+are fixed; fonts/render frames are awaited without sleeps. Keyboard-focus modality
+is established explicitly. Actual gamepads are neutralized. Rendering/capture
+read-only checks, room-start invariants and runtime-error checks remain active.
+
+These controls do not establish pixel-identical repeated output. The earlier
+menu mismatch remains undiagnosed; removing its comparison is an intentional
+capture-only scope change, not a claim to have fixed it.
+
+## Git tracking
+
+Keep the images in their generated location and review before committing:
+
+```sh
+git status --short -- docs/visual-catalogue/current/
+git add -- docs/visual-catalogue/current/
+git diff --cached --stat
+```
+
+Stage the matching manifest and gallery with the PNGs. An incomplete run can
+show deleted/missing images because old captures are intentionally removed.
+Do not commit it as a complete catalogue. Inspect deletions from scene renames
+or removals deliberately. Do not track `test-results/` or `playwright-report/`.
+
+The source fingerprint includes tracked and nonignored untracked files but
+excludes this catalogue directory to avoid self-dirtying. Dirty source status
+is recorded; HEAD alone does not identify a dirty capture. No volatile capture
+timestamp is added. Use the same OS/browser/fonts for meaningful human comparison.
+
+## Later iteration
+
+Automated visual regression will use a separate, explicitly reviewed reference
+set. This command never deletes or updates such references. Baseline approval,
+promotion, image-diff guards and exact-pixel stability investigation remain
+separate work. Existing gameplay tests and visual approval policy are unchanged.
