@@ -1,7 +1,8 @@
 import { CONFIG } from './config';
 import { MAPS } from './sim/maps';
-import type { Command, Effect, Mode, Shell, Tank, Wall, World } from './sim/types';
+import type { Command, Cork, Effect, Mode, Shell, Tank, Wall, World } from './sim/types';
 import { createEmptyWorld, createWorld, evaluateOutcome, stepWorld } from './sim/world';
+import { createVisualWorld, type VisualSceneId } from './visual-scenes';
 
 // The typed automation surface exists only in the dedicated test build. It
 // exposes curated scenarios and stable snapshots, never the mutable world.
@@ -77,6 +78,7 @@ export interface TestSnapshot {
   readonly shots: number;
   readonly bounces: number;
   readonly walls: readonly Wall[];
+  readonly corks: readonly Cork[];
   readonly players: readonly TankSnapshot[];
   readonly enemies: readonly TankSnapshot[];
   readonly shells: readonly ShellSnapshot[];
@@ -97,6 +99,7 @@ export interface TestBridgeHost {
 
 export interface ToyboxTestBridge {
   loadScenario(name: ScenarioName, options?: ScenarioOptions): TestSnapshot;
+  loadVisualScene(name: VisualSceneId): TestSnapshot;
   advanceTicks(count: number, options?: AdvanceOptions): TestSnapshot;
   snapshot(): TestSnapshot;
   events(): readonly string[];
@@ -169,6 +172,7 @@ export function snapshotWorld(world: World): TestSnapshot {
     shots: world.shots,
     bounces: world.bounces,
     walls: world.walls.map((wall) => ({ ...wall })),
+    corks: world.corks.map((cork) => ({ ...cork })),
     players: world.players.map(snapshotTank),
     enemies: world.enemies.map(snapshotTank),
     shells: world.shells.map(snapshotShell),
@@ -297,6 +301,14 @@ export function createTestBridge(host: TestBridgeHost): ToyboxTestBridge {
       const world = scenarioWorld(name, options);
       host.replaceWorld(world);
       host.takeClock();
+      return snapshotWorld(host.getWorld());
+    },
+
+    loadVisualScene(name): TestSnapshot {
+      const world = createVisualWorld(name);
+      host.takeClock();
+      host.replaceWorld(world);
+      host.sync();
       return snapshotWorld(host.getWorld());
     },
 
