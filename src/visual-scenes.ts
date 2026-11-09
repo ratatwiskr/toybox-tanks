@@ -4,14 +4,36 @@ import { createTank, createWorld } from './sim/world';
 
 // Curated test-build fixtures, never campaign rooms or a second renderer.
 export const VISUAL_SCENES = [
-  { id: 'cork-atlas', purpose: 'Left to right: 3, 2, 1, 0 hits; the last slot is intentionally empty.' },
-  { id: 'cork-isolated', purpose: 'Isolated damaged tiles with floor around cracks, chips, and shadows.' },
-  { id: 'cork-adjacent', purpose: 'Adjacent 3, 2, 1, 3 hit tiles; intact follows heavily damaged.' },
-  { id: 'cork-reversed', purpose: 'Same spatial arrangement as cork-adjacent, reversed draw iteration.' },
+  {
+    id: 'cork-atlas',
+    purpose: 'Left to right: 3, 2, 1, 0 hits; the last slot is intentionally empty.',
+  },
+  {
+    id: 'cork-isolated',
+    purpose: 'Isolated damaged tiles with floor around cracks, chips, and shadows.',
+  },
+  {
+    id: 'cork-adjacent',
+    purpose: 'Adjacent 3, 2, 1, 3 hit tiles; intact follows heavily damaged.',
+  },
+  {
+    id: 'cork-reversed',
+    purpose: 'Same spatial arrangement as cork-adjacent, reversed draw iteration.',
+  },
   { id: 'cork-aim-blocked', purpose: 'Primary aim stops at intact cork.' },
-  { id: 'cork-aim-cleared', purpose: 'Same placement as blocked aim, but destroyed cork is open floor.' },
-  { id: 'cork-aim-reflected', purpose: 'Primary guide reaches wood; reflected guide stops at cork.' },
-  { id: 'combat-feedback', purpose: 'Frozen invulnerability, sentry telegraph, shell factions, bounce ring, spark and poof.' },
+  {
+    id: 'cork-aim-cleared',
+    purpose: 'Same placement as blocked aim, but destroyed cork is open floor.',
+  },
+  {
+    id: 'cork-aim-reflected',
+    purpose: 'Primary guide reaches wood; reflected guide stops at cork.',
+  },
+  {
+    id: 'combat-feedback',
+    purpose:
+      'Frozen invulnerability, sentry telegraph, shell factions, bounce ring, spark and poof.',
+  },
 ] as const;
 
 export type VisualSceneId = (typeof VISUAL_SCENES)[number]['id'];
@@ -41,10 +63,7 @@ export function createVisualWorld(name: VisualSceneId): World {
       wall.y === CONFIG.gridY ||
       wall.y === CONFIG.gridY + (CONFIG.rows - 1) * CONFIG.tile,
   );
-  world.players = [
-    createTank('p1', 'player', 200, 270),
-    createTank('p2', 'player', 800, 450),
-  ];
+  world.players = [createTank('p1', 'player', 200, 270), createTank('p2', 'player', 800, 450)];
   world.enemies = [createTank('s0', 'enemy', 800, 130)];
   world.corks = [];
   world.events = [`Synthetic visual fixture: ${name}`];
@@ -89,9 +108,39 @@ export function createVisualWorld(name: VisualSceneId): World {
       first.invuln = CONFIG.postHitInvulnerability;
       enemy.charge = CONFIG.enemyTelegraph / 2;
       world.shells = [
-        { id: 0, owner: 'p1', faction: 'player', x: 360, y: 200, vx: 330, vy: 0, bounces: 0, dead: false },
-        { id: 1, owner: 'p2', faction: 'player', x: 440, y: 200, vx: 0, vy: -330, bounces: 1, dead: false },
-        { id: 2, owner: 's0', faction: 'enemy', x: 520, y: 200, vx: -200, vy: 0, bounces: 0, dead: false },
+        {
+          id: 0,
+          owner: 'p1',
+          faction: 'player',
+          x: 360,
+          y: 200,
+          vx: 330,
+          vy: 0,
+          bounces: 0,
+          dead: false,
+        },
+        {
+          id: 1,
+          owner: 'p2',
+          faction: 'player',
+          x: 440,
+          y: 200,
+          vx: 0,
+          vy: -330,
+          bounces: 1,
+          dead: false,
+        },
+        {
+          id: 2,
+          owner: 's0',
+          faction: 'enemy',
+          x: 520,
+          y: 200,
+          vx: -200,
+          vy: 0,
+          bounces: 0,
+          dead: false,
+        },
       ];
       world.nextShell = 3;
       world.shots = 3;

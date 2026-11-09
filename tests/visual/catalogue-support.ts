@@ -57,7 +57,10 @@ export function captureScenes(): CaptureScene[] {
       viewport: { width: 1280, height: 720 },
     },
     ...MAPS.map((map, room) => ({
-      id: `campaign-${map.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}-start`,
+      id: `campaign-${map.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')}-start`,
       purpose: `${map.name}: real co-op room initialization, zero ticks and intact terrain.`,
       scenario: 'room' as const,
       options: { room, mode: 'coop' as const },
@@ -110,7 +113,13 @@ export async function sourceProvenance(): Promise<{
   readonly sourceTreeSha256: string;
 }> {
   const paths = git([
-    'ls-files', '--cached', '--others', '--exclude-standard', '-z', '--', ...sourcePaths,
+    'ls-files',
+    '--cached',
+    '--others',
+    '--exclude-standard',
+    '-z',
+    '--',
+    ...sourcePaths,
   ]);
   const digest = createHash('sha256');
   for (const path of [...new Set(paths.split('\0').filter(Boolean))].sort()) {
@@ -186,7 +195,8 @@ export async function writeCatalogue(
   finished: boolean,
   runError: string | null = null,
 ): Promise<void> {
-  const complete = finished && runError === null && records.every((record) => record.status === 'captured');
+  const complete =
+    finished && runError === null && records.every((record) => record.status === 'captured');
   const manifest = {
     schema: 2,
     role: 'revision-render-catalogue-not-approved-baselines',
@@ -201,18 +211,26 @@ export async function writeCatalogue(
       expectedFiles: imageKinds(record.scene).map((kind) => `${record.scene.id}.${kind}.png`),
     })),
   };
-  const sections = records.map((record) => {
-    const heading = `<h2>${escape(record.scene.id)}: ${record.status.toUpperCase()}</h2>`;
-    const purpose = `<p>${escape(record.scene.purpose)}</p>`;
-    const error = record.error === null ? '' : `<pre>${escape(record.error)}</pre>`;
-    const images = record.images.map((image) =>
-      `<h3>${escape(image.file)}</h3><img loading="lazy" src="${escape(image.file)}" alt="${escape(image.file)}"><p>SHA-256: <code>${image.sha256}</code></p>`,
-    ).join('');
-    return `<section>${heading}${purpose}${error}${images}</section>`;
-  }).join('');
+  const sections = records
+    .map((record) => {
+      const heading = `<h2>${escape(record.scene.id)}: ${record.status.toUpperCase()}</h2>`;
+      const purpose = `<p>${escape(record.scene.purpose)}</p>`;
+      const error = record.error === null ? '' : `<pre>${escape(record.error)}</pre>`;
+      const images = record.images
+        .map(
+          (image) =>
+            `<h3>${escape(image.file)}</h3><img loading="lazy" src="${escape(image.file)}" alt="${escape(image.file)}"><p>SHA-256: <code>${image.sha256}</code></p>`,
+        )
+        .join('');
+      return `<section>${heading}${purpose}${error}${images}</section>`;
+    })
+    .join('');
   const html = `<!doctype html><html lang="en"><meta charset="utf-8"><title>Toybox Tanks captures</title><style>body{font:16px system-ui;margin:2rem;background:#f3ebdc;color:#242424}section{margin:3rem 0}img{display:block;max-width:100%;height:auto;margin:1rem 0;border:1px solid #777}pre,code{white-space:pre-wrap;overflow-wrap:anywhere}</style><h1>${complete ? 'Complete capture' : 'INCOMPLETE capture'}</h1><p>No image comparisons or baseline approval performed.</p><p>Source: <code>${escape(source.revision)}</code>; ${source.sourceStatus === '' ? 'source clean' : 'source dirty; see manifest'}.</p><p>${String(records.filter((record) => record.status === 'captured').length)} captured; ${String(records.filter((record) => record.status === 'failed').length)} failed; ${String(records.filter((record) => record.status === 'pending').length)} pending.</p><pre>${escape(runError ?? '')}</pre>${sections}</html>\n`;
   await writeFile(join(catalogueOutput, 'index.html.tmp'), html);
   await rename(join(catalogueOutput, 'index.html.tmp'), join(catalogueOutput, 'index.html'));
-  await writeFile(join(catalogueOutput, 'manifest.json.tmp'), `${JSON.stringify(manifest, null, 2)}\n`);
+  await writeFile(
+    join(catalogueOutput, 'manifest.json.tmp'),
+    `${JSON.stringify(manifest, null, 2)}\n`,
+  );
   await rename(join(catalogueOutput, 'manifest.json.tmp'), join(catalogueOutput, 'manifest.json'));
 }

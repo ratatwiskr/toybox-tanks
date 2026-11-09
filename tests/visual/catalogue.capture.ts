@@ -13,7 +13,10 @@ import {
   writeCatalogue,
 } from './catalogue-support';
 
-test('captures every catalogue scene once without image comparisons', async ({ context, browser }, testInfo) => {
+test('captures every catalogue scene once without image comparisons', async ({
+  context,
+  browser,
+}, testInfo) => {
   test.setTimeout(300_000);
   const records = pendingRecords();
   const source = await sourceProvenance();
@@ -61,7 +64,11 @@ test('captures every catalogue scene once without image comparisons', async ({ c
             }
             await document.fonts.ready;
             await new Promise<void>((resolve) => {
-              requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+              requestAnimationFrame(() =>
+                requestAnimationFrame(() => {
+                  resolve();
+                }),
+              );
             });
             bridge.render();
           }, scene);
@@ -77,7 +84,9 @@ test('captures every catalogue scene once without image comparisons', async ({ c
             expect(state.ticks).toBe(0);
             expect(state.shells).toHaveLength(0);
             expect(state.effects).toHaveLength(0);
-            expect(state.corks.every((cell) => cell.hitsRemaining === 3 && !cell.destroyed)).toBe(true);
+            expect(state.corks.every((cell) => cell.hitsRemaining === 3 && !cell.destroyed)).toBe(
+              true,
+            );
           }
           const canvas = page.locator('#game');
           await expect(canvas).toBeVisible();
@@ -100,15 +109,18 @@ test('captures every catalogue scene once without image comparisons', async ({ c
           await save('full', await page.screenshot(settings));
           await save('arena', await page.screenshot({ ...settings, clip: box }));
           if (scene.fixture !== undefined) {
-            await save('detail', await page.screenshot({
-              ...settings,
-              clip: {
-                x: box.x + (160 / CONFIG.width) * box.width,
-                y: box.y + (120 / CONFIG.height) * box.height,
-                width: (560 / CONFIG.width) * box.width,
-                height: (300 / CONFIG.height) * box.height,
-              },
-            }));
+            await save(
+              'detail',
+              await page.screenshot({
+                ...settings,
+                clip: {
+                  x: box.x + (160 / CONFIG.width) * box.width,
+                  y: box.y + (120 / CONFIG.height) * box.height,
+                  width: (560 / CONFIG.width) * box.width,
+                  height: (300 / CONFIG.height) * box.height,
+                },
+              }),
+            );
           }
           expect(await page.evaluate(() => window.__TOYBOX_TEST__?.snapshot())).toEqual(state);
           expect(errors, scene.id).toEqual([]);
@@ -125,9 +137,16 @@ test('captures every catalogue scene once without image comparisons', async ({ c
   }
 
   const unchanged = JSON.stringify(await sourceProvenance()) === JSON.stringify(source);
-  const runError = unchanged ? null : 'Source changed during capture; this is not a single-revision catalogue.';
+  const runError = unchanged
+    ? null
+    : 'Source changed during capture; this is not a single-revision catalogue.';
   await writeCatalogue(source, records, environment, true, runError);
-  const failed = records.filter((record) => record.status !== 'captured').map((record) => record.scene.id);
-  expect(failed, 'Incomplete capture; inspect the catalogue gallery and manifest for per-scene errors').toEqual([]);
+  const failed = records
+    .filter((record) => record.status !== 'captured')
+    .map((record) => record.scene.id);
+  expect(
+    failed,
+    'Incomplete capture; inspect the catalogue gallery and manifest for per-scene errors',
+  ).toEqual([]);
   expect(runError).toBeNull();
 });

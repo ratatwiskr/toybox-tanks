@@ -8,10 +8,5 @@ import {
 export default async function setup(): Promise<void> {
   const records = pendingRecords();
   await resetCatalogue();
-  await writeCatalogue(
-    await sourceProvenance(),
-    records,
-    { browser: 'not launched' },
-    false,
-  );
+  await writeCatalogue(await sourceProvenance(), records, { browser: 'not launched' }, false);
 }
