@@ -1,6 +1,29 @@
 # Toybox Tanks — current progress
 
-Updated: 2026-11-08
+Updated: 2026-11-09
+
+## In progress: independent tank body rotation (issue #1, draft PR #31)
+
+Branch feature/1-independent-body-rotation, based on main `f55cca2`. This slice is
+presentation-only: the body heading is derived after every fixed step from the
+distance a player actually moved and is stored outside `src/sim/**`. `Tank.angle`
+stays the only aim angle, and collision, muzzle, sight and gameplay snapshots are
+not touched. Replacing the procedural art with the supplied assets is a separate
+plan in issue #24.
+
+- Commits: `c9ed001` (heading module and unit tests) and `3eca155` (shared
+  `advanceWorld` step path in `main.ts` and `test-bridge.ts`, body/turret split in
+  `drawTank`, renderer and bridge tests).
+- Heading rules as implemented: movement below `MIN_BODY_TURN_DISTANCE` (10% of
+  the full-speed per-step distance) is ignored; fully blocked moves do not turn
+  the body; wall sliding follows the real path; sentries keep a fixed up-facing
+  body; disabled players keep their last heading; labels stay upright.
+- Checks: nothing was run locally for this slice. At 2026-11-09 21:22 UTC the
+  `verify` job on the draft PR was in progress and no result is recorded here.
+  Record the actual conclusion, run URL and tested head before claiming a pass.
+- Still open: owner decision on the turn threshold, candidate screenshots and
+  explicit visual approval, a real keyboard check of diagonals, wall sliding and
+  pause. No screenshot baseline is approved and Gate E is not declared complete.
 
 ## Merged baseline: borders and cork
 
@@ -57,7 +80,14 @@ Do not extend this to every state, reset, release, browser or physical device.
 Visual regression and comprehensive cork-state coverage remain separate work.
 No screenshot baseline is approved; Gate E is not declared complete.
 
-## Mobile/tablet feature: PR #17, not merged by this update
+## Mobile/tablet feature: PR #17 (merged)
+
+Status correction, checked through GitHub on 2026-11-09: PR #17 is closed and
+merged, and main contains the squash commit `dd2ac51` ("Add mobile support (#17)",
+2026-11-08 20:29:45 UTC). The local screenshot catalogue (#21) was merged on top
+as `f55cca2`. The sections below were written while #17 was still open and are
+kept as historical evidence. Post-merge production deployment and published-site
+smoke results were not inspected for this update.
 
 Branch: feature/solo-touch-controls, based on the merged cork baseline.
 Implemented on this branch: fixed touch pads, tick-only P1 commands, bounded
@@ -116,7 +146,10 @@ accepted, not as proof of all lifecycle cases, tablet/controller combinations
 or real Safari/iOS compatibility. No repeated layout acceptance is requested
 solely because tests/docs are added without runtime changes.
 
-### Remaining before merge recommendation
+### Remaining before merge recommendation (historical)
+
+This list was written before the merge. The merge itself is confirmed above; the
+final-head CI result for the input-safety batch is not recorded in this file.
 
 - Require fresh green CI on the final test/documentation head and inspect any
   failure. Current tests remain an execution claim only after actual results.

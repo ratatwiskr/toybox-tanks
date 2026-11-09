@@ -13,10 +13,15 @@ PR #15 is closed without merging; it is historical provenance, not an active
 stack to rebase or a pending implementation. Do not repeat the reconstruction,
 open another replacement PR, or reopen #15 as routine cleanup.
 
-PR #17 is the separate mobile/tablet input work on feature/solo-touch-controls.
-Do not infer that it is merged because cork is merged. Read docs/progress.md and
-the actual current PR/head for evidence. Old migration and session handoffs are
+PR #17 (mobile/tablet input) is squash-merged into main as `dd2ac51`, checked
+through GitHub on 2026-11-09; the local screenshot catalogue (#21) is merged too.
+Read docs/progress.md and the actual current PR/head for evidence rather than
+inferring status from branch names. Old migration and session handoffs are
 historical context, not permission to repeat completed work or push main.
+
+Independent tank body rotation (issue #1) is in draft PR #31; it is
+presentation-only and keeps `Tank.angle` as the only aim angle. Replacing the
+procedural art with the supplied assets is planned separately in issue #24.
 
 ADR 0002 records the accepted cork mechanic and procedural rendering decision.
 Do not implement its superseded SVG proposal. The owner reported successful cork
