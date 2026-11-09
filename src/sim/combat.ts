@@ -51,12 +51,151 @@ export function shoot(world: World, tank: Tank): boolean {
     dead: false,
   };
 
+  const spawnX = tank.x;
+  const spawnY = tank.y;
   world.shells.push(shell);
   tank.cooldown = tank.faction === 'player' ? CONFIG.firingCooldown : CONFIG.enemyFiringInterval;
   world.shots += 1;
   // Sweep all the way out of the barrel, never spawn beyond nearby terrain.
   advanceShell(world, shell, 23);
+  muzzleShellContact(world, shell, spawnX, spawnY);
   return true;
+}
+
+function segmentPointDistance(
+  ax: number,
+  ay: number,
+  bx: number,
+  by: number,
+  px: number,
+  py: number,
+): number {
+  const abx = bx - ax;
+  const aby = by - ay;
+  const apx = px - ax;
+  const apy = py - ay;
+  const lengthSquared = abx * abx + aby * aby;
+  if (lengthSquared < 1e-12) {
+    return Math.hypot(apx, apy);
+  }
+  const t = Math.max(0, Math.min(1, (apx * abx + apy * aby) / lengthSquared));
+  return Math.hypot(px - (ax + abx * t), py - (ay + aby * t));
+}
+
+// The muzzle sweep is short (23 px) and other shells have not advanced yet in
+// this step, so a segment-to-point check against their current position is a
+// bounded, conservative approximation of the swept interaction.
+function muzzleShellContact(world: World, shell: Shell, spawnX: number, spawnY: number): void {
+  if (shell.dead) {
+    return;
+  }
+  for (const other of world.shells) {
+    if (other === shell || other.dead) {
+      continue;
+    }
+    const distance = segmentPointDistance(spawnX, spawnY, shell.x, shell.y, other.x, other.y);
+    if (distance <= CONFIG.shellRadius * 2) {
+      shell.dead = true;
+      other.dead = true;
+      poof(world, (shell.x + other.x) / 2, (shell.y + other.y) / 2, 'spark');
+      record(world, 'Shells collided');
+      return;
+    }
+  }
+}
+
+export function resolveShellCollisions(world: World, dt: number): void {
+  const live = world.shells.filter((shell) => !shell.dead);
+  if (live.length < 2) {
+    return;
+  }
+
+  // Cap each shell's segment at its first terrain or tank contact so a wall,
+  // cork, or tank hit earlier in the step wins over a shell-shell collision.
+  const limits = new Map<number, number>();
+  for (const shell of live) {
+    const speed = Math.hypot(shell.vx, shell.vy);
+    if (speed < 1e-7) {
+      limits.set(shell.id, 0);
+      continue;
+    }
+    const dx = shell.vx * dt;
+    const dy = shell.vy * dt;
+    let limit = 1;
+    const terrain = firstTerrain(world, shell.x, shell.y, dx, dy);
+    if (terrain !== null) {
+      limit = Math.min(limit, terrain.t);
+    }
+    for (const tank of [...world.players, ...world.enemies]) {
+      if (!canHit(shell, tank)) {
+        continue;
+      }
+      const hit = rayCircle(shell.x, shell.y, dx, dy, tank);
+      if (hit !== null) {
+        limit = Math.min(limit, hit);
+      }
+    }
+    limits.set(shell.id, limit);
+  }
+
+  interface Candidate {
+    readonly a: Shell;
+    readonly b: Shell;
+    readonly t: number;
+  }
+
+  const candidates: Candidate[] = [];
+  for (let i = 0; i < live.length; i += 1) {
+    for (let j = i + 1; j < live.length; j += 1) {
+      const a = live[i];
+      const b = live[j];
+      const limit = Math.min(limits.get(a.id) ?? 0, limits.get(b.id) ?? 0);
+      if (limit <= 0) {
+        continue;
+      }
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const rvx = b.vx - a.vx;
+      const rvy = b.vy - a.vy;
+      const denom = rvx * rvx + rvy * rvy;
+      let t = 0;
+      if (denom > 1e-12) {
+        t = -(dx * rvx + dy * rvy) / denom;
+        t = Math.max(0, Math.min(1, t));
+      }
+      const closestX = dx + rvx * t;
+      const closestY = dy + rvy * t;
+      if (Math.hypot(closestX, closestY) <= CONFIG.shellRadius * 2 && (t < limit || limit >= 1)) {
+        candidates.push({ a, b, t });
+      }
+    }
+  }
+
+  // Earliest contact first; shell id breaks ties so the result does not depend
+  // on the shell array order.
+  candidates.sort((left, right) => left.t - right.t || left.a.id - right.a.id);
+
+  const collided = new Set<number>();
+  for (const candidate of candidates) {
+    if (collided.has(candidate.a.id) || collided.has(candidate.b.id)) {
+      continue;
+    }
+    collided.add(candidate.a.id);
+    collided.add(candidate.b.id);
+    poof(
+      world,
+      candidate.a.x + candidate.a.vx * dt * candidate.t,
+      candidate.a.y + candidate.a.vy * dt * candidate.t,
+      'spark',
+    );
+    record(world, 'Shells collided');
+  }
+
+  for (const shell of live) {
+    if (collided.has(shell.id)) {
+      shell.dead = true;
+    }
+  }
 }
 
 export function shellWallContact(world: World, shell: Shell, hit: WallHit): boolean {
