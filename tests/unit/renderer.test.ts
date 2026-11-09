@@ -250,8 +250,10 @@ function firstPlayer(world: World): Tank {
   return tank;
 }
 
+// Sentries share the shadow rectangle and style with players, but players are
+// drawn after them, so the last matching fill belongs to a player.
 function fillOf(context: RecordingContext, rect: RecordedRect, style: string): RecordedPath {
-  const found = context.fills.find(
+  const matches = context.fills.filter(
     (path) =>
       path.style === style &&
       path.rect !== null &&
@@ -260,6 +262,7 @@ function fillOf(context: RecordingContext, rect: RecordedRect, style: string): R
       path.rect.width === rect.width &&
       path.rect.height === rect.height,
   );
+  const found = matches[matches.length - 1];
   if (found === undefined) {
     throw new Error(`Expected fill ${style} not recorded`);
   }
