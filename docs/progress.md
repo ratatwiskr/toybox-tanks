@@ -1,6 +1,43 @@
 # Toybox Tanks — current progress
 
-Updated: 2026-11-08
+Updated: 2026-11-09
+
+## Independent tank body rotation (issue #1, PR #31)
+
+Branch feature/1-independent-body-rotation, based on main `f55cca2`. This slice is
+presentation-only: the body heading is derived after every fixed step from the
+distance a player actually moved and is stored outside `src/sim/**`. `Tank.angle`
+stays the only aim angle, and collision, muzzle, sight and gameplay snapshots are
+not touched. Replacing the procedural art with the supplied assets is a separate
+plan in issue #24.
+
+- Commits: `c9ed001` (heading module and unit tests), `3eca155` (shared
+  `advanceWorld` step path in `main.ts` and `test-bridge.ts`, body/turret split in
+  `drawTank`, renderer and bridge tests), `c0282ee` (docs) and `6d1b84b` (test-only
+  fix, see below).
+- Heading rules as implemented: movement below `MIN_BODY_TURN_DISTANCE` (10% of
+  the full-speed per-step distance) is ignored; fully blocked moves do not turn
+  the body; wall sliding follows the real path; sentries keep a fixed up-facing
+  body; disabled players keep their last heading; labels stay upright.
+- Local checks: none were run locally for this slice.
+- CI, observed through GitHub (job conclusions, not log audits): the first `verify`
+  run, started 21:24 UTC, failed one renderer test. The assertion matched a
+  sentry's shadow fill instead of the player's, because sentries are drawn first;
+  the production code was correct. Commit `6d1b84b` changed only the test helper
+  to take the last matching fill, with no assertion weakened. The `verify` job for
+  head `6d1b84b` then succeeded, finishing 2026-11-09 21:31 UTC:
+  https://github.com/ratatwiskr/toybox-tanks/actions/runs/42702862716/job/129452031059
+  The `deploy-pages` and `pages-smoke` jobs were skipped on the PR, not passed.
+  Later documentation-only commits need their own CI run.
+- Owner playtest: on 2026-11-09 the owner played the branch on Android in the Brave
+  browser through the playtest repository's GitHub Pages deployment and reported
+  that body rotation worked great. The exact deployed SHA was not supplied. This
+  covers touch play on one device and browser. It does not cover desktop keyboard
+  diagonals, wall sliding with two players, physical gamepads, real Safari/iOS,
+  or the `file://` single-HTML release.
+- Decisions: the turn threshold is implemented as proposed and was not separately
+  confirmed beyond the owner's request to merge. No screenshot candidates were
+  captured and no screenshot baseline is approved. Gate E is not declared complete.
 
 ## Merged baseline: borders and cork
 
@@ -57,7 +94,14 @@ Do not extend this to every state, reset, release, browser or physical device.
 Visual regression and comprehensive cork-state coverage remain separate work.
 No screenshot baseline is approved; Gate E is not declared complete.
 
-## Mobile/tablet feature: PR #17, not merged by this update
+## Mobile/tablet feature: PR #17 (merged)
+
+Status correction, checked through GitHub on 2026-11-09: PR #17 is closed and
+merged, and main contains the squash commit `dd2ac51` ("Add mobile support (#17)",
+2026-11-08 20:29:45 UTC). The local screenshot catalogue (#21) was merged on top
+as `f55cca2`. The sections below were written while #17 was still open and are
+kept as historical evidence. Post-merge production deployment and published-site
+smoke results were not inspected for this update.
 
 Branch: feature/solo-touch-controls, based on the merged cork baseline.
 Implemented on this branch: fixed touch pads, tick-only P1 commands, bounded
@@ -116,7 +160,10 @@ accepted, not as proof of all lifecycle cases, tablet/controller combinations
 or real Safari/iOS compatibility. No repeated layout acceptance is requested
 solely because tests/docs are added without runtime changes.
 
-### Remaining before merge recommendation
+### Remaining before merge recommendation (historical)
+
+This list was written before the merge. The merge itself is confirmed above; the
+final-head CI result for the input-safety batch is not recorded in this file.
 
 - Require fresh green CI on the final test/documentation head and inspect any
   failure. Current tests remain an execution claim only after actual results.

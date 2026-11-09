@@ -1,7 +1,8 @@
 import { CONFIG } from './config';
+import { advanceWorld } from './presentation/body-heading';
 import { MAPS } from './sim/maps';
 import type { Command, Cork, Effect, Mode, Shell, Tank, Wall, World } from './sim/types';
-import { createEmptyWorld, createWorld, evaluateOutcome, stepWorld } from './sim/world';
+import { createEmptyWorld, createWorld, evaluateOutcome } from './sim/world';
 import { createVisualWorld, type VisualSceneId } from './visual-scenes';
 
 // The typed automation surface exists only in the dedicated test build. It
@@ -215,7 +216,7 @@ function scenarioWorld(name: ScenarioName, options: ScenarioOptions): World {
       const player = world.players[0];
       if (player !== undefined) {
         player.angle = 0;
-        stepWorld(world, CONFIG.fixedStep, [
+        advanceWorld(world, CONFIG.fixedStep, [
           { x: 0, y: 0, turn: 0, fire: true },
           { x: 0, y: 0, turn: 0, fire: false },
         ]);
@@ -329,7 +330,7 @@ export function createTestBridge(host: TestBridgeHost): ToyboxTestBridge {
         const commands = Array.from({ length: world.players.length }, (_, index) =>
           normalizeCommand(source[index]),
         );
-        stepWorld(world, CONFIG.fixedStep, commands);
+        advanceWorld(world, CONFIG.fixedStep, commands);
       }
 
       host.sync();

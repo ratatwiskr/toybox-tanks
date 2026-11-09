@@ -1,4 +1,5 @@
 import { CONFIG } from '../config';
+import { bodyHeading } from '../presentation/body-heading';
 import { firstTerrain, isSolidCork, reflect } from '../sim/collision';
 import type { Cork, Effect, Shell, Tank, Wall, World } from '../sim/types';
 
@@ -315,11 +316,17 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
     const dark = isPlayer ? (blue ? '#226080' : '#9d5e27') : '#78384e';
     const light = isPlayer ? (blue ? '#8bd5ec' : '#ffd18b') : '#e4a2b9';
 
+    // The body art points up, while the heading is a direction angle (0 = east).
+    // Body and turret use separate absolute angles around the same pivot.
+    const bodyAngle = bodyHeading(tank) + Math.PI / 2;
+
     ctx.save();
     ctx.translate(tank.x, tank.y);
 
     if (!tank.alive) {
       ctx.globalAlpha = 0.8;
+      ctx.save();
+      ctx.rotate(bodyAngle);
       rounded(-17, -13, 34, 30, 7, '#9a8e79');
       rounded(-12, -12, 24, 24, 5, '#b1a38b', '#7e7769');
       ctx.lineWidth = 3;
@@ -330,6 +337,7 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
       ctx.moveTo(6, -6);
       ctx.lineTo(-6, 6);
       ctx.stroke();
+      ctx.restore();
       ctx.fillStyle = '#514e46';
       ctx.font = 'bold 9px system-ui';
       ctx.textAlign = 'center';
@@ -349,7 +357,15 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
       ctx.setLineDash([]);
     }
 
-    rounded(-17, -7, 34, 27, 7, '#53422830');
+    // The shadow keeps its world-space offset while its footprint turns.
+    ctx.save();
+    ctx.translate(0, 6);
+    ctx.rotate(bodyAngle);
+    rounded(-17, -13, 34, 27, 7, '#53422830');
+    ctx.restore();
+
+    ctx.save();
+    ctx.rotate(bodyAngle);
     rounded(-17, -13, 9, 27, 4, '#454e50');
     rounded(8, -13, 9, 27, 4, '#454e50');
     ctx.strokeStyle = '#87918a';
@@ -395,6 +411,7 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
     } else {
       ctx.fillRect(-9, 6, 5, 5);
     }
+    ctx.restore();
 
     ctx.save();
     ctx.rotate(tank.angle);

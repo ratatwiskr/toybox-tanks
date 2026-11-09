@@ -4,10 +4,11 @@ import { CONFIG } from './config';
 import { GamepadAdapter, type GamepadSource } from './input/gamepad';
 import { KeyboardAdapter } from './input/keyboard';
 import { createMobileControls, gamepadMode, gamepadSlot } from './input/mobile';
+import { advanceWorld } from './presentation/body-heading';
 import { createRenderer } from './render/renderer';
 import { MAPS } from './sim/maps';
 import type { Command, GameState, Mode, World } from './sim/types';
-import { activeShells, createEmptyWorld, createWorld, stepWorld } from './sim/world';
+import { activeShells, createEmptyWorld, createWorld } from './sim/world';
 import { installTestBridge } from './test-bridge';
 
 function requireElement(id: string): HTMLElement {
@@ -536,7 +537,7 @@ function frame(timestamp: number): void {
     let count = 0;
 
     while (accumulator >= CONFIG.fixedStep && count < CONFIG.maxSteps && isPlaying(world)) {
-      stepWorld(
+      advanceWorld(
         world,
         CONFIG.fixedStep,
         world.players.map((_, index) => readCommand(index)),

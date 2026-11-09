@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
+import { bodyHeading, updateBodyHeading } from '../../src/presentation/body-heading';
 import { createRenderer } from '../../src/render/renderer';
 import type { RenderCanvas, RenderContext } from '../../src/render/renderer';
-import type { Cork, World } from '../../src/sim/types';
+import type { Cork, Tank, World } from '../../src/sim/types';
 import { createWorld } from '../../src/sim/world';
 
 class StubContext implements RenderContext {
@@ -29,10 +30,10 @@ class StubContext implements RenderContext {
   ellipse(): void {}
   roundRect(_x: number, _y: number, _w: number, _h: number, _r?: number): void {}
   translate(): void {}
-  rotate(): void {}
+  rotate(_angle: number): void {}
   setTransform(): void {}
   setLineDash(): void {}
-  fillText(): void {}
+  fillText(_text: string, _x: number, _y: number): void {}
 }
 
 class StubCanvas implements RenderCanvas {
@@ -61,13 +62,34 @@ interface RecordedPath {
   readonly rect: RecordedRect | null;
   readonly style: string;
   readonly lineWidth: number;
+  readonly rotation: number;
+}
+
+interface RecordedText {
+  readonly text: string;
+  readonly rotation: number;
 }
 
 class RecordingContext extends StubContext {
   readonly strokes: RecordedPath[] = [];
   readonly fills: RecordedPath[] = [];
+  readonly texts: RecordedText[] = [];
   private points: Array<{ x: number; y: number }> = [];
   private rect: RecordedRect | null = null;
+  private rotation = 0;
+  private readonly savedRotations: number[] = [];
+
+  override save(): void {
+    this.savedRotations.push(this.rotation);
+  }
+
+  override restore(): void {
+    this.rotation = this.savedRotations.pop() ?? 0;
+  }
+
+  override rotate(angle: number): void {
+    this.rotation += angle;
+  }
 
   override beginPath(): void {
     this.points = [];
@@ -86,12 +108,17 @@ class RecordingContext extends StubContext {
     this.rect = { x, y, width, height };
   }
 
+  override fillText(text: string): void {
+    this.texts.push({ text, rotation: this.rotation });
+  }
+
   override stroke(): void {
     this.strokes.push({
       points: [...this.points],
       rect: this.rect,
       style: typeof this.strokeStyle === 'string' ? this.strokeStyle : '',
       lineWidth: this.lineWidth,
+      rotation: this.rotation,
     });
   }
 
@@ -101,6 +128,7 @@ class RecordingContext extends StubContext {
       rect: this.rect,
       style: typeof this.fillStyle === 'string' ? this.fillStyle : '',
       lineWidth: this.lineWidth,
+      rotation: this.rotation,
     });
   }
 }
@@ -206,6 +234,53 @@ function outlineSignature(context: RecordingContext, cork: Cork): string {
       JSON.stringify([path.style, path.lineWidth, path.rect?.width, path.rect?.height]),
     )
     .join('|');
+}
+
+const P1_BLUE = '#378ebb';
+const HULL: RecordedRect = { x: -12, y: -14, width: 24, height: 28 };
+const BARREL: RecordedRect = { x: 7, y: -3, width: 17, height: 6 };
+const SHADOW: RecordedRect = { x: -17, y: -13, width: 34, height: 27 };
+const WRECK: RecordedRect = { x: -17, y: -13, width: 34, height: 30 };
+
+function firstPlayer(world: World): Tank {
+  const tank = world.players[0];
+  if (tank === undefined) {
+    throw new Error('Player missing');
+  }
+  return tank;
+}
+
+// Sentries share the shadow rectangle and style with players, but players are
+// drawn after them, so the last matching fill belongs to a player.
+function fillOf(context: RecordingContext, rect: RecordedRect, style: string): RecordedPath {
+  const matches = context.fills.filter(
+    (path) =>
+      path.style === style &&
+      path.rect !== null &&
+      path.rect.x === rect.x &&
+      path.rect.y === rect.y &&
+      path.rect.width === rect.width &&
+      path.rect.height === rect.height,
+  );
+  const found = matches[matches.length - 1];
+  if (found === undefined) {
+    throw new Error(`Expected fill ${style} not recorded`);
+  }
+  return found;
+}
+
+function textOf(context: RecordingContext, text: string): RecordedText {
+  const found = context.texts.find((entry) => entry.text === text);
+  if (found === undefined) {
+    throw new Error(`Expected text ${text} not recorded`);
+  }
+  return found;
+}
+
+function renderRecorded(world: World): RecordingContext {
+  const canvas = new RecordingCanvas();
+  createRenderer(canvas).render(world);
+  return canvas.recording;
 }
 
 describe('renderer contract', () => {
@@ -338,5 +413,65 @@ describe('renderer contract', () => {
     for (const cork of reversed.corks) {
       expect(outlineSignature(reversed.context, cork)).toBe(forwardSignatures.get(cork.id));
     }
+  });
+});
+
+describe('tank body and turret rendering', () => {
+  it('draws a freshly spawned tank without any body rotation', () => {
+    const context = renderRecorded(createWorld(0, 'solo'));
+
+    expect(fillOf(context, HULL, P1_BLUE).rotation).toBe(0);
+    expect(fillOf(context, SHADOW, '#53422830').rotation).toBe(0);
+  });
+
+  it('turns the body by its heading and the barrel by the aim angle only', () => {
+    const world = createWorld(0, 'solo');
+    const tank = firstPlayer(world);
+    tank.angle = 1.2;
+    updateBodyHeading(tank, 1, 0);
+
+    const context = renderRecorded(world);
+
+    expect(fillOf(context, HULL, P1_BLUE).rotation).toBeCloseTo(Math.PI / 2, 9);
+    expect(fillOf(context, SHADOW, '#53422830').rotation).toBeCloseTo(Math.PI / 2, 9);
+    expect(fillOf(context, BARREL, P1_BLUE).rotation).toBeCloseTo(1.2, 9);
+  });
+
+  it('keeps the player label upright while the body is turned', () => {
+    const world = createWorld(0, 'solo');
+    updateBodyHeading(firstPlayer(world), 0, 1);
+
+    const context = renderRecorded(world);
+
+    expect(textOf(context, 'P1').rotation).toBe(0);
+  });
+
+  it('keeps a disabled player on its last heading with an upright OUT label', () => {
+    const world = createWorld(0, 'solo');
+    const tank = firstPlayer(world);
+    updateBodyHeading(tank, -1, 0);
+    tank.alive = false;
+    tank.hp = 0;
+
+    const context = renderRecorded(world);
+
+    expect(fillOf(context, WRECK, '#9a8e79').rotation).toBeCloseTo(Math.PI + Math.PI / 2, 9);
+    expect(textOf(context, 'P1 OUT').rotation).toBe(0);
+  });
+
+  it('does not change the body heading or the world when rendering repeatedly', () => {
+    const world = createWorld(0, 'coop');
+    const tank = firstPlayer(world);
+    updateBodyHeading(tank, 0, -1);
+    const heading = bodyHeading(tank);
+    const before = snapshot(world);
+    const renderer = createRenderer(new StubCanvas());
+
+    for (let frame = 0; frame < 5; frame += 1) {
+      renderer.render(world, frame % 2 === 0);
+    }
+
+    expect(bodyHeading(tank)).toBe(heading);
+    expect(snapshot(world)).toEqual(before);
   });
 });
