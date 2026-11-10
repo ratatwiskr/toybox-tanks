@@ -1,6 +1,7 @@
 import { CONFIG } from './config';
 import type { Cork, World } from './sim/types';
 import { createTank, createWorld } from './sim/world';
+import { createMotionWorld, isMotionScene, MOTION_SCENES } from './visual-motion-scenes';
 
 // Curated test-build fixtures, never campaign rooms or a second renderer.
 export const VISUAL_SCENES = [
@@ -34,6 +35,7 @@ export const VISUAL_SCENES = [
     purpose:
       'Frozen invulnerability, sentry telegraph, shell factions, bounce ring, spark and poof.',
   },
+  ...MOTION_SCENES,
 ] as const;
 
 export type VisualSceneId = (typeof VISUAL_SCENES)[number]['id'];
@@ -53,6 +55,9 @@ function cork(id: string, x: number, y: number, hitsRemaining: number): Cork {
 export function createVisualWorld(name: VisualSceneId): World {
   if (!VISUAL_SCENES.some((scene) => scene.id === name)) {
     throw new Error(`Unknown visual scene: ${name}`);
+  }
+  if (isMotionScene(name)) {
+    return createMotionWorld(name);
   }
 
   const world = createWorld(0, 'coop');
