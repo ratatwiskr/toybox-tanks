@@ -1,55 +1,56 @@
 import { CONFIG } from '../config';
-import { hasLOS } from './collision';
-import { shoot } from './combat';
-import type { Tank, World } from './types';
+import { moveTank } from './collision';
+import { advanceShell, resolveShellCollisions, shoot } from './combat';
+import { turnToward, updateEnemy } from './enemies';
+import { record } from './feedback';
+import { addMapBorder, MAPS, validateMap } from './maps';
+import type { Command, Faction, Mode, SimulationEvent, Tank, World } from './types';
 
-export function angleDelta(a: number, b: number): number {
-  return Math.atan2(Math.sin(b - a), Math.cos(b - a));
-}
+export { activeShells, damage, shoot } from './combat';
 
-export function turnToward(a: number, b: number, max: number): number {
-  const delta = angleDelta(a, b);
-  return a + Math.max(-max, Math.min(max, delta));
-}
+const NEUTRAL_COMMAND: Command = { x: 0, y: 0, turn: 0, fire: false };
 
-export function updateEnemy(world: World, enemy: Tank, dt: number): void {
+export function updateEnemy(world: World, enemy: Tank, dt: number, events?: SimulationEvent[]): void {
   if (!enemy.alive) {
     return;
   }
 
-  const visible = world.players
-    .filter((player) => player.alive && hasLOS(world, enemy, player))
-    .sort(
-      (a, b) => Math.hypot(a.x - enemy.x, a.y - enemy.y) - Math.hypot(b.x - enemy.x, b.y - enemy.y),
-    );
-  const target = visible[0];
+  enemy.cooldown = Math.max(0, enemy.cooldown - dt);
 
-  if (target === undefined) {
+  let target: Tank | null = null;
+  let best = Infinity;
+  for (const player of world.players) {
+    if (!player.alive) {
+      continue;
+    }
+    const distance = Math.hypot(player.x - enemy.x, player.y - enemy.y);
+    if (distance < best) {
+      best = distance;
+      target = player;
+    }
+  }
+
+  if (target === null) {
     enemy.charge = 0;
-    enemy.targetId = null;
     return;
   }
 
-  if (enemy.targetId !== target.id) {
+  enemy.targetId = target.id;
+  const wanted = Math.atan2(target.y - enemy.y, target.x - enemy.x);
+  enemy.angle = turnToward(enemy.angle, wanted, CONFIG.enemyTurnSpeed * dt);
+
+  if (enemy.cooldown > 0) {
     enemy.charge = 0;
-    enemy.targetId = target.id;
+    return;
   }
 
-  const aim = Math.atan2(target.y - enemy.y, target.x - enemy.x);
-  enemy.angle = turnToward(enemy.angle, aim, CONFIG.enemyTurnSpeed * dt);
-
-  if (enemy.cooldown <= 0 && Math.abs(angleDelta(enemy.angle, aim)) < 0.09) {
-    enemy.charge += dt;
-
-    if (enemy.charge >= CONFIG.enemyTelegraph) {
-      // Require actual barrel alignment and unobstructed shell-radius clearance
-      // at the firing instant. No prediction and no planned ricochets.
-      if (hasLOS(world, enemy, target)) {
-        shoot(world, enemy);
-      }
-      enemy.charge = 0;
+  enemy.charge += dt;
+  if (enemy.charge >= CONFIG.enemyChargeTime) {
+    // Require actual barrel alignment and unobstructed shell-radius clearance
+    // at the firing instant. No prediction and no planned ricochets.
+    if (hasLOS(world, enemy, target)) {
+      shoot(world, enemy, events);
     }
-  } else {
     enemy.charge = 0;
   }
 }

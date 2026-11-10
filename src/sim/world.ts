@@ -4,7 +4,7 @@ import { advanceShell, resolveShellCollisions, shoot } from './combat';
 import { turnToward, updateEnemy } from './enemies';
 import { record } from './feedback';
 import { addMapBorder, MAPS, validateMap } from './maps';
-import type { Command, Faction, Mode, Tank, World } from './types';
+import type { Command, Faction, Mode, SimulationEvent, Tank, World } from './types';
 
 export { activeShells, damage, shoot } from './combat';
 
@@ -108,12 +108,17 @@ export function createWorld(index: number, mode: Mode): World {
   return world;
 }
 
-function commitOutcome(world: World, state: 'defeat' | 'cleared' | 'completed'): void {
+function commitOutcome(
+  world: World,
+  state: 'defeat' | 'cleared' | 'completed',
+  events?: SimulationEvent[],
+): void {
   if (world.state !== 'playing') {
     return;
   }
 
   world.state = state;
+  events?.push({ type: 'outcome', state });
   world.shells.length = 0;
   for (const enemy of world.enemies) {
     enemy.charge = 0;
@@ -128,23 +133,28 @@ function commitOutcome(world: World, state: 'defeat' | 'cleared' | 'completed'):
   );
 }
 
-export function evaluateOutcome(world: World): void {
+export function evaluateOutcome(world: World, events?: SimulationEvent[]): void {
   if (world.state !== 'playing') {
     return;
   }
 
   if (world.players.every((player) => !player.alive)) {
-    commitOutcome(world, 'defeat');
+    commitOutcome(world, 'defeat', events);
   } else if (world.enemies.every((enemy) => !enemy.alive)) {
-    commitOutcome(world, world.room === MAPS.length - 1 ? 'completed' : 'cleared');
+    commitOutcome(world, world.room === MAPS.length - 1 ? 'completed' : 'cleared', events);
   }
 }
 
-export function stepWorld(world: World, dt: number, commands: readonly Command[] = []): void {
+export function stepWorld(
+  world: World,
+  dt: number,
+  commands: readonly Command[] = [],
+): SimulationEvent[] {
   if (world.state !== 'playing') {
-    return;
+    return [];
   }
 
+  const events: SimulationEvent[] = [];
   world.time += dt;
 
   for (const tank of [...world.players, ...world.enemies]) {
@@ -177,19 +187,19 @@ export function stepWorld(world: World, dt: number, commands: readonly Command[]
     }
 
     if (command.fire) {
-      shoot(world, player);
+      shoot(world, player, events);
     }
   });
 
   for (const enemy of world.enemies) {
-    updateEnemy(world, enemy, dt);
+    updateEnemy(world, enemy, dt, events);
   }
 
-  resolveShellCollisions(world, dt);
+  resolveShellCollisions(world, dt, events);
 
   for (const shell of world.shells) {
     if (!shell.dead) {
-      advanceShell(world, shell, Math.hypot(shell.vx, shell.vy) * dt);
+      advanceShell(world, shell, Math.hypot(shell.vx, shell.vy) * dt, events);
     }
   }
 
@@ -202,5 +212,6 @@ export function stepWorld(world: World, dt: number, commands: readonly Command[]
 
   // Do not short-circuit during projectile processing: defeat has priority
   // when the last enemy and last player fall in the same simulation step.
-  evaluateOutcome(world);
+  evaluateOutcome(world, events);
+  return events;
 }

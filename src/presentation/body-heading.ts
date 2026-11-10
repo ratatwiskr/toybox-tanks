@@ -1,5 +1,5 @@
 import { CONFIG } from '../config';
-import type { Command, Tank, World } from '../sim/types';
+import type { Command, SimulationEvent, Tank, World } from '../sim/types';
 import { stepWorld } from '../sim/world';
 
 // Body heading is presentation state. It is never read by the simulation and is
@@ -25,12 +25,16 @@ export function updateBodyHeading(tank: Tank, dx: number, dy: number): void {
 }
 
 // Single path for real-time play and manual test stepping: advance the
-// simulation, then derive each player's heading from the distance actually
-// travelled during that fixed step.
-export function advanceWorld(world: World, dt: number, commands: readonly Command[] = []): void {
+// simulation, derive each player's heading from the distance actually
+// travelled during that fixed step, and return that step's structured events.
+export function advanceWorld(
+  world: World,
+  dt: number,
+  commands: readonly Command[] = [],
+): SimulationEvent[] {
   const before = world.players.map((player) => ({ x: player.x, y: player.y }));
 
-  stepWorld(world, dt, commands);
+  const events = stepWorld(world, dt, commands);
 
   for (const [index, player] of world.players.entries()) {
     const start = before[index];
@@ -38,4 +42,6 @@ export function advanceWorld(world: World, dt: number, commands: readonly Comman
       updateBodyHeading(player, player.x - start.x, player.y - start.y);
     }
   }
+
+  return events;
 }
