@@ -2,6 +2,7 @@ import { CONFIG } from '../config';
 import { canHit, firstTerrain, rayCircle, reflect } from './collision';
 import type { TerrainHit, WallHit } from './collision';
 import { poof, record } from './feedback';
+import { firstShellContact } from './shell-contact';
 import type { Shell, Tank, World } from './types';
 
 export function activeShells(world: World, owner: string): number {
@@ -60,26 +61,25 @@ export function shoot(world: World, tank: Tank): boolean {
 }
 
 export function resolveShellCollisions(world: World, dt: number): void {
-  const live = world.shells.filter((shell) => !shell.dead);
+  if (!Number.isFinite(dt) || dt <= 0) {
+    return;
+  }
+
+  const live = world.shells.filter((shell) => !shell.dead).sort((a, b) => a.id - b.id);
   if (live.length < 2) {
     return;
   }
 
-  // Cap each shell's segment at its first terrain or tank contact so a wall,
-  // cork, or tank hit earlier in the step wins over a shell-shell collision.
+  // Terrain/tank fractions and pair fractions use the same normalized step.
+  // Infinity distinguishes no obstacle from an obstacle exactly at step end.
   const limits = new Map<number, number>();
   for (const shell of live) {
-    const speed = Math.hypot(shell.vx, shell.vy);
-    if (speed < 1e-7) {
-      limits.set(shell.id, 0);
-      continue;
-    }
     const dx = shell.vx * dt;
     const dy = shell.vy * dt;
-    let limit = 1;
+    let limit = Infinity;
     const terrain = firstTerrain(world, shell.x, shell.y, dx, dy);
     if (terrain !== null) {
-      limit = Math.min(limit, terrain.t);
+      limit = terrain.t;
     }
     for (const tank of [...world.players, ...world.enemies]) {
       if (!canHit(shell, tank)) {
@@ -110,52 +110,32 @@ export function resolveShellCollisions(world: World, dt: number): void {
       if (b === undefined) {
         continue;
       }
+      const t = firstShellContact(a, b, dt);
       const limit = Math.min(limits.get(a.id) ?? 0, limits.get(b.id) ?? 0);
-      if (limit <= 0) {
-        continue;
-      }
-      const dx = b.x - a.x;
-      const dy = b.y - a.y;
-      const rvx = b.vx - a.vx;
-      const rvy = b.vy - a.vy;
-      const denom = rvx * rvx + rvy * rvy;
-      let t = 0;
-      if (denom > 1e-12) {
-        t = -(dx * rvx + dy * rvy) / denom;
-        t = Math.max(0, Math.min(1, t));
-      }
-      const closestX = dx + rvx * t;
-      const closestY = dy + rvy * t;
-      if (Math.hypot(closestX, closestY) <= CONFIG.shellRadius * 2 && (t < limit || limit >= 1)) {
+      // Preserve conservative terrain/tank priority for nearly equal times.
+      if (t !== null && t < limit - 1e-7) {
         candidates.push({ a, b, t });
       }
     }
   }
 
-  // Earliest contact first; shell id breaks ties so the result does not depend
-  // on the shell array order.
-  candidates.sort((left, right) => left.t - right.t || left.a.id - right.a.id);
+  candidates.sort(
+    (left, right) => left.t - right.t || left.a.id - right.a.id || left.b.id - right.b.id,
+  );
 
-  const collided = new Set<number>();
-  for (const candidate of candidates) {
-    if (collided.has(candidate.a.id) || collided.has(candidate.b.id)) {
+  for (const { a, b, t } of candidates) {
+    if (a.dead || b.dead) {
       continue;
     }
-    collided.add(candidate.a.id);
-    collided.add(candidate.b.id);
+    a.dead = true;
+    b.dead = true;
     poof(
       world,
-      candidate.a.x + candidate.a.vx * dt * candidate.t,
-      candidate.a.y + candidate.a.vy * dt * candidate.t,
-      'spark',
+      (a.x + a.vx * dt * t + b.x + b.vx * dt * t) / 2,
+      (a.y + a.vy * dt * t + b.y + b.vy * dt * t) / 2,
+      'poof',
     );
     record(world, 'Shells collided');
-  }
-
-  for (const shell of live) {
-    if (collided.has(shell.id)) {
-      shell.dead = true;
-    }
   }
 }
 
