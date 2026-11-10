@@ -1,7 +1,8 @@
 import { expect, type BrowserContext } from '@playwright/test';
 
 import { CONFIG } from '../../src/config';
-import type { CaptureRecord } from './catalogue-support';
+import { configureMobileCapture, verifyMobileCapture } from './catalogue-mobile';
+import { imageKinds, type CaptureRecord } from './catalogue-support';
 
 export async function captureScene(
   context: BrowserContext,
@@ -21,7 +22,7 @@ export async function captureScene(
     await page.addInitScript(() => {
       Object.defineProperty(navigator, 'getGamepads', { value: () => [] });
     });
-    await page.setViewportSize(scene.viewport);
+    await configureMobileCapture(page, scene);
     await page.goto('/');
     await page.bringToFront();
     await page.waitForFunction(() => window.__TOYBOX_TEST__ !== undefined);
@@ -41,6 +42,7 @@ export async function captureScene(
       });
       bridge.render();
     }, scene);
+    const mobileContext = await verifyMobileCapture(page, scene);
     const state = await page.evaluate(() => {
       const bridge = window.__TOYBOX_TEST__;
       if (bridge === undefined) throw new Error('Test bridge missing after fixture loading');
@@ -60,8 +62,10 @@ export async function captureScene(
     record.renderContext = {
       canvasBounds: box,
       viewport: page.viewportSize(),
+      mobileContext,
       ...(await page.evaluate(() => ({
         deviceScaleFactor: window.devicePixelRatio,
+        maxTouchPoints: navigator.maxTouchPoints,
         fonts: document.fonts.status,
         focusedElement: document.activeElement?.id ?? '',
         focusVisible: document.activeElement?.matches(':focus-visible') ?? false,
@@ -70,9 +74,12 @@ export async function captureScene(
       }))),
     };
     const settings = { animations: 'disabled', caret: 'hide', timeout: 10_000 } as const;
+    const kinds = imageKinds(scene);
     await save('full', await page.screenshot(settings));
-    await save('arena', await page.screenshot({ ...settings, clip: box }));
-    if (scene.fixture !== undefined) {
+    if (kinds.includes('arena')) {
+      await save('arena', await page.screenshot({ ...settings, clip: box }));
+    }
+    if (kinds.includes('detail')) {
       await save('detail', await page.screenshot({
         ...settings,
         clip: {

@@ -18,6 +18,8 @@ export interface CaptureScene {
   readonly options: ScenarioOptions;
   readonly fixture?: VisualSceneId;
   readonly viewport: { readonly width: number; readonly height: number };
+  readonly mobile?: 'landscape' | 'portrait';
+  readonly views?: readonly ('full' | 'arena' | 'detail')[];
 }
 
 export interface CaptureRecord {
@@ -74,6 +76,24 @@ export function captureScenes(): CaptureScene[] {
       fixture: fixture.id,
       viewport,
     })),
+    {
+      id: 'touch-landscape-gameplay',
+      purpose: 'Real touch UI in compact landscape, whole arena between the pads.',
+      scenario: 'solo',
+      options: {},
+      viewport: { width: 640, height: 300 },
+      mobile: 'landscape',
+      views: ['full', 'arena'],
+    },
+    {
+      id: 'touch-portrait-paused',
+      purpose: 'Rotate a clock-controlled landscape game into portrait; actual orientation guard.',
+      scenario: 'solo',
+      options: {},
+      viewport: { width: 390, height: 844 },
+      mobile: 'portrait',
+      views: ['full'],
+    },
   ];
   if (new Set(scenes.map((scene) => scene.id)).size !== scenes.length) {
     throw new Error('Duplicate catalogue scene IDs');
@@ -96,7 +116,7 @@ export function pendingRecords(): CaptureRecord[] {
 }
 
 export function imageKinds(scene: CaptureScene): readonly string[] {
-  return scene.fixture === undefined ? ['full', 'arena'] : ['full', 'arena', 'detail'];
+  return scene.views ?? (scene.fixture === undefined ? ['full', 'arena'] : ['full', 'arena', 'detail']);
 }
 
 export function imageHash(bytes: Uint8Array): string {
