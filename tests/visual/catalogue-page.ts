@@ -1,6 +1,7 @@
 import { expect, type BrowserContext } from '@playwright/test';
 
 import { CONFIG } from '../../src/config';
+import { configureFullscreenCapture, enterFullscreenCapture } from './catalogue-fullscreen';
 import { configureMobileCapture, verifyMobileCapture } from './catalogue-mobile';
 import { imageKinds, type CaptureRecord } from './catalogue-support';
 
@@ -23,6 +24,7 @@ export async function captureScene(
       Object.defineProperty(navigator, 'getGamepads', { value: () => [] });
     });
     await configureMobileCapture(page, scene);
+    await configureFullscreenCapture(page, scene);
     await page.goto('/');
     await page.bringToFront();
     await page.waitForFunction(() => window.__TOYBOX_TEST__ !== undefined);
@@ -47,6 +49,7 @@ export async function captureScene(
       bridge.render();
     }, scene);
     const mobileContext = await verifyMobileCapture(page, scene);
+    const fullscreenContext = await enterFullscreenCapture(page, scene);
     const state = await page.evaluate(() => {
       const bridge = window.__TOYBOX_TEST__;
       if (bridge === undefined) throw new Error('Test bridge missing after fixture loading');
@@ -67,6 +70,7 @@ export async function captureScene(
       canvasBounds: box,
       viewport: page.viewportSize(),
       mobileContext,
+      fullscreenContext,
       ...(await page.evaluate(() => ({
         deviceScaleFactor: window.devicePixelRatio,
         maxTouchPoints: navigator.maxTouchPoints,

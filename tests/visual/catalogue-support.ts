@@ -19,6 +19,7 @@ export interface CaptureScene {
   readonly fixture?: VisualSceneId;
   readonly viewport: { readonly width: number; readonly height: number };
   readonly mobile?: 'landscape' | 'portrait';
+  readonly fullscreen?: boolean;
   readonly views?: readonly ('full' | 'arena' | 'detail')[];
 }
 
@@ -92,6 +93,25 @@ export function captureScenes(): CaptureScene[] {
       options: {},
       viewport: { width: 390, height: 844 },
       mobile: 'portrait',
+      views: ['full'],
+    },
+    {
+      id: 'desktop-fullscreen-gameplay',
+      purpose: 'Real app fullscreen, non-touch co-op, compact HUD without touch pads.',
+      scenario: 'coop',
+      options: {},
+      viewport,
+      fullscreen: true,
+      views: ['full'],
+    },
+    {
+      id: 'touch-fullscreen-gameplay',
+      purpose: 'Real app fullscreen, touch solo, full arena between enabled pads.',
+      scenario: 'solo',
+      options: {},
+      viewport: { width: 640, height: 300 },
+      mobile: 'landscape',
+      fullscreen: true,
       views: ['full'],
     },
   ];
