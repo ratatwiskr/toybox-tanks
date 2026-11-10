@@ -29,20 +29,27 @@ export async function verifyMobileCapture(page: Page, scene: CaptureScene): Prom
     await expect(page.locator('#rotateHint')).toContainText('Resume when you are ready');
     await expect(page.locator('#dialogText')).toContainText('Rotate to landscape');
     await expect(page.locator('#touchControls')).toBeHidden();
-    await expect.poll(async () =>
-      page.evaluate(() => window.__TOYBOX_TEST__?.snapshot().state),
-    ).toBe('paused');
+    await expect
+      .poll(async () => page.evaluate(() => window.__TOYBOX_TEST__?.snapshot().state))
+      .toBe('paused');
     const paused = await page.evaluate(() => window.__TOYBOX_TEST__?.snapshot());
     if (paused === undefined) throw new Error('Paused mobile bridge missing');
     expect(paused.time).toBe(initial.time);
     expect(paused.players).toEqual(initial.players);
     await page.evaluate(async () => {
       await new Promise<void>((resolve) => {
-        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => {
+            resolve();
+          }),
+        );
       });
       window.__TOYBOX_TEST__?.render();
     });
-    return { mobile: scene.mobile, orientationGuard: await page.locator('#rotateHint').boundingBox() };
+    return {
+      mobile: scene.mobile,
+      orientationGuard: await page.locator('#rotateHint').boundingBox(),
+    };
   }
 
   await expect(page.locator('#movePad')).toBeVisible();
@@ -51,7 +58,8 @@ export async function verifyMobileCapture(page: Page, scene: CaptureScene): Prom
   const move = await page.locator('#movePad').boundingBox();
   const aim = await page.locator('#aimPad').boundingBox();
   const arena = await page.locator('#game').boundingBox();
-  if (move === null || aim === null || arena === null) throw new Error('Mobile layout bounds missing');
+  if (move === null || aim === null || arena === null)
+    throw new Error('Mobile layout bounds missing');
   expect(move.x + move.width).toBeLessThanOrEqual(arena.x + 1);
   expect(aim.x).toBeGreaterThanOrEqual(arena.x + arena.width - 1);
   expect(arena.width / arena.height).toBeCloseTo(16 / 9, 2);

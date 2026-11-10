@@ -116,7 +116,9 @@ export function pendingRecords(): CaptureRecord[] {
 }
 
 export function imageKinds(scene: CaptureScene): readonly string[] {
-  return scene.views ?? (scene.fixture === undefined ? ['full', 'arena'] : ['full', 'arena', 'detail']);
+  return (
+    scene.views ?? (scene.fixture === undefined ? ['full', 'arena'] : ['full', 'arena', 'detail'])
+  );
 }
 
 export function imageHash(bytes: Uint8Array): string {

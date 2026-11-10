@@ -20,7 +20,10 @@ export default defineConfig({
   workers: 1,
   retries: 0,
   timeout: 120_000,
-  reporter: [['list'], ['html', { outputFolder: 'playwright-report/visual-review', open: 'never' }]],
+  reporter: [
+    ['list'],
+    ['html', { outputFolder: 'playwright-report/visual-review', open: 'never' }],
+  ],
   use: {
     ...devices['Desktop Chrome'],
     baseURL,

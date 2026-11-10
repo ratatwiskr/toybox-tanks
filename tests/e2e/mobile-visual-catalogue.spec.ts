@@ -36,9 +36,9 @@ test('portrait stops stepping and landscape requires explicit Resume', async ({ 
   await expect(page.locator('#movePad')).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.locator('#rotateHint')).toBeVisible();
-  await expect.poll(async () =>
-    page.evaluate(() => window.__TOYBOX_TEST__?.snapshot().state),
-  ).toBe('paused');
+  await expect
+    .poll(async () => page.evaluate(() => window.__TOYBOX_TEST__?.snapshot().state))
+    .toBe('paused');
   const before = await page.evaluate(() => window.__TOYBOX_TEST__?.snapshot());
   if (before === undefined) throw new Error('Paused snapshot missing');
   const after = await page.evaluate(() => window.__TOYBOX_TEST__?.advanceTicks(120));

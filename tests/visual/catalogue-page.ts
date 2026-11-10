@@ -38,7 +38,11 @@ export async function captureScene(
       }
       await document.fonts.ready;
       await new Promise<void>((resolve) => {
-        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => {
+            resolve();
+          }),
+        );
       });
       bridge.render();
     }, scene);
@@ -80,15 +84,18 @@ export async function captureScene(
       await save('arena', await page.screenshot({ ...settings, clip: box }));
     }
     if (kinds.includes('detail')) {
-      await save('detail', await page.screenshot({
-        ...settings,
-        clip: {
-          x: box.x + (160 / CONFIG.width) * box.width,
-          y: box.y + (120 / CONFIG.height) * box.height,
-          width: (560 / CONFIG.width) * box.width,
-          height: (300 / CONFIG.height) * box.height,
-        },
-      }));
+      await save(
+        'detail',
+        await page.screenshot({
+          ...settings,
+          clip: {
+            x: box.x + (160 / CONFIG.width) * box.width,
+            y: box.y + (120 / CONFIG.height) * box.height,
+            width: (560 / CONFIG.width) * box.width,
+            height: (300 / CONFIG.height) * box.height,
+          },
+        }),
+      );
     }
     expect(await page.evaluate(() => window.__TOYBOX_TEST__?.snapshot())).toEqual(state);
     expect(errors, scene.id).toEqual([]);

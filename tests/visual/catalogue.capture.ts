@@ -47,7 +47,12 @@ test('captures every catalogue scene once without image comparisons', async ({
     ? null
     : 'Source changed during capture; this is not a single-revision catalogue.';
   await writeCatalogue(source, records, environment, true, runError);
-  const failed = records.filter((record) => record.status !== 'captured').map((record) => record.scene.id);
-  expect(failed, 'Incomplete capture; inspect the catalogue gallery and manifest for per-scene errors').toEqual([]);
+  const failed = records
+    .filter((record) => record.status !== 'captured')
+    .map((record) => record.scene.id);
+  expect(
+    failed,
+    'Incomplete capture; inspect the catalogue gallery and manifest for per-scene errors',
+  ).toEqual([]);
   expect(runError).toBeNull();
 });

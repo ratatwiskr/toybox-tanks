@@ -102,10 +102,12 @@ for (const record of records.filter(
           try {
             validateReference(reference, `${reference}.approval.json`, image.file, environment);
           } catch (error) {
-            expect.soft(
-              false,
-              `UNAPPROVED / INCOMPATIBLE ${image.file}: ${error instanceof Error ? error.message : String(error)}`,
-            ).toBe(true);
+            expect
+              .soft(
+                false,
+                `UNAPPROVED / INCOMPATIBLE ${image.file}: ${error instanceof Error ? error.message : String(error)}`,
+              )
+              .toBe(true);
             return;
           }
           const actual = await readFile(testInfo.outputPath(image.file));

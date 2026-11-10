@@ -1,4 +1,11 @@
-import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  writeFileSync,
+} from 'node:fs';
 import { dirname, isAbsolute, join, parse, relative, resolve, sep } from 'node:path';
 
 import { captureScenes, imageHash, imageKinds } from './catalogue-support';
@@ -10,7 +17,8 @@ function object(value: unknown): Record<string, unknown> {
 }
 
 function text(value: unknown): string {
-  if (typeof value !== 'string' || value.length === 0) throw new Error('Expected a nonempty string');
+  if (typeof value !== 'string' || value.length === 0)
+    throw new Error('Expected a nonempty string');
   return value;
 }
 
@@ -57,8 +65,15 @@ function environment(value: unknown): Record<string, string | number> {
     }
     result[key] = entry;
   }
-  for (const key of ['os', 'osRelease', 'architecture', 'node', 'playwright', 'browser']) text(result[key]);
-  if (result.deviceScaleFactor !== 1 || result.colorScheme !== 'light' || result.reducedMotion !== 'reduce' || result.locale !== 'en-US' || result.timezoneId !== 'UTC') {
+  for (const key of ['os', 'osRelease', 'architecture', 'node', 'playwright', 'browser'])
+    text(result[key]);
+  if (
+    result.deviceScaleFactor !== 1 ||
+    result.colorScheme !== 'light' ||
+    result.reducedMotion !== 'reduce' ||
+    result.locale !== 'en-US' ||
+    result.timezoneId !== 'UTC'
+  ) {
     throw new Error('Unsupported capture environment');
   }
   return result;
@@ -66,7 +81,10 @@ function environment(value: unknown): Record<string, string | number> {
 
 export function promoteReferences(
   approvalPath: string,
-  roots = { candidates: 'test-results/visual-review', references: 'docs/visual-references/chromium-local' },
+  roots = {
+    candidates: 'test-results/visual-review',
+    references: 'docs/visual-references/chromium-local',
+  },
 ): string[] {
   const approvalBytes = readSafe(approvalPath);
   const request = object(JSON.parse(approvalBytes.toString('utf8')));
@@ -86,9 +104,14 @@ export function promoteReferences(
     within(roots.candidates, manifestPath);
     const manifestBytes = readSafe(manifestPath);
     const manifestSha256 = digest(candidate.manifestSha256);
-    if (imageHash(manifestBytes) !== manifestSha256) throw new Error('Reviewed manifest hash changed');
+    if (imageHash(manifestBytes) !== manifestSha256)
+      throw new Error('Reviewed manifest hash changed');
     const manifest = object(JSON.parse(manifestBytes.toString('utf8')));
-    if (manifest.schema !== 1 || manifest.role !== 'visual-review-candidate' || manifest.complete !== true) {
+    if (
+      manifest.schema !== 1 ||
+      manifest.role !== 'visual-review-candidate' ||
+      manifest.complete !== true
+    ) {
       throw new Error('Candidate capture is incomplete or unsupported');
     }
     const scene = captureScenes().find((entry) => entry.id === manifest.scene);
@@ -98,21 +121,36 @@ export function promoteReferences(
       const image = object(entry);
       return { file: text(image.file), sha256: digest(image.sha256) };
     });
-    if (images.length !== expected.length || new Set(images.map((image) => image.file)).size !== images.length || images.some((image) => !expected.includes(image.file))) {
+    if (
+      images.length !== expected.length ||
+      new Set(images.map((image) => image.file)).size !== images.length ||
+      images.some((image) => !expected.includes(image.file))
+    ) {
       throw new Error('Candidate must contain every canonical scene view exactly once');
     }
     const source = object(manifest.source);
-    const sourceRecord = { revision: text(source.revision), sourceStatus: source.sourceStatus, sourceTreeSha256: digest(source.sourceTreeSha256) };
-    if (!/^[a-f0-9]{40}$/.test(sourceRecord.revision) || typeof sourceRecord.sourceStatus !== 'string') {
+    const sourceRecord = {
+      revision: text(source.revision),
+      sourceStatus: source.sourceStatus,
+      sourceTreeSha256: digest(source.sourceTreeSha256),
+    };
+    if (
+      !/^[a-f0-9]{40}$/.test(sourceRecord.revision) ||
+      typeof sourceRecord.sourceStatus !== 'string'
+    ) {
       throw new Error('Invalid source provenance');
     }
     const capturedEnvironment = environment(manifest.environment);
-    if (commonEnvironment !== undefined && !sameEnvironment(capturedEnvironment, commonEnvironment)) {
+    if (
+      commonEnvironment !== undefined &&
+      !sameEnvironment(capturedEnvironment, commonEnvironment)
+    ) {
       throw new Error('Incompatible selected candidate environments');
     }
     commonEnvironment = capturedEnvironment;
     const chosen = list(candidate.images);
-    if (chosen.length === 0) throw new Error('Select explicit scene/view filenames; no approve-all default');
+    if (chosen.length === 0)
+      throw new Error('Select explicit scene/view filenames; no approve-all default');
     for (const entry of chosen) {
       const choice = object(entry);
       const file = text(choice.file);
@@ -124,8 +162,12 @@ export function promoteReferences(
       selected.add(file);
       const bytes = readSafe(join(dirname(manifestPath), file));
       if (imageHash(bytes) !== sha256) throw new Error(`Reviewed candidate bytes changed: ${file}`);
-      if (!bytes.subarray(0, 8).equals(Buffer.from('89504e470d0a1a0a', 'hex'))) throw new Error('Candidate is not PNG data');
-      for (const destination of [join(roots.references, file), join(roots.references, `${file}.approval.json`)]) {
+      if (!bytes.subarray(0, 8).equals(Buffer.from('89504e470d0a1a0a', 'hex')))
+        throw new Error('Candidate is not PNG data');
+      for (const destination of [
+        join(roots.references, file),
+        join(roots.references, `${file}.approval.json`),
+      ]) {
         noLinks(destination);
         const existing = lstatSync(destination, { throwIfNoEntry: false });
         if (existing !== undefined && (!existing.isFile() || existing.nlink > 1)) {

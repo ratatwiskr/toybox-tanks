@@ -5,9 +5,9 @@
   "complete": true,
   "runError": null,
   "source": {
-    "revision": "473e3b02e6a711c0a67d2fb13f6b05ccd19ec535",
-    "sourceStatus": "",
-    "sourceTreeSha256": "fc87979939e2c53cadb86522c054d9501c66d4fa1f9200fc104c832114163376"
+    "revision": "b4e523102859ab8ba7ff395b4bbbba77ae1f2521",
+    "sourceStatus": " M docs/development-workflow.md\n M playwright.review.config.ts\n M src/visual-motion-scenes.ts\n M tests/e2e/mobile-visual-catalogue.spec.ts\n M tests/unit/visual-promotion.test.ts\n M tests/unit/visual-review-safety.test.ts\n M tests/visual/catalogue-mobile.ts\n M tests/visual/catalogue-page.ts\n M tests/visual/catalogue-support.ts\n M tests/visual/catalogue.capture.ts\n M tests/visual/review-promotion.ts\n M tests/visual/review-safety.ts\n M tests/visual/review.approve.ts\n M tests/visual/review.compare.ts",
+    "sourceTreeSha256": "0fc82183fa599b5fc7e01d99405ac0600b7b07da2790c48c80457c08dbf103eb"
   },
   "environment": {
     "os": "linux",
@@ -630,7 +630,9 @@
           "width": 1440,
           "height": 1000
         },
+        "mobileContext": null,
         "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
         "fonts": "loaded",
         "focusedElement": "",
         "focusVisible": true,
@@ -1253,7 +1255,9 @@
           "width": 1440,
           "height": 1000
         },
+        "mobileContext": null,
         "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
         "fonts": "loaded",
         "focusedElement": "stage",
         "focusVisible": true,
@@ -1888,7 +1892,9 @@
           "width": 1440,
           "height": 1000
         },
+        "mobileContext": null,
         "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
         "fonts": "loaded",
         "focusedElement": "stage",
         "focusVisible": true,
@@ -2511,7 +2517,9 @@
           "width": 1440,
           "height": 1000
         },
+        "mobileContext": null,
         "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
         "fonts": "loaded",
         "focusedElement": "stage",
         "focusVisible": true,
@@ -3134,7 +3142,9 @@
           "width": 1440,
           "height": 1000
         },
+        "mobileContext": null,
         "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
         "fonts": "loaded",
         "focusedElement": "",
         "focusVisible": true,
@@ -3144,7 +3154,7 @@
       "images": [
         {
           "file": "ui-paused.full.png",
-          "sha256": "96c48823947ed4368a31d91da9dc5b87a0d1beee4e85e9e525074a9041b8fdb1"
+          "sha256": "0a925d4574b52fc3cdcc18d52768d500969749e66d8ba07ecf267d9cdff4f46d"
         },
         {
           "file": "ui-paused.arena.png",
@@ -3757,7 +3767,9 @@
           "width": 1440,
           "height": 1000
         },
+        "mobileContext": null,
         "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
         "fonts": "loaded",
         "focusedElement": "",
         "focusVisible": true,
@@ -3767,7 +3779,7 @@
       "images": [
         {
           "file": "ui-cleared.full.png",
-          "sha256": "525a46d30346ed74c9f67fd7d00e4dfa6a796cb7e6e528509dcc4712c75b1fd1"
+          "sha256": "66fb793764468f1dffd99ca3643758d0d6087ce6c086ce8a20c0a7428913bfc1"
         },
         {
           "file": "ui-cleared.arena.png",
@@ -4380,7 +4392,9 @@
           "width": 1440,
           "height": 1000
         },
+        "mobileContext": null,
         "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
         "fonts": "loaded",
         "focusedElement": "",
         "focusVisible": true,
@@ -5151,7 +5165,9 @@
           "width": 1440,
           "height": 1000
         },
+        "mobileContext": null,
         "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
         "fonts": "loaded",
         "focusedElement": "",
         "focusVisible": true,
@@ -5774,7 +5790,9 @@
           "width": 1280,
           "height": 720
         },
+        "mobileContext": null,
         "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
         "fonts": "loaded",
         "focusedElement": "stage",
         "focusVisible": true,
@@ -5784,7 +5802,7 @@
       "images": [
         {
           "file": "ui-resized-gameplay.full.png",
-          "sha256": "6b33b611b8295e49b881b29c96a039687a4b9424055bce9ca3354f42814a8e90"
+          "sha256": "4ca968dbb071af604a882eb704ad2820ec0184691806f6ec4ca5a011ea8522b1"
         },
         {
           "file": "ui-resized-gameplay.arena.png",
@@ -6400,7 +6418,9 @@
           "width": 1440,
           "height": 1000
         },
+        "mobileContext": null,
         "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
         "fonts": "loaded",
         "focusedElement": "stage",
         "focusVisible": true,
@@ -7100,7 +7120,9 @@
           "width": 1440,
           "height": 1000
         },
+        "mobileContext": null,
         "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
         "fonts": "loaded",
         "focusedElement": "stage",
         "focusVisible": true,
@@ -7110,7 +7132,7 @@
       "images": [
         {
           "file": "campaign-block-party-start.full.png",
-          "sha256": "869e9c2f87fa5ad3d38dd85923ed9f11e9d94c2ca282ee703dbff5b43e1aa978"
+          "sha256": "6aa31ec052b2fffe50f1fadad10be165db1678ed39a2b0456b531b0b3a380f40"
         },
         {
           "file": "campaign-block-party-start.arena.png",
@@ -7805,7 +7827,9 @@
           "width": 1440,
           "height": 1000
         },
+        "mobileContext": null,
         "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
         "fonts": "loaded",
         "focusedElement": "stage",
         "focusVisible": true,
@@ -7815,7 +7839,7 @@
       "images": [
         {
           "file": "campaign-together-through-start.full.png",
-          "sha256": "be2c4929c8fb0f20981d0c328209ff0fe98847912cf9cc1ac2b8bc0f3cec3833"
+          "sha256": "58c4cc64eb5493ca48d34e487e4b29472417a46fa0cc553fc41eb029773dd8e7"
         },
         {
           "file": "campaign-together-through-start.arena.png",
@@ -8582,7 +8606,9 @@
           "width": 1440,
           "height": 1000
         },
+        "mobileContext": null,
         "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
         "fonts": "loaded",
         "focusedElement": "stage",
         "focusVisible": true,
@@ -8592,7 +8618,7 @@
       "images": [
         {
           "file": "campaign-cork-keep-start.full.png",
-          "sha256": "4b2b77d16f4ed512411d1416d14563818ae1f7425046797a9acc8017e1db5976"
+          "sha256": "dec43c3193f52a6e45da3676e0c6da86171b48c37097e971534acc1f4a6bc091"
         },
         {
           "file": "campaign-cork-keep-start.arena.png",
@@ -9154,7 +9180,9 @@
           "width": 1440,
           "height": 1000
         },
+        "mobileContext": null,
         "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
         "fonts": "loaded",
         "focusedElement": "stage",
         "focusVisible": true,
@@ -9712,7 +9740,9 @@
           "width": 1440,
           "height": 1000
         },
+        "mobileContext": null,
         "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
         "fonts": "loaded",
         "focusedElement": "stage",
         "focusVisible": true,
@@ -10292,7 +10322,9 @@
           "width": 1440,
           "height": 1000
         },
+        "mobileContext": null,
         "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
         "fonts": "loaded",
         "focusedElement": "stage",
         "focusVisible": true,
@@ -10872,7 +10904,9 @@
           "width": 1440,
           "height": 1000
         },
+        "mobileContext": null,
         "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
         "fonts": "loaded",
         "focusedElement": "stage",
         "focusVisible": true,
@@ -10882,7 +10916,7 @@
       "images": [
         {
           "file": "cork-reversed.full.png",
-          "sha256": "8a3eeb78bdbfb78b9098d9aa3583ad4b4143e43ed4e0930a824a607878a18bea"
+          "sha256": "5d650c82e9538bb235cc0b2395a280155fdff1abeaf8f620bbfd576db7b7ec1c"
         },
         {
           "file": "cork-reversed.arena.png",
@@ -11425,7 +11459,9 @@
           "width": 1440,
           "height": 1000
         },
+        "mobileContext": null,
         "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
         "fonts": "loaded",
         "focusedElement": "stage",
         "focusVisible": true,
@@ -11978,7 +12014,9 @@
           "width": 1440,
           "height": 1000
         },
+        "mobileContext": null,
         "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
         "fonts": "loaded",
         "focusedElement": "stage",
         "focusVisible": true,
@@ -12537,7 +12575,9 @@
           "width": 1440,
           "height": 1000
         },
+        "mobileContext": null,
         "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
         "fonts": "loaded",
         "focusedElement": "stage",
         "focusVisible": true,
@@ -12547,7 +12587,7 @@
       "images": [
         {
           "file": "cork-aim-reflected.full.png",
-          "sha256": "a7b673cdaadf8dbd5b613d1e407455e6531830d9da59a4c8f6a76672017bdcf1"
+          "sha256": "3e721a776a138637d8dad5787e409069ec8d82ac7fb4737ade663d6355a759ef"
         },
         {
           "file": "cork-aim-reflected.arena.png",
@@ -13131,7 +13171,9 @@
           "width": 1440,
           "height": 1000
         },
+        "mobileContext": null,
         "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
         "fonts": "loaded",
         "focusedElement": "stage",
         "focusVisible": true,
@@ -13141,7 +13183,7 @@
       "images": [
         {
           "file": "combat-feedback.full.png",
-          "sha256": "826d5c7ea81718f106650973abfe5712e9cb7ea4e263af868e3423a06f685bd8"
+          "sha256": "c6f10bbbe2de5f4dff624858eb2e6aa404997971f206d11f41552f1d3073e386"
         },
         {
           "file": "combat-feedback.arena.png",
@@ -13157,6 +13199,5121 @@
         "combat-feedback.arena.png",
         "combat-feedback.detail.png"
       ]
+    },
+    {
+      "scene": {
+        "id": "body-aim-independent",
+        "purpose": "Synthetic fixture: Horizontal movement, upward turret aim, then a neutral step.",
+        "scenario": "coop",
+        "options": {},
+        "fixture": "body-aim-independent",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        }
+      },
+      "status": "captured",
+      "error": null,
+      "state": {
+        "room": 0,
+        "mode": "coop",
+        "state": "playing",
+        "time": 0.10833333333333332,
+        "ticks": 13,
+        "nextShell": 0,
+        "shots": 0,
+        "bounces": 0,
+        "walls": [
+          {
+            "x": 0,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          }
+        ],
+        "corks": [],
+        "players": [
+          {
+            "id": "p1",
+            "faction": "player",
+            "x": 318.5000000000002,
+            "y": 270,
+            "spawnX": 300,
+            "spawnY": 270,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 1.2
+          },
+          {
+            "id": "p2",
+            "faction": "player",
+            "x": 760,
+            "y": 450,
+            "spawnX": 760,
+            "spawnY": 450,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "enemies": [
+          {
+            "id": "s0",
+            "faction": "enemy",
+            "x": 820,
+            "y": 130,
+            "spawnX": 820,
+            "spawnY": 130,
+            "r": 15,
+            "angle": -1.7766296601282303,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 99.89166666666658,
+            "charge": 0,
+            "targetId": "p2",
+            "track": 0
+          }
+        ],
+        "shells": [],
+        "effects": [],
+        "events": ["Synthetic visual fixture: body-aim-independent"]
+      },
+      "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "mobileContext": null,
+        "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
+        "fonts": "loaded",
+        "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
+        "visible": "visible"
+      },
+      "images": [
+        {
+          "file": "body-aim-independent.full.png",
+          "sha256": "beb60502fac070a294e5632a1bbd4d63567097dd15c5e206758af0789c92023f"
+        },
+        {
+          "file": "body-aim-independent.arena.png",
+          "sha256": "675951fa7d58beca310127e772688292bd92824d16e2fcee14cee9564554f660"
+        },
+        {
+          "file": "body-aim-independent.detail.png",
+          "sha256": "9cbb1dcead94dbc1036f3444cd4bf7b04e11d221fad114618af5cb0e6954060e"
+        }
+      ],
+      "expectedFiles": [
+        "body-aim-independent.full.png",
+        "body-aim-independent.arena.png",
+        "body-aim-independent.detail.png"
+      ]
+    },
+    {
+      "scene": {
+        "id": "body-diagonal",
+        "purpose": "Synthetic fixture: Diagonal movement with independent upward turret aim, then stop.",
+        "scenario": "coop",
+        "options": {},
+        "fixture": "body-diagonal",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        }
+      },
+      "status": "captured",
+      "error": null,
+      "state": {
+        "room": 0,
+        "mode": "coop",
+        "state": "playing",
+        "time": 0.10833333333333332,
+        "ticks": 13,
+        "nextShell": 0,
+        "shots": 0,
+        "bounces": 0,
+        "walls": [
+          {
+            "x": 0,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          }
+        ],
+        "corks": [],
+        "players": [
+          {
+            "id": "p1",
+            "faction": "player",
+            "x": 313.0814754519513,
+            "y": 283.0814754519513,
+            "spawnX": 300,
+            "spawnY": 270,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 1.2
+          },
+          {
+            "id": "p2",
+            "faction": "player",
+            "x": 760,
+            "y": 450,
+            "spawnX": 760,
+            "spawnY": 450,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "enemies": [
+          {
+            "id": "s0",
+            "faction": "enemy",
+            "x": 820,
+            "y": 130,
+            "spawnX": 820,
+            "spawnY": 130,
+            "r": 15,
+            "angle": -1.7766296601282303,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 99.89166666666658,
+            "charge": 0,
+            "targetId": "p2",
+            "track": 0
+          }
+        ],
+        "shells": [],
+        "effects": [],
+        "events": ["Synthetic visual fixture: body-diagonal"]
+      },
+      "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "mobileContext": null,
+        "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
+        "fonts": "loaded",
+        "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
+        "visible": "visible"
+      },
+      "images": [
+        {
+          "file": "body-diagonal.full.png",
+          "sha256": "27540253f86317e3725209a05fa98b98ce85dc47dc44de0a3ca3924a19bcb4e4"
+        },
+        {
+          "file": "body-diagonal.arena.png",
+          "sha256": "6942b575f6c432b3dd14f99c2d45f9a982e6a9d77020c3fe9e41b2f81625cd1a"
+        },
+        {
+          "file": "body-diagonal.detail.png",
+          "sha256": "d60efb9ba8e2716e177b06385ca7ac13084c0f32e98bcedf7bb2ec35612d4a31"
+        }
+      ],
+      "expectedFiles": [
+        "body-diagonal.full.png",
+        "body-diagonal.arena.png",
+        "body-diagonal.detail.png"
+      ]
+    },
+    {
+      "scene": {
+        "id": "body-wall-slide",
+        "purpose": "Synthetic fixture: Diagonal input into a wall; body follows actual downward sliding.",
+        "scenario": "coop",
+        "options": {},
+        "fixture": "body-wall-slide",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        }
+      },
+      "status": "captured",
+      "error": null,
+      "state": {
+        "room": 0,
+        "mode": "coop",
+        "state": "playing",
+        "time": 0.10833333333333332,
+        "ticks": 13,
+        "nextShell": 0,
+        "shots": 0,
+        "bounces": 0,
+        "walls": [
+          {
+            "x": 0,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 340,
+            "y": 200,
+            "w": 40,
+            "h": 160
+          }
+        ],
+        "corks": [],
+        "players": [
+          {
+            "id": "p1",
+            "faction": "player",
+            "x": 325,
+            "y": 283.0814754519513,
+            "spawnX": 325,
+            "spawnY": 270,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 1.2
+          },
+          {
+            "id": "p2",
+            "faction": "player",
+            "x": 760,
+            "y": 450,
+            "spawnX": 760,
+            "spawnY": 450,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "enemies": [
+          {
+            "id": "s0",
+            "faction": "enemy",
+            "x": 820,
+            "y": 130,
+            "spawnX": 820,
+            "spawnY": 130,
+            "r": 15,
+            "angle": -1.7766296601282303,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 99.89166666666658,
+            "charge": 0,
+            "targetId": "p2",
+            "track": 0
+          }
+        ],
+        "shells": [],
+        "effects": [],
+        "events": ["Synthetic visual fixture: body-wall-slide"]
+      },
+      "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "mobileContext": null,
+        "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
+        "fonts": "loaded",
+        "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
+        "visible": "visible"
+      },
+      "images": [
+        {
+          "file": "body-wall-slide.full.png",
+          "sha256": "4c468d22dbc5dd31025a41fca15667b2fa8ea9c46f0cc7206b2be203c8fca788"
+        },
+        {
+          "file": "body-wall-slide.arena.png",
+          "sha256": "64ec3f4ad44794f23d6795fa539547b9af59bc1f6181d5f38b4a29cce6a80383"
+        },
+        {
+          "file": "body-wall-slide.detail.png",
+          "sha256": "453391b84614c45acd33083a118a1652c854ea748de9ba033c03853be1395342"
+        }
+      ],
+      "expectedFiles": [
+        "body-wall-slide.full.png",
+        "body-wall-slide.arena.png",
+        "body-wall-slide.detail.png"
+      ]
+    },
+    {
+      "scene": {
+        "id": "shell-head-on-before",
+        "purpose": "Synthetic fixture: Two approaching shells one fixed tick before contact.",
+        "scenario": "coop",
+        "options": {},
+        "fixture": "shell-head-on-before",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        }
+      },
+      "status": "captured",
+      "error": null,
+      "state": {
+        "room": 0,
+        "mode": "coop",
+        "state": "playing",
+        "time": 0.049999999999999996,
+        "ticks": 6,
+        "nextShell": 2,
+        "shots": 2,
+        "bounces": 0,
+        "walls": [
+          {
+            "x": 0,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          }
+        ],
+        "corks": [],
+        "players": [
+          {
+            "id": "p1",
+            "faction": "player",
+            "x": 300,
+            "y": 270,
+            "spawnX": 300,
+            "spawnY": 270,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "p2",
+            "faction": "player",
+            "x": 760,
+            "y": 450,
+            "spawnX": 760,
+            "spawnY": 450,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "enemies": [
+          {
+            "id": "s0",
+            "faction": "enemy",
+            "x": 820,
+            "y": 130,
+            "spawnX": 820,
+            "spawnY": 130,
+            "r": 15,
+            "angle": -1.6657963267948968,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 99.94999999999996,
+            "charge": 0,
+            "targetId": "p2",
+            "track": 0
+          }
+        ],
+        "shells": [
+          {
+            "id": 1,
+            "owner": "p1",
+            "faction": "player",
+            "x": 416.5,
+            "y": 270,
+            "vx": 330,
+            "vy": 0,
+            "bounces": 0,
+            "dead": false
+          },
+          {
+            "id": 2,
+            "owner": "s0",
+            "faction": "enemy",
+            "x": 423.5,
+            "y": 270,
+            "vx": -330,
+            "vy": 0,
+            "bounces": 0,
+            "dead": false
+          }
+        ],
+        "effects": [],
+        "events": ["Synthetic visual fixture: shell-head-on-before"]
+      },
+      "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "mobileContext": null,
+        "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
+        "fonts": "loaded",
+        "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
+        "visible": "visible"
+      },
+      "images": [
+        {
+          "file": "shell-head-on-before.full.png",
+          "sha256": "c0ba918f8179addd060dfdabbe724022d1214ee83a2bb021b40dd6a51b2e55f9"
+        },
+        {
+          "file": "shell-head-on-before.arena.png",
+          "sha256": "e30ba26333886b04510c740b4d3c1c9d227fdac7a2f5764568f589cdf3b004c1"
+        },
+        {
+          "file": "shell-head-on-before.detail.png",
+          "sha256": "ea35fbdf82ba2ce9ac9b452416885dcfa679317e94b7cb40200ba60a23eaa4c2"
+        }
+      ],
+      "expectedFiles": [
+        "shell-head-on-before.full.png",
+        "shell-head-on-before.arena.png",
+        "shell-head-on-before.detail.png"
+      ]
+    },
+    {
+      "scene": {
+        "id": "shell-head-on-contact",
+        "purpose": "Synthetic fixture: First contact tick: both shells removed, one real collision poof.",
+        "scenario": "coop",
+        "options": {},
+        "fixture": "shell-head-on-contact",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        }
+      },
+      "status": "captured",
+      "error": null,
+      "state": {
+        "room": 0,
+        "mode": "coop",
+        "state": "playing",
+        "time": 0.05833333333333333,
+        "ticks": 7,
+        "nextShell": 2,
+        "shots": 2,
+        "bounces": 0,
+        "walls": [
+          {
+            "x": 0,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          }
+        ],
+        "corks": [],
+        "players": [
+          {
+            "id": "p1",
+            "faction": "player",
+            "x": 300,
+            "y": 270,
+            "spawnX": 300,
+            "spawnY": 270,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "p2",
+            "faction": "player",
+            "x": 760,
+            "y": 450,
+            "spawnX": 760,
+            "spawnY": 450,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "enemies": [
+          {
+            "id": "s0",
+            "faction": "enemy",
+            "x": 820,
+            "y": 130,
+            "spawnX": 820,
+            "spawnY": 130,
+            "r": 15,
+            "angle": -1.6816296601282301,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 99.94166666666662,
+            "charge": 0,
+            "targetId": "p2",
+            "track": 0
+          }
+        ],
+        "shells": [],
+        "effects": [
+          {
+            "x": 420,
+            "y": 270,
+            "type": "poof",
+            "age": 0.008333333333333333,
+            "life": 0.52,
+            "seed": 0.05833333333333333
+          }
+        ],
+        "events": ["0.06  Shells collided", "Synthetic visual fixture: shell-head-on-contact"]
+      },
+      "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "mobileContext": null,
+        "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
+        "fonts": "loaded",
+        "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
+        "visible": "visible"
+      },
+      "images": [
+        {
+          "file": "shell-head-on-contact.full.png",
+          "sha256": "33acaec7c6c0ca673298ed3def47e98ddba240bd5214b04f6b65ff1c5c093477"
+        },
+        {
+          "file": "shell-head-on-contact.arena.png",
+          "sha256": "3b33569e60a301d6f0e9d0dbfa3d8d6550b538fa549f3068d3c50041640f0ede"
+        },
+        {
+          "file": "shell-head-on-contact.detail.png",
+          "sha256": "944f1fa0314101bb1d2f62a10ae72b53e8acbaadfc4e87dd6b2cc074443da70c"
+        }
+      ],
+      "expectedFiles": [
+        "shell-head-on-contact.full.png",
+        "shell-head-on-contact.arena.png",
+        "shell-head-on-contact.detail.png"
+      ]
+    },
+    {
+      "scene": {
+        "id": "shell-head-on-aged",
+        "purpose": "Synthetic fixture: Collision poof twelve fixed ticks after the contact tick.",
+        "scenario": "coop",
+        "options": {},
+        "fixture": "shell-head-on-aged",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        }
+      },
+      "status": "captured",
+      "error": null,
+      "state": {
+        "room": 0,
+        "mode": "coop",
+        "state": "playing",
+        "time": 0.15833333333333333,
+        "ticks": 19,
+        "nextShell": 2,
+        "shots": 2,
+        "bounces": 0,
+        "walls": [
+          {
+            "x": 0,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          }
+        ],
+        "corks": [],
+        "players": [
+          {
+            "id": "p1",
+            "faction": "player",
+            "x": 300,
+            "y": 270,
+            "spawnX": 300,
+            "spawnY": 270,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "p2",
+            "faction": "player",
+            "x": 760,
+            "y": 450,
+            "spawnX": 760,
+            "spawnY": 450,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "enemies": [
+          {
+            "id": "s0",
+            "faction": "enemy",
+            "x": 820,
+            "y": 130,
+            "spawnX": 820,
+            "spawnY": 130,
+            "r": 15,
+            "angle": -1.8716296601282305,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 99.84166666666654,
+            "charge": 0,
+            "targetId": "p2",
+            "track": 0
+          }
+        ],
+        "shells": [],
+        "effects": [
+          {
+            "x": 420,
+            "y": 270,
+            "type": "poof",
+            "age": 0.10833333333333332,
+            "life": 0.52,
+            "seed": 0.05833333333333333
+          }
+        ],
+        "events": ["0.06  Shells collided", "Synthetic visual fixture: shell-head-on-aged"]
+      },
+      "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "mobileContext": null,
+        "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
+        "fonts": "loaded",
+        "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
+        "visible": "visible"
+      },
+      "images": [
+        {
+          "file": "shell-head-on-aged.full.png",
+          "sha256": "8b37e79ee83154fe0dfbec8ac2bc4a846814e42b65b425810b4eb1ef6f103545"
+        },
+        {
+          "file": "shell-head-on-aged.arena.png",
+          "sha256": "ef815d4a5268543b68fe591d68fb6fec9c799c59c100f44705809791394928c8"
+        },
+        {
+          "file": "shell-head-on-aged.detail.png",
+          "sha256": "90b1b7f2d29b0facf7ee25d9d9eb14e647de6a152adcc7bf53820dce3875cba8"
+        }
+      ],
+      "expectedFiles": [
+        "shell-head-on-aged.full.png",
+        "shell-head-on-aged.arena.png",
+        "shell-head-on-aged.detail.png"
+      ]
+    },
+    {
+      "scene": {
+        "id": "shell-head-on-cleared",
+        "purpose": "Synthetic fixture: Sixty fixed ticks after contact: both shells and the poof are gone.",
+        "scenario": "coop",
+        "options": {},
+        "fixture": "shell-head-on-cleared",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        }
+      },
+      "status": "captured",
+      "error": null,
+      "state": {
+        "room": 0,
+        "mode": "coop",
+        "state": "playing",
+        "time": 0.5583333333333338,
+        "ticks": 67,
+        "nextShell": 2,
+        "shots": 2,
+        "bounces": 0,
+        "walls": [
+          {
+            "x": 0,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          }
+        ],
+        "corks": [],
+        "players": [
+          {
+            "id": "p1",
+            "faction": "player",
+            "x": 300,
+            "y": 270,
+            "spawnX": 300,
+            "spawnY": 270,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "p2",
+            "faction": "player",
+            "x": 760,
+            "y": 450,
+            "spawnX": 760,
+            "spawnY": 450,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "enemies": [
+          {
+            "id": "s0",
+            "faction": "enemy",
+            "x": 820,
+            "y": 130,
+            "spawnX": 820,
+            "spawnY": 130,
+            "r": 15,
+            "angle": -2.6316296601282234,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 99.44166666666622,
+            "charge": 0,
+            "targetId": "p2",
+            "track": 0
+          }
+        ],
+        "shells": [],
+        "effects": [
+          {
+            "x": 420,
+            "y": 270,
+            "type": "poof",
+            "age": 0.508333333333334,
+            "life": 0.52,
+            "seed": 0.05833333333333333
+          }
+        ],
+        "events": ["0.06  Shells collided", "Synthetic visual fixture: shell-head-on-cleared"]
+      },
+      "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "mobileContext": null,
+        "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
+        "fonts": "loaded",
+        "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
+        "visible": "visible"
+      },
+      "images": [
+        {
+          "file": "shell-head-on-cleared.full.png",
+          "sha256": "29413619b720ee08266eb73733d7ec9d6164ae1ab2abd1fba0e1353b78efc3f8"
+        },
+        {
+          "file": "shell-head-on-cleared.arena.png",
+          "sha256": "855bb6bd34052ca8bbc59f3a52b096c62ae7dd6e047dc7bc4a31ab738d54ebf9"
+        },
+        {
+          "file": "shell-head-on-cleared.detail.png",
+          "sha256": "92fe211b91f6ebe956ad6f96cca3e7106f5650700ca3ceff663d416a6836933a"
+        }
+      ],
+      "expectedFiles": [
+        "shell-head-on-cleared.full.png",
+        "shell-head-on-cleared.arena.png",
+        "shell-head-on-cleared.detail.png"
+      ]
+    },
+    {
+      "scene": {
+        "id": "touch-landscape-gameplay",
+        "purpose": "Real touch UI in compact landscape, whole arena between the pads.",
+        "scenario": "solo",
+        "options": {},
+        "viewport": {
+          "width": 640,
+          "height": 300
+        },
+        "mobile": "landscape",
+        "views": ["full", "arena"]
+      },
+      "status": "captured",
+      "error": null,
+      "state": {
+        "room": 0,
+        "mode": "solo",
+        "state": "playing",
+        "time": 0,
+        "ticks": 0,
+        "nextShell": 0,
+        "shots": 0,
+        "bounces": 0,
+        "walls": [
+          {
+            "x": 0,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          }
+        ],
+        "corks": [],
+        "players": [
+          {
+            "id": "p1",
+            "faction": "player",
+            "x": 180,
+            "y": 430,
+            "spawnX": 180,
+            "spawnY": 430,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "enemies": [
+          {
+            "id": "s0",
+            "faction": "enemy",
+            "x": 180,
+            "y": 150,
+            "spawnX": 180,
+            "spawnY": 150,
+            "r": 15,
+            "angle": 1.5707963267948966,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 1.2,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "s1",
+            "faction": "enemy",
+            "x": 780,
+            "y": 150,
+            "spawnX": 780,
+            "spawnY": 150,
+            "r": 15,
+            "angle": 1.5707963267948966,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 1.58,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "shells": [],
+        "effects": [],
+        "events": ["0.00  Room loaded: First Bounce"]
+      },
+      "renderContext": {
+        "canvasBounds": {
+          "x": 138.671875,
+          "y": 92,
+          "width": 362.65625,
+          "height": 203.984375
+        },
+        "viewport": {
+          "width": 640,
+          "height": 300
+        },
+        "mobileContext": {
+          "mobile": "landscape",
+          "move": {
+            "x": 12,
+            "y": 194,
+            "width": 96,
+            "height": 96
+          },
+          "aim": {
+            "x": 532,
+            "y": 194,
+            "width": 96,
+            "height": 96
+          },
+          "arena": {
+            "x": 138.671875,
+            "y": 92,
+            "width": 362.65625,
+            "height": 203.984375
+          }
+        },
+        "deviceScaleFactor": 1,
+        "maxTouchPoints": 2,
+        "fonts": "loaded",
+        "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
+        "visible": "visible"
+      },
+      "images": [
+        {
+          "file": "touch-landscape-gameplay.full.png",
+          "sha256": "e5785ae230fbc96c0f88ae2390069f8324d92d119151490d9f9ae8c7533385f5"
+        },
+        {
+          "file": "touch-landscape-gameplay.arena.png",
+          "sha256": "1636090961525841419bca2feb761e3fbfe7e7659633b2633d8c6a7759c68e9c"
+        }
+      ],
+      "expectedFiles": ["touch-landscape-gameplay.full.png", "touch-landscape-gameplay.arena.png"]
+    },
+    {
+      "scene": {
+        "id": "touch-portrait-paused",
+        "purpose": "Rotate a clock-controlled landscape game into portrait; actual orientation guard.",
+        "scenario": "solo",
+        "options": {},
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "mobile": "portrait",
+        "views": ["full"]
+      },
+      "status": "captured",
+      "error": null,
+      "state": {
+        "room": 0,
+        "mode": "solo",
+        "state": "paused",
+        "time": 0,
+        "ticks": 0,
+        "nextShell": 0,
+        "shots": 0,
+        "bounces": 0,
+        "walls": [
+          {
+            "x": 0,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          }
+        ],
+        "corks": [],
+        "players": [
+          {
+            "id": "p1",
+            "faction": "player",
+            "x": 180,
+            "y": 430,
+            "spawnX": 180,
+            "spawnY": 430,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "enemies": [
+          {
+            "id": "s0",
+            "faction": "enemy",
+            "x": 180,
+            "y": 150,
+            "spawnX": 180,
+            "spawnY": 150,
+            "r": 15,
+            "angle": 1.5707963267948966,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 1.2,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "s1",
+            "faction": "enemy",
+            "x": 780,
+            "y": 150,
+            "spawnX": 780,
+            "spawnY": 150,
+            "r": 15,
+            "angle": 1.5707963267948966,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 1.58,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "shells": [],
+        "effects": [],
+        "events": ["0.00  Room loaded: First Bounce"]
+      },
+      "renderContext": {
+        "canvasBounds": {
+          "x": 168,
+          "y": 450.8125,
+          "width": 54,
+          "height": 30.375
+        },
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "mobileContext": {
+          "mobile": "portrait",
+          "orientationGuard": {
+            "x": 0,
+            "y": 0,
+            "width": 390,
+            "height": 844
+          }
+        },
+        "deviceScaleFactor": 1,
+        "maxTouchPoints": 2,
+        "fonts": "loaded",
+        "focusedElement": "",
+        "focusVisible": true,
+        "documentHasFocus": true,
+        "visible": "visible"
+      },
+      "images": [
+        {
+          "file": "touch-portrait-paused.full.png",
+          "sha256": "3b9a118e7c34cc33afa0985aa18079bc8173c82cd4f6f3492f1e9b31755254fc"
+        }
+      ],
+      "expectedFiles": ["touch-portrait-paused.full.png"]
     }
   ]
 }

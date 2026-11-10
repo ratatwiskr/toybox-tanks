@@ -15,13 +15,13 @@ is hidden inside convenience commands.
 
 ## Visual workflow
 
-| Command | Purpose | Changes references? |
-| --- | --- | --- |
-| `visual:capture` | Overwrite current Git-trackable catalogue | No |
-| `visual:compare` | Capture fresh actuals and compare approved references | No |
-| `visual:report` | Open local comparison report | No |
-| `visual:approve` | Promote explicitly reviewed hashes | Selected images only |
-| `visual:candidates` | Older nine-scene candidate-only capture | No |
+| Command             | Purpose                                               | Changes references?  |
+| ------------------- | ----------------------------------------------------- | -------------------- |
+| `visual:capture`    | Overwrite current Git-trackable catalogue             | No                   |
+| `visual:compare`    | Capture fresh actuals and compare approved references | No                   |
+| `visual:report`     | Open local comparison report                          | No                   |
+| `visual:approve`    | Promote explicitly reviewed hashes                    | Selected images only |
+| `visual:candidates` | Older nine-scene candidate-only capture               | No                   |
 
 ```sh
 TOYBOX_REVIEW_SCENES=ui-menu,ui-coop,cork-atlas npm run visual:compare
