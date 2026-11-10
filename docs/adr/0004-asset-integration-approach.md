@@ -1,7 +1,7 @@
 # ADR 0004: Asset integration approach (Phase 0 decision record)
 
 Date: 2026-11-10
-Status: Proposed. The owner asked on 2026-11-10 to proceed with the recommendations below; they become accepted when this record is approved in review. This record authorizes no production code, gameplay change, screenshot baseline or CI change.
+Status: Proposed. The owner asked on 2026-11-10 to proceed with the recommendations below and confirmed D1; they become accepted when this record is approved in review. This record authorizes no production code, gameplay change, screenshot baseline or CI change.
 
 Related: issue #24, issue #1 (merged as PR #31), `docs/asset-integration-plan.md` (not replaced), ADR 0002 (procedural cork), ADR 0003 (shell-shell collision).
 
@@ -22,7 +22,7 @@ The repository holds two directories (`Perplexity-assets-...aspekte/` and `...as
 - `toybox-assets.js` (v0.1 study): exports `definitions`, `markup`, `svg`, `image`. Parts carry a `rotation` field (`body`, `aim`, `loaded`, `fixed`). Metadata includes `bodyForward`, `aimPivot`, `footprint` (circle radius 35, visual only) and `suggestedDisplaySize`. Cork assets are `block-cork-1..3` with `damageStage` 0..2. There is no `prepareLayers` or `drawLayers`.
 - `toybox-assets (2).js`: exports the same four functions plus `prepareLayers(id, resolution = 256)` and `drawLayers(ctx, layers, x, y, size, options)`. Parts carry a `role` field with the same four values. Shadows are `[rx, ry]` arrays, and there is no `footprint`, `aimPivot` or `bodyForward`. Cork assets are `block-cork-0..2`. Colors and corner radii differ slightly (for example the blue hull is `#458fc5` here and `#458ec3` in v0.1; the sentry hull is `#3c424b` here and `#383d45` in v0.1).
 - Both: viewBox -64..64, forward is +X, angles are degrees, tank muzzle `[54, 0]`, sentry assets `turret-enemy` (fixed base plus aim layer) and `tank-enemy`.
-- The handoff prose describes the `prepareLayers` API, so it matches the `(2)` file. Which file is the newest delivery is not provable from the repository; the owner is asked to confirm.
+- The handoff prose describes the `prepareLayers` API, so it matches the `(2)` file. The repository cannot prove which file is the newest delivery. The owner confirmed on 2026-11-10 that the `(2)` file is the one to use.
 
 ### Other scripts
 
@@ -37,7 +37,7 @@ The repository holds two directories (`Perplexity-assets-...aspekte/` and `...as
 
 ## Decisions
 
-D1. Source revision. Extract the typed data from `toybox-assets (2).js`, provided the owner confirms it is the newest delivery; otherwise from `toybox-assets.js`. The adapter reads checked-in typed data and never calls the pack's globals, so a different revision later only means regenerating that data. Status: owner confirmation open.
+D1. Source revision. Extract the typed data from `toybox-assets (2).js`. Confirmed by the owner on 2026-11-10. The adapter reads checked-in typed data and never calls the pack's globals, so a different revision later only means regenerating that data.
 
 D2. Rendering approach. Layers as data, rasterized once, drawn with `drawImage` (option C in issue #24), with the procedural drawing kept as fallback. No runtime fetch, CDN, script evaluation or external resource. Cork stays procedural.
 
@@ -53,7 +53,7 @@ D7. Floor. `wood-warm` as a world-anchored repeating pattern. Spawn rings stay. 
 
 D8. Raster size and browser check. 256 px per layer, which matches the pack's own `prepareLayers` default; memory is about 256 KB per layer. No separate browser spike is run now. The adapter step's CI browser tests must show that SVG decoding works in Chromium, Firefox and WebKit, with the procedural fallback proven by a test.
 
-D9. Scale. Art is fitted to the existing body and authoritative muzzle, never the reverse. Candidate scale factors: about 0.43 from the footprint (radius 35 to collision radius 15), about 0.47 from hull width, about 0.5 by eye. With the 54 px art muzzle these give roughly 23, 25 and 27 logical px against today's barrel tip near 25. Candidate images pick the value.
+D9. Scale. Art is fitted to the existing body and authoritative muzzle, never the reverse. Candidate scale factors: about 0.43 from the footprint (radius 35 to collision radius 15), about 0.47 from hull width, about 0.5 by eye. With the 54 px art muzzle these give roughly 23, 25 and 27 logical px against today's barrel tip near 25. Candidate images pick the value. The `(2)` file has no `footprint` field, so the 0.43 figure comes from the v0.1 file and the issue plan.
 
 D10. Duplicates. Left untouched. A separate cleanup PR needs explicit owner approval.
 
@@ -72,4 +72,3 @@ Every step ends with candidate screenshots and explicit owner approval. Candidat
 - No browser run, screenshot capture or build-size measurement.
 - The blocks, floors and border scripts were not re-verified.
 - Duplicate pack copies were not byte-compared.
-- The newest-revision question (D1) is unresolved.
