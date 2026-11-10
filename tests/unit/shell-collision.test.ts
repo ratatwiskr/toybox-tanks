@@ -119,7 +119,7 @@ describe('shell-shell collision', () => {
     const world = createEmptyWorld('coop');
     const player = createTank('p1', 'player', 200, 200);
     player.angle = 0;
-    const enemy = createTank('s0', 'enemy', 240, 200);
+    const enemy = createTank('s0', 'enemy', 260, 200);
     enemy.angle = Math.PI;
     world.players = [player];
     world.enemies = [enemy];
@@ -127,8 +127,9 @@ describe('shell-shell collision', () => {
     expect(shoot(world, player)).toBe(true);
     expect(shoot(world, enemy)).toBe(true);
 
-    // Muzzle sweeps cross at 40 px separation, but neither shell may pop at
-    // the muzzle; convergence is handled by resolveShellCollisions later.
+    // At 60 px separation the muzzle sweeps do not reach the enemy's hit
+    // boundary, so neither shell pops at the muzzle; convergence is handled
+    // by resolveShellCollisions later.
     expect(world.shells.every((shell) => !shell.dead)).toBe(true);
   });
 
