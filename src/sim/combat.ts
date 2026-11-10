@@ -2,6 +2,7 @@ import { CONFIG } from '../config';
 import { canHit, firstTerrain, rayCircle, reflect } from './collision';
 import type { TerrainHit, WallHit } from './collision';
 import { poof, record } from './feedback';
+import { firstShellContact } from './shell-contact';
 import type { Shell, Tank, World } from './types';
 
 export function activeShells(world: World, owner: string): number {
@@ -57,6 +58,85 @@ export function shoot(world: World, tank: Tank): boolean {
   // Sweep all the way out of the barrel, never spawn beyond nearby terrain.
   advanceShell(world, shell, 23);
   return true;
+}
+
+export function resolveShellCollisions(world: World, dt: number): void {
+  if (!Number.isFinite(dt) || dt <= 0) {
+    return;
+  }
+
+  const live = world.shells.filter((shell) => !shell.dead).sort((a, b) => a.id - b.id);
+  if (live.length < 2) {
+    return;
+  }
+
+  // Terrain/tank fractions and pair fractions use the same normalized step.
+  // Infinity distinguishes no obstacle from an obstacle exactly at step end.
+  const limits = new Map<number, number>();
+  for (const shell of live) {
+    const dx = shell.vx * dt;
+    const dy = shell.vy * dt;
+    let limit = Infinity;
+    const terrain = firstTerrain(world, shell.x, shell.y, dx, dy);
+    if (terrain !== null) {
+      limit = terrain.t;
+    }
+    for (const tank of [...world.players, ...world.enemies]) {
+      if (!canHit(shell, tank)) {
+        continue;
+      }
+      const hit = rayCircle(shell.x, shell.y, dx, dy, tank);
+      if (hit !== null) {
+        limit = Math.min(limit, hit);
+      }
+    }
+    limits.set(shell.id, limit);
+  }
+
+  interface Candidate {
+    readonly a: Shell;
+    readonly b: Shell;
+    readonly t: number;
+  }
+
+  const candidates: Candidate[] = [];
+  for (let i = 0; i < live.length; i += 1) {
+    const a = live[i];
+    if (a === undefined) {
+      continue;
+    }
+    for (let j = i + 1; j < live.length; j += 1) {
+      const b = live[j];
+      if (b === undefined) {
+        continue;
+      }
+      const t = firstShellContact(a, b, dt);
+      const limit = Math.min(limits.get(a.id) ?? 0, limits.get(b.id) ?? 0);
+      // Preserve conservative terrain/tank priority for nearly equal times.
+      if (t !== null && t < limit - 1e-7) {
+        candidates.push({ a, b, t });
+      }
+    }
+  }
+
+  candidates.sort(
+    (left, right) => left.t - right.t || left.a.id - right.a.id || left.b.id - right.b.id,
+  );
+
+  for (const { a, b, t } of candidates) {
+    if (a.dead || b.dead) {
+      continue;
+    }
+    a.dead = true;
+    b.dead = true;
+    poof(
+      world,
+      (a.x + a.vx * dt * t + b.x + b.vx * dt * t) / 2,
+      (a.y + a.vy * dt * t + b.y + b.vy * dt * t) / 2,
+      'poof',
+    );
+    record(world, 'Shells collided');
+  }
 }
 
 export function shellWallContact(world: World, shell: Shell, hit: WallHit): boolean {

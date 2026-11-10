@@ -1,6 +1,6 @@
 import { CONFIG } from '../config';
 import { moveTank } from './collision';
-import { advanceShell, shoot } from './combat';
+import { advanceShell, resolveShellCollisions, shoot } from './combat';
 import { turnToward, updateEnemy } from './enemies';
 import { record } from './feedback';
 import { addMapBorder, MAPS, validateMap } from './maps';
@@ -184,6 +184,8 @@ export function stepWorld(world: World, dt: number, commands: readonly Command[]
   for (const enemy of world.enemies) {
     updateEnemy(world, enemy, dt);
   }
+
+  resolveShellCollisions(world, dt);
 
   for (const shell of world.shells) {
     if (!shell.dead) {

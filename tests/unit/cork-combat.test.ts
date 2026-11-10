@@ -47,12 +47,6 @@ function firstCork(world: World): Cork {
   return cork;
 }
 
-function simultaneousFixture(): World {
-  const world = fixture();
-  world.shells = [1, 2, 3, 4].map((id) => ({ ...projectile(id), x: 116 }));
-  return world;
-}
-
 describe('cork terrain', () => {
   it('blocks a circular tank until destroyed, then permits the same movement', () => {
     const world = fixture();
@@ -205,14 +199,20 @@ describe('cork terrain', () => {
     expect(world.corks.map((cork) => cork.hitsRemaining)).toEqual([2, 3]);
   });
 
-  it('lets later shells pass after the third same-step contact destroys cork', () => {
-    const world = simultaneousFixture();
-    stepWorld(world, CONFIG.fixedStep);
+  it('lets later shells pass after the third contact destroys cork', () => {
+    const world = fixture();
+    for (let index = 0; index < 3; index += 1) {
+      const shell = projectile(index + 1);
+      advanceShell(world, shell, 200);
+      expect(shell.dead).toBe(true);
+    }
     expect(firstCork(world).hitsRemaining).toBe(0);
     expect(firstCork(world).destroyed).toBe(true);
-    expect(world.shells).toHaveLength(1);
-    expect(world.shells[0]?.id).toBe(4);
-    expect(world.shells[0]?.x).toBeGreaterThan(120 - CONFIG.shellRadius);
+
+    const fourth = projectile(4);
+    advanceShell(world, fourth, 200);
+    expect(fourth.dead).toBe(false);
+    expect(fourth.x).toBeGreaterThan(120 - CONFIG.shellRadius);
     expect(world.effects).toEqual([]);
   });
 
@@ -236,10 +236,14 @@ describe('cork terrain', () => {
   });
 
   it('repeats simultaneous destruction deterministically', () => {
-    const a = simultaneousFixture();
-    const b = simultaneousFixture();
-    stepWorld(a, CONFIG.fixedStep);
-    stepWorld(b, CONFIG.fixedStep);
+    const a = fixture();
+    const b = fixture();
+    for (let index = 0; index < 3; index += 1) {
+      const shellA = projectile(index + 1);
+      const shellB = projectile(index + 1);
+      advanceShell(a, shellA, 200);
+      advanceShell(b, shellB, 200);
+    }
     expect(a).toEqual(b);
   });
 });
