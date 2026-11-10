@@ -5,9 +5,9 @@
   "complete": true,
   "runError": null,
   "source": {
-    "revision": "03baf5d8e551bca983d35f78c297dd5d13b3a556",
+    "revision": "2c19d5c98bfff5f57aceed1b64d60f63f579d571",
     "sourceStatus": "",
-    "sourceTreeSha256": "42b690145a7dbb86745fec32f4d96405323e6628be0bedc87d035096c126a4be"
+    "sourceTreeSha256": "fc87979939e2c53cadb86522c054d9501c66d4fa1f9200fc104c832114163376"
   },
   "environment": {
     "os": "linux",
@@ -620,15 +620,27 @@
         "events": ["0.00  Room loaded: First Bounce"]
       },
       "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
         "deviceScaleFactor": 1,
         "fonts": "loaded",
         "focusedElement": "",
+        "focusVisible": true,
+        "documentHasFocus": true,
         "visible": "visible"
       },
       "images": [
         {
           "file": "ui-menu.full.png",
-          "sha256": "21444d77a7e58cf0e262deeedf256af7105f10197156ebea043a51132c71967f"
+          "sha256": "95d80fe220c79bee90dde5d888acc1040dbeaa6d3f075d1f9f2005eb40f667a5"
         },
         {
           "file": "ui-menu.arena.png",
@@ -1231,9 +1243,21 @@
         "events": ["0.00  Room loaded: First Bounce"]
       },
       "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
         "deviceScaleFactor": 1,
         "fonts": "loaded",
         "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
         "visible": "visible"
       },
       "images": [
@@ -1854,15 +1878,27 @@
         "events": ["0.00  Room loaded: First Bounce"]
       },
       "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
         "deviceScaleFactor": 1,
         "fonts": "loaded",
         "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
         "visible": "visible"
       },
       "images": [
         {
           "file": "ui-active-shot.full.png",
-          "sha256": "8839a34432341786fae979622e49d4f68ab7ea3b2d882866427a46850f498acc"
+          "sha256": "1239aeaa0ed07164f957aa431a284475d974b91fc3bbb02c3c2316b1a9b252c5"
         },
         {
           "file": "ui-active-shot.arena.png",
@@ -2465,9 +2501,21 @@
         "events": ["0.00  Room loaded: First Bounce"]
       },
       "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
         "deviceScaleFactor": 1,
         "fonts": "loaded",
         "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
         "visible": "visible"
       },
       "images": [
@@ -3076,15 +3124,27 @@
         "events": ["0.00  Room loaded: First Bounce"]
       },
       "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
         "deviceScaleFactor": 1,
         "fonts": "loaded",
         "focusedElement": "",
+        "focusVisible": true,
+        "documentHasFocus": true,
         "visible": "visible"
       },
       "images": [
         {
           "file": "ui-paused.full.png",
-          "sha256": "96c48823947ed4368a31d91da9dc5b87a0d1beee4e85e9e525074a9041b8fdb1"
+          "sha256": "0a925d4574b52fc3cdcc18d52768d500969749e66d8ba07ecf267d9cdff4f46d"
         },
         {
           "file": "ui-paused.arena.png",
@@ -3687,9 +3747,21 @@
         "events": ["0.00  VICTORY · room clear", "0.00  Room loaded: First Bounce"]
       },
       "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
         "deviceScaleFactor": 1,
         "fonts": "loaded",
         "focusedElement": "",
+        "focusVisible": true,
+        "documentHasFocus": true,
         "visible": "visible"
       },
       "images": [
@@ -4298,9 +4370,21 @@
         "events": ["0.00  DEFEAT", "0.00  Room loaded: First Bounce"]
       },
       "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
         "deviceScaleFactor": 1,
         "fonts": "loaded",
         "focusedElement": "",
+        "focusVisible": true,
+        "documentHasFocus": true,
         "visible": "visible"
       },
       "images": [
@@ -5057,9 +5141,21 @@
         "events": ["0.00  VICTORY · all rooms", "0.00  Room loaded: Cork Keep"]
       },
       "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
         "deviceScaleFactor": 1,
         "fonts": "loaded",
         "focusedElement": "",
+        "focusVisible": true,
+        "documentHasFocus": true,
         "visible": "visible"
       },
       "images": [
@@ -5668,9 +5764,21 @@
         "events": ["0.00  Room loaded: First Bounce"]
       },
       "renderContext": {
+        "canvasBounds": {
+          "x": 220.4375,
+          "y": 169.25,
+          "width": 839.109375,
+          "height": 471.984375
+        },
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
         "deviceScaleFactor": 1,
         "fonts": "loaded",
         "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
         "visible": "visible"
       },
       "images": [
@@ -6282,9 +6390,21 @@
         "events": ["0.00  Room loaded: First Bounce"]
       },
       "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
         "deviceScaleFactor": 1,
         "fonts": "loaded",
         "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
         "visible": "visible"
       },
       "images": [
@@ -6970,9 +7090,21 @@
         "events": ["0.00  Room loaded: Block Party"]
       },
       "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
         "deviceScaleFactor": 1,
         "fonts": "loaded",
         "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
         "visible": "visible"
       },
       "images": [
@@ -7663,15 +7795,27 @@
         "events": ["0.00  Room loaded: Together Through"]
       },
       "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
         "deviceScaleFactor": 1,
         "fonts": "loaded",
         "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
         "visible": "visible"
       },
       "images": [
         {
           "file": "campaign-together-through-start.full.png",
-          "sha256": "58c4cc64eb5493ca48d34e487e4b29472417a46fa0cc553fc41eb029773dd8e7"
+          "sha256": "4d03001214ef166af928bc9e8231819070d5cbea4350269b606c0f4eedbec20d"
         },
         {
           "file": "campaign-together-through-start.arena.png",
@@ -8428,9 +8572,21 @@
         "events": ["0.00  Room loaded: Cork Keep"]
       },
       "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
         "deviceScaleFactor": 1,
         "fonts": "loaded",
         "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
         "visible": "visible"
       },
       "images": [
@@ -8988,9 +9144,21 @@
         "events": ["Synthetic visual fixture: cork-atlas"]
       },
       "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
         "deviceScaleFactor": 1,
         "fonts": "loaded",
         "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
         "visible": "visible"
       },
       "images": [
@@ -9534,9 +9702,21 @@
         "events": ["Synthetic visual fixture: cork-isolated"]
       },
       "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
         "deviceScaleFactor": 1,
         "fonts": "loaded",
         "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
         "visible": "visible"
       },
       "images": [
@@ -10102,9 +10282,21 @@
         "events": ["Synthetic visual fixture: cork-adjacent"]
       },
       "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
         "deviceScaleFactor": 1,
         "fonts": "loaded",
         "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
         "visible": "visible"
       },
       "images": [
@@ -10670,9 +10862,21 @@
         "events": ["Synthetic visual fixture: cork-reversed"]
       },
       "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
         "deviceScaleFactor": 1,
         "fonts": "loaded",
         "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
         "visible": "visible"
       },
       "images": [
@@ -11211,9 +11415,21 @@
         "events": ["Synthetic visual fixture: cork-aim-blocked"]
       },
       "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
         "deviceScaleFactor": 1,
         "fonts": "loaded",
         "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
         "visible": "visible"
       },
       "images": [
@@ -11752,15 +11968,27 @@
         "events": ["Synthetic visual fixture: cork-aim-cleared"]
       },
       "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
         "deviceScaleFactor": 1,
         "fonts": "loaded",
         "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
         "visible": "visible"
       },
       "images": [
         {
           "file": "cork-aim-cleared.full.png",
-          "sha256": "03bf0f56afc9007fc033ae403c773ad59ca3886ab80c60a6627b222a252b8c76"
+          "sha256": "8cc9af62f301abc7b809176e090f9fae1d3c192536c27f5ad01c9e40643008a0"
         },
         {
           "file": "cork-aim-cleared.arena.png",
@@ -12299,9 +12527,21 @@
         "events": ["Synthetic visual fixture: cork-aim-reflected"]
       },
       "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
         "deviceScaleFactor": 1,
         "fonts": "loaded",
         "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
         "visible": "visible"
       },
       "images": [
@@ -12881,15 +13121,27 @@
         "events": ["Synthetic visual fixture: combat-feedback"]
       },
       "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
         "deviceScaleFactor": 1,
         "fonts": "loaded",
         "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
         "visible": "visible"
       },
       "images": [
         {
           "file": "combat-feedback.full.png",
-          "sha256": "c6f10bbbe2de5f4dff624858eb2e6aa404997971f206d11f41552f1d3073e386"
+          "sha256": "1511be697797dde95b0010ee275ae3d4341abcfda80ee5e32c0be5c98014e704"
         },
         {
           "file": "combat-feedback.arena.png",
