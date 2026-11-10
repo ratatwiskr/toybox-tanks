@@ -146,9 +146,15 @@ export function resolveShellCollisions(world: World, dt: number): void {
 
   const candidates: Candidate[] = [];
   for (let i = 0; i < live.length; i += 1) {
+    const a = live[i];
+    if (a === undefined) {
+      continue;
+    }
     for (let j = i + 1; j < live.length; j += 1) {
-      const a = live[i];
       const b = live[j];
+      if (b === undefined) {
+        continue;
+      }
       const limit = Math.min(limits.get(a.id) ?? 0, limits.get(b.id) ?? 0);
       if (limit <= 0) {
         continue;
