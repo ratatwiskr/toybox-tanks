@@ -1,5 +1,11 @@
 export type Faction = 'player' | 'enemy';
 
+export type SimulationEvent =
+  | { readonly type: 'shot'; readonly faction: Faction }
+  | { readonly type: 'terrain'; readonly kind: 'bounce' | 'wall' | 'cork' | 'shellCollision' }
+  | { readonly type: 'damage'; readonly faction: Faction; readonly destroyed: boolean }
+  | { readonly type: 'outcome'; readonly state: 'cleared' | 'defeat' | 'completed' };
+
 export type Mode = 'coop' | 'solo';
 
 export type GameState =
