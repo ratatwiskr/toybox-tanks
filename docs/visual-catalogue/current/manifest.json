@@ -5,7 +5,7 @@
   "complete": true,
   "runError": null,
   "source": {
-    "revision": "2c19d5c98bfff5f57aceed1b64d60f63f579d571",
+    "revision": "473e3b02e6a711c0a67d2fb13f6b05ccd19ec535",
     "sourceStatus": "",
     "sourceTreeSha256": "fc87979939e2c53cadb86522c054d9501c66d4fa1f9200fc104c832114163376"
   },
@@ -640,7 +640,7 @@
       "images": [
         {
           "file": "ui-menu.full.png",
-          "sha256": "95d80fe220c79bee90dde5d888acc1040dbeaa6d3f075d1f9f2005eb40f667a5"
+          "sha256": "c891fe5b2009774a7261c4d25eb73f71b7af5214ecc46ffa4b70856cff9926b5"
         },
         {
           "file": "ui-menu.arena.png",
@@ -1898,7 +1898,7 @@
       "images": [
         {
           "file": "ui-active-shot.full.png",
-          "sha256": "1239aeaa0ed07164f957aa431a284475d974b91fc3bbb02c3c2316b1a9b252c5"
+          "sha256": "8839a34432341786fae979622e49d4f68ab7ea3b2d882866427a46850f498acc"
         },
         {
           "file": "ui-active-shot.arena.png",
@@ -3144,7 +3144,7 @@
       "images": [
         {
           "file": "ui-paused.full.png",
-          "sha256": "0a925d4574b52fc3cdcc18d52768d500969749e66d8ba07ecf267d9cdff4f46d"
+          "sha256": "96c48823947ed4368a31d91da9dc5b87a0d1beee4e85e9e525074a9041b8fdb1"
         },
         {
           "file": "ui-paused.arena.png",
@@ -4390,7 +4390,7 @@
       "images": [
         {
           "file": "ui-defeat.full.png",
-          "sha256": "6f82294cb46c2107c8557eca5673e7094bf6c0de1daa4f48c91d77fdbe8b61a7"
+          "sha256": "e421b10e496075d1f388da64c46f62bb18daa76982f47916afbff54ddddb028e"
         },
         {
           "file": "ui-defeat.arena.png",
@@ -5784,7 +5784,7 @@
       "images": [
         {
           "file": "ui-resized-gameplay.full.png",
-          "sha256": "4ca968dbb071af604a882eb704ad2820ec0184691806f6ec4ca5a011ea8522b1"
+          "sha256": "6b33b611b8295e49b881b29c96a039687a4b9424055bce9ca3354f42814a8e90"
         },
         {
           "file": "ui-resized-gameplay.arena.png",
@@ -7110,7 +7110,7 @@
       "images": [
         {
           "file": "campaign-block-party-start.full.png",
-          "sha256": "6aa31ec052b2fffe50f1fadad10be165db1678ed39a2b0456b531b0b3a380f40"
+          "sha256": "869e9c2f87fa5ad3d38dd85923ed9f11e9d94c2ca282ee703dbff5b43e1aa978"
         },
         {
           "file": "campaign-block-party-start.arena.png",
@@ -7815,7 +7815,7 @@
       "images": [
         {
           "file": "campaign-together-through-start.full.png",
-          "sha256": "4d03001214ef166af928bc9e8231819070d5cbea4350269b606c0f4eedbec20d"
+          "sha256": "be2c4929c8fb0f20981d0c328209ff0fe98847912cf9cc1ac2b8bc0f3cec3833"
         },
         {
           "file": "campaign-together-through-start.arena.png",
@@ -8592,7 +8592,7 @@
       "images": [
         {
           "file": "campaign-cork-keep-start.full.png",
-          "sha256": "dec43c3193f52a6e45da3676e0c6da86171b48c37097e971534acc1f4a6bc091"
+          "sha256": "4b2b77d16f4ed512411d1416d14563818ae1f7425046797a9acc8017e1db5976"
         },
         {
           "file": "campaign-cork-keep-start.arena.png",
@@ -9722,7 +9722,7 @@
       "images": [
         {
           "file": "cork-isolated.full.png",
-          "sha256": "77d03a690d76ad71e2f754fc03823c802d92cd5e9c595d97c922185fb8764102"
+          "sha256": "22e7997e1ed3e9df294088f858af50dc7c584a7e9411ea2b7926b8fa7e39bc0d"
         },
         {
           "file": "cork-isolated.arena.png",
@@ -11988,7 +11988,7 @@
       "images": [
         {
           "file": "cork-aim-cleared.full.png",
-          "sha256": "8cc9af62f301abc7b809176e090f9fae1d3c192536c27f5ad01c9e40643008a0"
+          "sha256": "03bf0f56afc9007fc033ae403c773ad59ca3886ab80c60a6627b222a252b8c76"
         },
         {
           "file": "cork-aim-cleared.arena.png",
@@ -12547,7 +12547,7 @@
       "images": [
         {
           "file": "cork-aim-reflected.full.png",
-          "sha256": "3e721a776a138637d8dad5787e409069ec8d82ac7fb4737ade663d6355a759ef"
+          "sha256": "a7b673cdaadf8dbd5b613d1e407455e6531830d9da59a4c8f6a76672017bdcf1"
         },
         {
           "file": "cork-aim-reflected.arena.png",
@@ -13141,7 +13141,7 @@
       "images": [
         {
           "file": "combat-feedback.full.png",
-          "sha256": "1511be697797dde95b0010ee275ae3d4341abcfda80ee5e32c0be5c98014e704"
+          "sha256": "826d5c7ea81718f106650973abfe5712e9cb7ea4e263af868e3423a06f685bd8"
         },
         {
           "file": "combat-feedback.arena.png",
