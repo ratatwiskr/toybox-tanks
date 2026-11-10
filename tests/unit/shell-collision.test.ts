@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { resolveShellCollisions, shoot } from '../../src/sim/combat';
+import { advanceShell, resolveShellCollisions, shoot } from '../../src/sim/combat';
 import type { Shell } from '../../src/sim/types';
 import { createEmptyWorld, createTank } from '../../src/sim/world';
 
@@ -14,6 +14,16 @@ function makeShell(
   owner: string,
 ): Shell {
   return { id, owner, faction, x, y, vx, vy, bounces: 0, dead: false };
+}
+
+function stepShells(world: { shells: Shell[] }, dt: number): void {
+  resolveShellCollisions(world, dt);
+  for (const shell of world.shells) {
+    if (!shell.dead) {
+      advanceShell(world, shell, Math.hypot(shell.vx, shell.vy) * dt);
+    }
+  }
+  world.shells = world.shells.filter((shell) => !shell.dead);
 }
 
 describe('shell-shell collision', () => {
@@ -69,7 +79,7 @@ describe('shell-shell collision', () => {
 
   it('terrain contact earlier in the step wins over shell collision', () => {
     const world = createEmptyWorld('coop');
-    world.walls = [{ x: 130, y: 150, w: 40, h: 100 }];
+    world.walls = [{ x: 110, y: 150, w: 40, h: 100 }];
     const a = makeShell(1, 100, 200, 100, 0, 'player', 'p1');
     const b = makeShell(2, 160, 200, -100, 0, 'enemy', 's0');
     world.shells = [a, b];
@@ -105,16 +115,45 @@ describe('shell-shell collision', () => {
     expect(firstById.get(3)).toBe(false);
   });
 
-  it('muzzle sweep pops an incoming shell', () => {
+  it('does not pop either shell at the muzzle when both fire in the same step', () => {
     const world = createEmptyWorld('coop');
     const player = createTank('p1', 'player', 200, 200);
     player.angle = 0;
+    const enemy = createTank('s0', 'enemy', 240, 200);
+    enemy.angle = Math.PI;
     world.players = [player];
-    const incoming = makeShell(1, 225, 200, -100, 0, 'enemy', 's0');
-    world.shells = [incoming];
+    world.enemies = [enemy];
 
     expect(shoot(world, player)).toBe(true);
-    expect(world.shells.every((shell) => shell.dead)).toBe(true);
+    expect(shoot(world, enemy)).toBe(true);
+
+    // Muzzle sweeps cross at 40 px separation, but neither shell may pop at
+    // the muzzle; convergence is handled by resolveShellCollisions later.
+    expect(world.shells.every((shell) => !shell.dead)).toBe(true);
+  });
+
+  it('does not pop an enemy shell at the muzzle when the player fires first', () => {
+    const world = createEmptyWorld('coop');
+    const player = createTank('p1', 'player', 200, 200);
+    player.angle = 0;
+    const enemy = createTank('s0', 'enemy', 260, 200);
+    enemy.angle = Math.PI;
+    world.players = [player];
+    world.enemies = [enemy];
+
+    // Step 1: player fires; enemy is still charging.
+    expect(shoot(world, player)).toBe(true);
+    stepShells(world, 1 / 120);
+
+    // Step 2: enemy finishes charging and fires.
+    enemy.cooldown = 0;
+    expect(shoot(world, enemy)).toBe(true);
+
+    // The enemy's freshly fired shell must not be popped by the player's
+    // in-flight shell via the muzzle sweep.
+    const enemyShell = world.shells.find((shell) => shell.owner === 's0');
+    expect(enemyShell).toBeDefined();
+    expect(enemyShell?.dead).toBe(false);
   });
 
   it('post-bounce shell still collides with an opposing shell', () => {

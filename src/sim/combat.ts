@@ -51,57 +51,12 @@ export function shoot(world: World, tank: Tank): boolean {
     dead: false,
   };
 
-  const spawnX = tank.x;
-  const spawnY = tank.y;
   world.shells.push(shell);
   tank.cooldown = tank.faction === 'player' ? CONFIG.firingCooldown : CONFIG.enemyFiringInterval;
   world.shots += 1;
   // Sweep all the way out of the barrel, never spawn beyond nearby terrain.
   advanceShell(world, shell, 23);
-  muzzleShellContact(world, shell, spawnX, spawnY);
   return true;
-}
-
-function segmentPointDistance(
-  ax: number,
-  ay: number,
-  bx: number,
-  by: number,
-  px: number,
-  py: number,
-): number {
-  const abx = bx - ax;
-  const aby = by - ay;
-  const apx = px - ax;
-  const apy = py - ay;
-  const lengthSquared = abx * abx + aby * aby;
-  if (lengthSquared < 1e-12) {
-    return Math.hypot(apx, apy);
-  }
-  const t = Math.max(0, Math.min(1, (apx * abx + apy * aby) / lengthSquared));
-  return Math.hypot(px - (ax + abx * t), py - (ay + aby * t));
-}
-
-// The muzzle sweep is short (23 px) and other shells have not advanced yet in
-// this step, so a segment-to-point check against their current position is a
-// bounded, conservative approximation of the swept interaction.
-function muzzleShellContact(world: World, shell: Shell, spawnX: number, spawnY: number): void {
-  if (shell.dead) {
-    return;
-  }
-  for (const other of world.shells) {
-    if (other === shell || other.dead) {
-      continue;
-    }
-    const distance = segmentPointDistance(spawnX, spawnY, shell.x, shell.y, other.x, other.y);
-    if (distance <= CONFIG.shellRadius * 2) {
-      shell.dead = true;
-      other.dead = true;
-      poof(world, (shell.x + other.x) / 2, (shell.y + other.y) / 2, 'spark');
-      record(world, 'Shells collided');
-      return;
-    }
-  }
 }
 
 export function resolveShellCollisions(world: World, dt: number): void {
