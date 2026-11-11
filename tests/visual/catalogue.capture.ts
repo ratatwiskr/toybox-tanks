@@ -12,6 +12,7 @@ import {
   sourceProvenance,
   type CaptureRecord,
 } from './catalogue-support';
+import { FullscreenUnsupportedError } from './catalogue-fullscreen';
 import { developmentStaging } from './development-cli';
 
 function escape(value: string): string {
@@ -75,6 +76,7 @@ test('captures every catalogue scene once without image comparisons', async ({
     headless: String(testInfo.project.use.headless !== false),
   };
   await writeCatalogue(source, records, environment, false);
+  let unsupportedFullscreen: FullscreenUnsupportedError | null = null;
   for (const record of records) {
     try {
       await test.step(record.scene.id, async () => {
@@ -88,6 +90,9 @@ test('captures every catalogue scene once without image comparisons', async ({
     } catch (error) {
       record.status = 'failed';
       record.error = error instanceof Error ? error.message : String(error);
+      if (error instanceof FullscreenUnsupportedError) {
+        unsupportedFullscreen = error;
+      }
     }
     await writeCatalogue(source, records, environment, false);
   }
@@ -96,6 +101,9 @@ test('captures every catalogue scene once without image comparisons', async ({
     ? null
     : 'Source changed during capture; this is not a single-revision catalogue.';
   await writeCatalogue(source, records, environment, true, runError);
+  if (unsupportedFullscreen !== null) {
+    throw unsupportedFullscreen;
+  }
   expect(
     records.filter((record) => record.status !== 'captured').map((record) => record.scene.id),
     'Incomplete capture; inspect staging gallery and manifest',
