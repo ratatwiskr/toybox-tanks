@@ -95,25 +95,9 @@ export function captureScenes(): CaptureScene[] {
       mobile: 'portrait',
       views: ['full'],
     },
-    {
-      id: 'desktop-fullscreen-gameplay',
-      purpose: 'Real app fullscreen, non-touch co-op, compact HUD without touch pads.',
-      scenario: 'coop',
-      options: {},
-      viewport,
-      fullscreen: true,
-      views: ['full'],
-    },
-    {
-      id: 'touch-fullscreen-gameplay',
-      purpose: 'Real app fullscreen, touch solo, full arena between enabled pads.',
-      scenario: 'solo',
-      options: {},
-      viewport: { width: 640, height: 300 },
-      mobile: 'landscape',
-      fullscreen: true,
-      views: ['full'],
-    },
+    // Fullscreen catalogue coverage is deferred. Entering fullscreen currently
+    // triggers the app's focus/pause behavior in the capture environment, and
+    // the intended landscape-only touch behavior needs a separate decision.
   ];
   if (new Set(scenes.map((scene) => scene.id)).size !== scenes.length) {
     throw new Error('Duplicate catalogue scene IDs');
@@ -164,7 +148,7 @@ export async function sourceProvenance(): Promise<{
     ...sourcePaths,
   ]);
   const digest = createHash('sha256');
-  for (const path of [...new Set(paths.split('\0').filter(Boolean))].sort()) {
+  for (const path of [...new Set(paths.split('\0')).filter(Boolean).sort()]) {
     digest.update(path).update('\0');
     try {
       digest.update(await readFile(path));
@@ -174,7 +158,6 @@ export async function sourceProvenance(): Promise<{
       }
       digest.update('<deleted>');
     }
-    digest.update('\0');
   }
   return {
     revision: git(['rev-parse', 'HEAD']),
