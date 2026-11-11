@@ -19,7 +19,7 @@ import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-import { FullscreenUnsupportedError } from './catalogue-fullscreen';
+import { FullscreenUnsupportedError } from './catalogue-fullscreen.ts';
 
 export const developmentBaseline = 'docs/visual-catalogue/current';
 export const developmentStaging = 'test-results/visual-baseline-staging';
