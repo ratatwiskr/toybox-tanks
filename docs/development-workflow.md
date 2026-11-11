@@ -6,11 +6,11 @@ hash-selection/promotion workflow in this branch's task and evidence notes.
 
 ## Three commands
 
-| Command | Result |
-| --- | --- |
-| `npm run capture:visual:baseline` | Capture all registered scenes and replace the saved development checkpoint after a complete successful run |
-| `npm run test:visual:compare` | Capture current actuals and compare against the checkpoint; fail on differences, missing images, coverage changes or capture errors |
-| `npm run test:visual:report` | Serve the most recent comparison report on an automatically selected loopback port |
+| Command                           | Result                                                                                                                              |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run capture:visual:baseline` | Capture all registered scenes and replace the saved development checkpoint after a complete successful run                          |
+| `npm run test:visual:compare`     | Capture current actuals and compare against the checkpoint; fail on differences, missing images, coverage changes or capture errors |
+| `npm run test:visual:report`      | Serve the most recent comparison report on an automatically selected loopback port                                                  |
 
 No environment-variable snippets, hand-written hashes, scene lists, manual
 cleanup, snapshot-update flags or remembered ports are needed. All currently
