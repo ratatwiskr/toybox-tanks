@@ -50,7 +50,8 @@ export async function enterFullscreenCapture(page: Page, scene: CaptureScene): P
         async () =>
           page.evaluate(() => {
             if (document.fullscreenElement === document.getElementById('app')) return 'active';
-            return document.getElementById('fullscreenBtn')?.textContent === 'Fullscreen unavailable'
+            return document.getElementById('fullscreenBtn')?.textContent ===
+              'Fullscreen unavailable'
               ? 'denied'
               : 'pending';
           }),
