@@ -1,7 +1,17 @@
 import { CONFIG } from './config';
 import { advanceWorld } from './presentation/body-heading';
 import { MAPS } from './sim/maps';
-import type { Command, Cork, Effect, Mode, Shell, Tank, Wall, World } from './sim/types';
+import type {
+  Command,
+  Cork,
+  Effect,
+  Mode,
+  Shell,
+  SimulationEvent,
+  Tank,
+  Wall,
+  World,
+} from './sim/types';
 import { createEmptyWorld, createWorld, evaluateOutcome } from './sim/world';
 import { createVisualWorld, type VisualSceneId } from './visual-scenes';
 
@@ -88,6 +98,7 @@ export interface TestSnapshot {
 }
 
 export interface TestBridgeHost {
+  afterStep?(events: readonly SimulationEvent[]): void;
   getWorld(): World;
   replaceWorld(world: World): void;
   readCommands(): readonly Command[];
@@ -330,7 +341,8 @@ export function createTestBridge(host: TestBridgeHost): ToyboxTestBridge {
         const commands = Array.from({ length: world.players.length }, (_, index) =>
           normalizeCommand(source[index]),
         );
-        advanceWorld(world, CONFIG.fixedStep, commands);
+        const events = advanceWorld(world, CONFIG.fixedStep, commands);
+        host.afterStep?.(events);
       }
 
       host.sync();
