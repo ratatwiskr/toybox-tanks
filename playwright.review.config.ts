@@ -14,7 +14,7 @@ export default defineConfig({
   testDir: './tests',
   testMatch: /visual\/review\.compare\.ts$/,
   outputDir: 'test-results/visual-review',
-  snapshotPathTemplate: '{testDir}/../docs/visual-references/chromium-local/{arg}{ext}',
+  snapshotPathTemplate: '{testDir}/../docs/visual-catalogue/current/{arg}{ext}',
   updateSnapshots: 'none',
   fullyParallel: false,
   workers: 1,

@@ -1,62 +1,90 @@
-# Developer command guide
+# Development screenshots
 
-Scripts are ordered by workflow: run the app, review visuals, verify changes,
-run focused checks, build releases, then compatibility aliases and lifecycle.
-Use `npm run` to list commands. No fake separator scripts or automatic approval
-is hidden inside convenience commands.
+This is an opt-in development review workflow, not an approved/enforced visual
+regression suite. The 2026-11-11 scope clarification supersedes the earlier
+hash-selection/promotion workflow in this branch's task and evidence notes.
 
-## Daily development
+## Three commands
 
-- `dev`: normal application. `dev:test`: application with the test-only bridge.
-- `preview`: serve an existing production build.
-- `verify:fast`: existing non-browser verification. `verify`: existing full gate.
-- `format`, `format:check`, `lint`, `lint:fix`, `typecheck`: focused quality tools.
-  Format only intended files when preserving unrelated edits.
+| Command | Result |
+| --- | --- |
+| `npm run capture:visual:baseline` | Capture all registered scenes and replace the saved development checkpoint after a complete successful run |
+| `npm run test:visual:compare` | Capture current actuals and compare against the checkpoint; fail on differences, missing images, coverage changes or capture errors |
+| `npm run test:visual:report` | Serve the most recent comparison report on an automatically selected loopback port |
 
-## Visual workflow
+No environment-variable snippets, hand-written hashes, scene lists, manual
+cleanup, snapshot-update flags or remembered ports are needed. All scenes,
+including real desktop/touch fullscreen, use the shared registry and renderer.
+The capture command prints a clickable file URL for the saved image gallery.
 
-| Command             | Purpose                                               | Changes references?  |
-| ------------------- | ----------------------------------------------------- | -------------------- |
-| `visual:capture`    | Overwrite current Git-trackable catalogue             | No                   |
-| `visual:compare`    | Capture fresh actuals and compare approved references | No                   |
-| `visual:report`     | Open local comparison report                          | No                   |
-| `visual:approve`    | Promote explicitly reviewed hashes                    | Selected images only |
-| `visual:candidates` | Older nine-scene candidate-only capture               | No                   |
+## First capture
 
-```sh
-TOYBOX_REVIEW_SCENES=ui-menu,ui-coop,cork-atlas npm run visual:compare
-npm run visual:report
-```
+Run capture:visual:baseline. It stages captures under
+`test-results/visual-baseline-staging/`, including a manifest and gallery.
+Only a successful complete capture replaces `docs/visual-catalogue/current/`.
+Review those images and their Git diff; commit the checkpoint when appropriate.
+Recording images does not assert owner acceptance of their aesthetics.
 
-Open the report separately even if comparison returns nonzero; opening a report
-does not convert failure into success. Omit scene selection for every scene.
-Playwright arguments are forwarded: `npm run visual:compare -- --grep ui-cleared`.
+A failed capture keeps the old checkpoint intact. Its partial staging gallery
+and manifest remain available for diagnosis until the next capture. Successful
+replacement removes obsolete owned PNGs while preserving unrelated owner files.
+The wrapper restores the old directory if publication fails. A process crash
+can leave a lock/recovery copy; inspect the named paths and running processes
+before recovering. Do not delete an active lock. Capture and compare are
+serialized in one checkout; browser suites should also run sequentially.
 
-Missing references fail unapproved. After reviewing actual PNGs, create the
-selection JSON documented in docs/visual-references/README.md, then:
+## Review later changes
 
-```sh
-TOYBOX_APPROVAL_FILE=test-results/visual-approval-selection.json npm run visual:approve
-npm run visual:compare
-npm run visual:report
-```
+1. Run test:visual:compare. It finishes with a meaningful exit code and never
+   changes the saved checkpoint. Actuals and diffs are ignored output.
+2. Run test:visual:report, even when comparison failed. Inspect expected/actual/
+   diff images, capture errors and metadata. Stop the report with Ctrl+C.
+3. Fix unintended changes and compare again. If you deliberately want the
+   current state to replace the checkpoint, run capture:visual:baseline again.
 
-Comparison uses explicit path segments for lookup and matching, preserving
-`ui-cleared.full.png` and `ui-cleared.full.png.approval.json` instead of looking
-for a hyphen-normalized filename. A path-contract test covers every scene/view.
-No reference rename, refresh, tolerance change or approval is implied. Preserve
-important generated diagnostics before another comparison clears its output.
+The report command opens an existing report; it does not recapture. If a runner
+fails before producing a report, inspect its terminal error and report timestamps
+rather than treating an older report as evidence of the failed attempt.
+New comparison runs replace temporary comparison output. Preserve diagnostics
+before rerunning. Keep an existing checkpoint while reviewing against it; do
+not capture first if your goal is to inspect changes relative to that checkpoint.
 
-## Tests, builds and compatibility
+Exact pixel comparisons remain strict. Environment/provenance metadata and the
+menu fresh-page repeat check remain diagnostic safeguards; do not loosen them
+to hide differences. A deliberate change/revert/pass demonstration and actual
+local verification still need to be recorded; this code commit is not evidence.
 
-Existing test commands and build/build:single/build:test retain their meanings.
-`test:visual` is still the candidate-only suite used by verify, not reference
-comparison. Browser suites run sequentially per docs/verification.md.
+## Agent responsibilities
 
-`capture:visual`, `compare:visual`, `report:visual` and `approve:visual` remain
-argument-forwarding aliases. Existing instructions and CI continue to work.
-Dependencies, lockfiles and verification gates are unchanged.
+For assigned changes with visible effects, consider and extend screenshot
+coverage as part of the task: new states, damage stages, effects, interactions,
+map situations, orientation and responsive/fullscreen layouts. Reuse stable
+scene IDs, production rendering and deterministic test-bridge setup. Do not
+create unrelated artwork or infrastructure to manufacture screenshots.
 
-This API-authored change has not been formatted, linted, compiled or executed
-in this session. No references or screenshots are approved. New coverage work
-is specified in docs/tasks/visual-coverage-continuation.md.
+Compare before replacing a useful checkpoint. Preserve uncommitted owner
+captures. Agents may refresh this development catalogue as explicitly documented
+feature evidence when the task authorizes it; they must not claim aesthetic
+approval or overwrite a checkpoint merely to hide unexpected changes. List
+added/changed scenes and actual capture/check results in the handoff.
+
+## Compatibility and boundaries
+
+Older capture:visual/visual:capture and compare:visual/visual:compare/report:visual/
+visual:report aliases point to the three commands above. Approval scripts are
+removed from package.json. The old approval implementation/configuration files
+remain inactive historical code, not part of this slice's procedure. Formal
+reference governance and any mandatory regression/CI gate are deferred.
+
+The existing test:visual remains a compatibility alias for test:visual:candidates:
+the older candidate-only suite used by verify, not reference diffing. Existing
+verify/verify:fast/test:browsers semantics, dependencies, lockfile and CI gates
+are unchanged. Installed Node 24 runs the small typed CLI directly. The wrapper
+handles the owner's installed Chromium cache and strict, temporary dev-server
+ports without reusing an arbitrary existing server. No installations occur.
+
+No screenshot generation, aesthetic inspection, formatting, lint, compilation,
+unit/browser execution or local signal/port verification was performed in the
+API authoring session. Run the normal verification commands locally and record
+actual results before merge. Raw catalogue Playwright invocation now stages
+captures only; use capture:visual:baseline for replacement.
