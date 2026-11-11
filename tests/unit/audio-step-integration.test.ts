@@ -32,9 +32,7 @@ function shell(id: number, x: number, vx: number): Shell {
 describe('audio events through the shared presentation step', () => {
   it('returns shot events while retaining movement-derived body heading', () => {
     const { world, player } = fixture();
-    const events = advanceWorld(world, CONFIG.fixedStep, [
-      { x: 1, y: 0, turn: 0, fire: true },
-    ]);
+    const events = advanceWorld(world, CONFIG.fixedStep, [{ x: 1, y: 0, turn: 0, fire: true }]);
     expect(player.x).toBeGreaterThan(300);
     expect(bodyHeading(player)).toBeCloseTo(0, 9);
     expect(events).toEqual([{ type: 'shot', faction: 'player' }]);

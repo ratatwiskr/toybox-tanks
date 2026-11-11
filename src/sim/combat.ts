@@ -62,11 +62,7 @@ export function shoot(world: World, tank: Tank, events?: SimulationEvent[]): boo
   return true;
 }
 
-export function resolveShellCollisions(
-  world: World,
-  dt: number,
-  events?: SimulationEvent[],
-): void {
+export function resolveShellCollisions(world: World, dt: number, events?: SimulationEvent[]): void {
   if (!Number.isFinite(dt) || dt <= 0) {
     return;
   }
