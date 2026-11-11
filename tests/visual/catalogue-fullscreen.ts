@@ -14,7 +14,11 @@ async function ready(page: Page): Promise<void> {
   await page.evaluate(async () => {
     await document.fonts.ready;
     await new Promise<void>((resolve) => {
-      requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          resolve();
+        }),
+      );
     });
     window.__TOYBOX_TEST__?.render();
   });
@@ -25,17 +29,26 @@ export async function enterFullscreenCapture(page: Page, scene: CaptureScene): P
   const button = page.locator('#fullscreenBtn');
   const enabled = await page.evaluate(() => document.fullscreenEnabled);
   if (!enabled || !(await button.isEnabled())) {
-    throw new Error('FULLSCREEN_UNSUPPORTED: real fullscreen is unavailable; no windowed substitute captured.');
+    throw new Error(
+      'FULLSCREEN_UNSUPPORTED: real fullscreen is unavailable; no windowed substitute captured.',
+    );
   }
   const before = await page.evaluate(() => window.__TOYBOX_TEST__?.snapshot());
   if (before === undefined) throw new Error('Fullscreen capture bridge missing');
   expect(before.state).toBe('playing');
   await button.click();
-  await expect.poll(async () => page.evaluate(() => {
-    if (document.fullscreenElement === document.getElementById('app')) return 'active';
-    return document.getElementById('fullscreenBtn')?.textContent === 'Fullscreen unavailable'
-      ? 'denied' : 'pending';
-  }), { message: 'Real app fullscreen must activate; no CSS or viewport substitute is accepted' }).not.toBe('pending');
+  await expect
+    .poll(
+      async () =>
+        page.evaluate(() => {
+          if (document.fullscreenElement === document.getElementById('app')) return 'active';
+          return document.getElementById('fullscreenBtn')?.textContent === 'Fullscreen unavailable'
+            ? 'denied'
+            : 'pending';
+        }),
+      { message: 'Real app fullscreen must activate; no CSS or viewport substitute is accepted' },
+    )
+    .not.toBe('pending');
   if (!(await page.evaluate(() => document.fullscreenElement === document.getElementById('app')))) {
     throw new Error('FULLSCREEN_UNSUPPORTED: browser denied the real Fullscreen button request.');
   }
@@ -95,7 +108,9 @@ export async function exitFullscreenCapture(page: Page, scene: CaptureScene): Pr
   if (before === undefined) throw new Error('Fullscreen exit bridge missing');
   await expect(page.locator('#fullscreenBtn')).toHaveText('Exit fullscreen');
   await page.locator('#fullscreenBtn').click();
-  await expect.poll(async () => page.evaluate(() => document.fullscreenElement === null)).toBe(true);
+  await expect
+    .poll(async () => page.evaluate(() => document.fullscreenElement === null))
+    .toBe(true);
   await expect(page.locator('#fullscreenBtn')).toHaveText('Fullscreen');
   await ready(page);
   if (scene.mobile === undefined) {

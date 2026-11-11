@@ -1,6 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { configureFullscreenCapture, enterFullscreenCapture, exitFullscreenCapture } from '../visual/catalogue-fullscreen';
+import {
+  configureFullscreenCapture,
+  enterFullscreenCapture,
+  exitFullscreenCapture,
+} from '../visual/catalogue-fullscreen';
 import { configureMobileCapture, verifyMobileCapture } from '../visual/catalogue-mobile';
 import { captureScene } from '../visual/catalogue-page';
 import { captureScenes, imageKinds, pendingRecords } from '../visual/catalogue-support';
@@ -29,7 +33,9 @@ for (const scene of captureScenes().filter((entry) => entry.fullscreen === true)
     expect(record.state?.ticks).toBe(0);
   });
 
-  test(`fullscreen exit restores layout and clears held keyboard input: ${scene.id}`, async ({ page }) => {
+  test(`fullscreen exit restores layout and clears held keyboard input: ${scene.id}`, async ({
+    page,
+  }) => {
     await page.addInitScript(() => {
       Object.defineProperty(navigator, 'getGamepads', { value: () => [] });
     });
@@ -57,8 +63,12 @@ for (const scene of captureScenes().filter((entry) => entry.fullscreen === true)
     const movedAgain = await sampledPlayer(page);
     expect(movedAgain.x).toBeGreaterThan(moved.x);
     await exitFullscreenCapture(page, scene);
-    await expect.poll(async () => (await page.locator('#game').boundingBox())?.width ?? -1).toBeCloseTo(windowed.width, 1);
-    await expect.poll(async () => (await page.locator('#game').boundingBox())?.height ?? -1).toBeCloseTo(windowed.height, 1);
+    await expect
+      .poll(async () => (await page.locator('#game').boundingBox())?.width ?? -1)
+      .toBeCloseTo(windowed.width, 1);
+    await expect
+      .poll(async () => (await page.locator('#game').boundingBox())?.height ?? -1)
+      .toBeCloseTo(windowed.height, 1);
     expect(await sampledPlayer(page)).toEqual(movedAgain);
     await page.keyboard.up('d');
   });

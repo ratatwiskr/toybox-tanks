@@ -1,5 +1,13 @@
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -26,7 +34,22 @@ function fixture() {
   const sha256 = createHash('sha256').update(bytes).digest('hex');
   writeFileSync(join(staging, 'ui-menu.full.png'), bytes);
   writeFileSync(join(staging, 'index.html'), 'gallery');
-  const manifest = { schema: 2, role: 'revision-render-catalogue-not-approved-baselines', finished: true, complete: true, runError: null, environment: {}, scenes: [{ scene: { id: 'ui-menu' }, status: 'captured', images: [{ file: 'ui-menu.full.png', sha256 }], expectedFiles: ['ui-menu.full.png'] }] };
+  const manifest = {
+    schema: 2,
+    role: 'revision-render-catalogue-not-approved-baselines',
+    finished: true,
+    complete: true,
+    runError: null,
+    environment: {},
+    scenes: [
+      {
+        scene: { id: 'ui-menu' },
+        status: 'captured',
+        images: [{ file: 'ui-menu.full.png', sha256 }],
+        expectedFiles: ['ui-menu.full.png'],
+      },
+    ],
+  };
   writeFileSync(join(staging, 'manifest.json'), JSON.stringify(manifest));
   return { baseline, staging, previous, manifest };
 }
@@ -44,12 +67,16 @@ test('incomplete or changed staging never replaces the previous checkpoint', () 
   const { baseline, staging, previous, manifest } = fixture();
   manifest.complete = false;
   writeFileSync(join(staging, 'manifest.json'), JSON.stringify(manifest));
-  expect(() => replaceDevelopmentBaseline(staging, baseline, previous)).toThrow();
+  expect(() => {
+    replaceDevelopmentBaseline(staging, baseline, previous);
+  }).toThrow();
   expect(readFileSync(join(baseline, 'old.full.png'), 'utf8')).toBe('old');
   manifest.complete = true;
   writeFileSync(join(staging, 'manifest.json'), JSON.stringify(manifest));
   writeFileSync(join(staging, 'ui-menu.full.png'), 'modified');
-  expect(() => replaceDevelopmentBaseline(staging, baseline, previous)).toThrow();
+  expect(() => {
+    replaceDevelopmentBaseline(staging, baseline, previous);
+  }).toThrow();
   expect(readFileSync(join(baseline, 'old.full.png'), 'utf8')).toBe('old');
 });
 
@@ -59,7 +86,9 @@ test('failed publish restores the old checkpoint', () => {
     if (from === staging) throw new Error('simulated publish failure');
     renameSync(from, to);
   };
-  expect(() => replaceDevelopmentBaseline(staging, baseline, previous, move)).toThrow('simulated');
+  expect(() => {
+    replaceDevelopmentBaseline(staging, baseline, previous, move);
+  }).toThrow('simulated');
   expect(readFileSync(join(baseline, 'old.full.png'), 'utf8')).toBe('old');
   expect(existsSync(previous)).toBe(false);
 });
