@@ -51,15 +51,17 @@ describe('audio events through the shared presentation step', () => {
     expect(events).toEqual([{ type: 'terrain', kind: 'shellCollision' }]);
     expect(events.map(soundForEvent)).toEqual(['softImpact']);
     expect(soundForEvent({ type: 'terrain', kind: 'cork' })).toBe('softImpact');
-    expect(advanceWorld(world, CONFIG.fixedStep)).toEqual([]);
+    const afterCollision = advanceWorld(world, CONFIG.fixedStep);
+    expect(afterCollision).toEqual([]);
   });
 
   it('returns no events or movement while paused', () => {
     const { world, player } = fixture();
     world.state = 'paused';
-    expect(advanceWorld(world, CONFIG.fixedStep, [
+    const pausedEvents = advanceWorld(world, CONFIG.fixedStep, [
       { x: 1, y: 0, turn: 1, fire: true },
-    ])).toEqual([]);
+    ]);
+    expect(pausedEvents).toEqual([]);
     expect(player.x).toBe(300);
     expect(world.shots).toBe(0);
   });
