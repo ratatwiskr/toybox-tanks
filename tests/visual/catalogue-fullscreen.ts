@@ -2,6 +2,13 @@ import { expect, type Page } from '@playwright/test';
 
 import type { CaptureScene } from './catalogue-support';
 
+export class FullscreenUnsupportedError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'FullscreenUnsupportedError';
+  }
+}
+
 export async function configureFullscreenCapture(page: Page, scene: CaptureScene): Promise<void> {
   if (scene.fullscreen === true && scene.mobile === undefined) {
     await page.addInitScript(() => {
@@ -29,8 +36,8 @@ export async function enterFullscreenCapture(page: Page, scene: CaptureScene): P
   const button = page.locator('#fullscreenBtn');
   const enabled = await page.evaluate(() => document.fullscreenEnabled);
   if (!enabled || !(await button.isEnabled())) {
-    throw new Error(
-      'FULLSCREEN_UNSUPPORTED: real fullscreen is unavailable; no windowed substitute captured.',
+    throw new FullscreenUnsupportedError(
+      'FULLSCREEN_UNSUPPORTED: this browser environment cannot enter real fullscreen; no windowed substitute captured.',
     );
   }
   const before = await page.evaluate(() => window.__TOYBOX_TEST__?.snapshot());
@@ -50,7 +57,9 @@ export async function enterFullscreenCapture(page: Page, scene: CaptureScene): P
     )
     .not.toBe('pending');
   if (!(await page.evaluate(() => document.fullscreenElement === document.getElementById('app')))) {
-    throw new Error('FULLSCREEN_UNSUPPORTED: browser denied the real Fullscreen button request.');
+    throw new FullscreenUnsupportedError(
+      'FULLSCREEN_UNSUPPORTED: browser denied the real Fullscreen button request; no windowed substitute captured.',
+    );
   }
   await expect(button).toHaveText('Exit fullscreen');
   await expect(page.locator('#app')).toHaveClass(/compact/);

@@ -6,16 +6,16 @@ hash-selection/promotion workflow in this branch's task and evidence notes.
 
 ## Three commands
 
-| Command                           | Result                                                                                                                              |
-| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run capture:visual:baseline` | Capture all registered scenes and replace the saved development checkpoint after a complete successful run                          |
-| `npm run test:visual:compare`     | Capture current actuals and compare against the checkpoint; fail on differences, missing images, coverage changes or capture errors |
-| `npm run test:visual:report`      | Serve the most recent comparison report on an automatically selected loopback port                                                  |
+| Command | Result |
+| --- | --- |
+| `npm run capture:visual:baseline` | Capture all registered scenes and replace the saved development checkpoint after a complete successful run |
+| `npm run test:visual:compare` | Capture current actuals and compare against the checkpoint; fail on differences, missing images, coverage changes or capture errors |
+| `npm run test:visual:report` | Serve the most recent comparison report on an automatically selected loopback port |
 
 No environment-variable snippets, hand-written hashes, scene lists, manual
-cleanup, snapshot-update flags or remembered ports are needed. All scenes,
-including real desktop/touch fullscreen, use the shared registry and renderer.
-The capture command prints a clickable file URL for the saved image gallery.
+cleanup, snapshot-update flags or remembered ports are needed. All currently
+registered scenes use the shared registry and production renderer. The capture
+command prints a clickable file URL for the saved image gallery.
 
 ## First capture
 
@@ -53,6 +53,20 @@ Exact pixel comparisons remain strict. Environment/provenance metadata and the
 menu fresh-page repeat check remain diagnostic safeguards; do not loosen them
 to hide differences. A deliberate change/revert/pass demonstration and actual
 local verification still need to be recorded; this code commit is not evidence.
+
+## Fullscreen limitation
+
+The application exposes a real `#fullscreenBtn` and requests the Fullscreen API.
+The desktop and touch fullscreen scenes remain registered and use that real
+control. They must not be replaced by CSS-only fullscreen, viewport resizing, or
+windowed captures mislabeled as fullscreen.
+
+Headless Chromium may deny the browser-level fullscreen request. In that case,
+`capture:visual:baseline` exits with code 2 and a `FULLSCREEN_UNSUPPORTED`
+message, while preserving the existing checkpoint. This is an explicit
+environment limitation, not a passing capture or an automatic skip. A headed
+browser environment may be needed for genuine fullscreen capture; do not weaken
+the Fullscreen API assertion to make headless capture pass.
 
 ## Agent responsibilities
 
