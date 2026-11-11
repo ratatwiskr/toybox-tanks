@@ -1,6 +1,24 @@
 # Toybox Tanks — current progress
 
-Updated: 2026-11-09
+Updated: 2026-11-11
+
+## Audio issue 16: current-main port, not verified
+
+Branch `feature/16-audio-on-current-main` continues the clean-current-main port
+of the initial audio feature. The implementation adds the audio event model,
+semantic sound mapping, browser playback/session/controls, optional simulation
+event collectors, per-step structured event batches, application lifecycle
+wiring, moved binary assets, and an audio-step integration test.
+
+This port is a working handoff, not a completion claim. No formatter, TypeScript,
+unit, browser, release, or audible check has been observed for the branch head.
+Asset provenance, creator, generation source, license, and redistribution terms
+remain unresolved.
+
+Ported in this commit: `docs/audio.md`, the three audio evidence documents, and
+the `audio-events`, `audio-music`, and `audio-session` unit tests. The
+mobile-layout e2e audio assertions still need to be merged into the current base
+test file. Existing main progress sections are retained.
 
 ## Independent tank body rotation (issue #1, PR #31)
 
@@ -51,7 +69,7 @@ replacement for conflicted PR #15, was squash-merged as
 PR #15 was closed without merging at 11:18:37 UTC. These states were checked
 through GitHub, not inferred from a branch name or an old handoff.
 
-Provenance: reviewed #15 source `c19927abd793f871dd9c6212f87ab85fa9f48e00`
+Provenance: reviewed #15 source `c19927abd793f871dd88e0f9cb3e0032`
 was reconstructed on feature/destructible-cork-blocks-main; #19's reviewed head
 was `872262f7f934d90ea74a816bfea55d3482a2f0b0`. The 13 transferred application/
 test blobs were recorded as identical to the pinned source during reconstruction.
