@@ -60,7 +60,8 @@ for (const viewport of viewports) {
     expect(panelBox.y + panelBox.height).toBeLessThanOrEqual(viewport.height);
     const mute = page.getByRole('button', { name: 'Mute audio', exact: true });
     await mute.click();
-    await expect(mute).toHaveAttribute('aria-pressed', 'true');
+    const muteToggle = page.getByRole('button', { name: /(?:un)?mute audio/i });
+    await expect(muteToggle).toHaveAttribute('aria-pressed', 'true');
     const music = page.getByRole('slider', { name: 'Music volume', exact: true });
     await music.focus();
     await music.press('Home');
