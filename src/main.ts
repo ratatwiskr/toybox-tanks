@@ -1,5 +1,8 @@
 import './styles.css';
 import './mobile.css';
+import { createBrowserPlayback } from './audio/browser';
+import { createAudioControls } from './audio/controls';
+import { createAudioSession } from './audio/session';
 import { CONFIG } from './config';
 import { GamepadAdapter, type GamepadSource } from './input/gamepad';
 import { KeyboardAdapter } from './input/keyboard';
@@ -49,6 +52,7 @@ const hpElements = [requireElement('hp1'), requireElement('hp2')];
 const deviceElements = [requireElement('device1'), requireElement('device2')];
 const aimElements = [requireElement('aim1'), requireElement('aim2')];
 
+const audio = createAudioSession(createBrowserPlayback());
 const renderer = createRenderer(canvas);
 const keyboard = new KeyboardAdapter();
 const gamepads = new GamepadAdapter();
@@ -91,7 +95,7 @@ const mobile = createMobileControls({
   },
 });
 
-statusLine.textContent = `Toybox Tanks · ${String(MAPS.length)} tabletop rooms · Keyboard-first · No audio`;
+statusLine.textContent = `Toybox Tanks · ${String(MAPS.length)} tabletop rooms · Keyboard-first · Audio controls below`;
 
 function focusGame(): void {
   stage.focus({ preventScroll: true });
@@ -108,6 +112,13 @@ function clearInputs(): void {
 }
 
 function pollGamepads(): void {
+  if (
+    document.activeElement instanceof Element &&
+    document.activeElement.closest('.audio-controls') !== null
+  ) {
+    gamepads.clear();
+    return;
+  }
   const previous = gamepads.assigned.map((pad) => `${String(pad.index)}:${pad.id}`);
   const startRequest = { pending: false };
   gamepads.poll(gamepadMode(world.mode, mobile.enabled), gamepadSource, {
@@ -130,6 +141,12 @@ function pollGamepads(): void {
 }
 
 function readCommand(index: number): Command {
+  if (
+    document.activeElement instanceof Element &&
+    document.activeElement.closest('.audio-controls') !== null
+  ) {
+    return { x: 0, y: 0, turn: 0, fire: false };
+  }
   const fallback = keyboard.readCommand(index);
   const slot = gamepadSlot(index, world.mode, mobile.enabled);
   const command = slot === null ? fallback : gamepads.readCommand(slot, fallback);
@@ -225,6 +242,7 @@ function overlayContent(state: GameState): OverlayContent {
 }
 
 function setOverlay(): void {
+  audio.setState(world.state);
   mobile.sync(world.mode, world.state);
   if (world.state === 'playing' && !mobile.canPlay) {
     pauseGame('Rotate to landscape, then resume.');
@@ -261,6 +279,7 @@ function setOverlay(): void {
 }
 
 function loadRoom(index: number, mode: Mode = world.mode): void {
+  audio.reset();
   try {
     world = createWorld(index, mode);
     clearInputs();
@@ -286,6 +305,7 @@ function restartRoom(): void {
 // The test bridge is the only caller that replaces a world wholesale. Keep the
 // same input/reset discipline as a normal room load.
 function replaceWorld(next: World): void {
+  audio.reset();
   world = next;
   clearInputs();
   accumulator = 0;
@@ -296,6 +316,7 @@ function replaceWorld(next: World): void {
 }
 
 function showError(message: string): void {
+  audio.reset();
   pauseReason = message;
   world = createEmptyWorld(world.mode);
   world.state = 'error';
@@ -339,6 +360,7 @@ function togglePause(): void {
 }
 
 function showMenu(): void {
+  audio.reset();
   try {
     world = createWorld(0, 'coop');
     world.state = 'menu';
@@ -448,6 +470,26 @@ function updateHUD(): void {
   }
 }
 
+const removeAudioControls = createAudioControls(app, audio, clearInputs);
+const audioActivation = new AbortController();
+function activateAudio(event: Event): void {
+  if (event.isTrusted) void audio.unlock();
+}
+app.addEventListener('pointerdown', activateAudio, {
+  capture: true,
+  signal: audioActivation.signal,
+});
+app.addEventListener('keydown', activateAudio, { capture: true, signal: audioActivation.signal });
+window.addEventListener('pagehide', (event) => {
+  clearInputs();
+  pauseGame('Page hidden — resume when ready.');
+  if (!event.persisted) {
+    removeAudioControls();
+    audioActivation.abort();
+    audio.dispose();
+  }
+});
+
 dialog.addEventListener('click', (event) => {
   const target = event.target;
   if (!(target instanceof Element)) {
@@ -537,10 +579,12 @@ function frame(timestamp: number): void {
     let count = 0;
 
     while (accumulator >= CONFIG.fixedStep && count < CONFIG.maxSteps && isPlaying(world)) {
-      advanceWorld(
-        world,
-        CONFIG.fixedStep,
-        world.players.map((_, index) => readCommand(index)),
+      audio.consume(
+        advanceWorld(
+          world,
+          CONFIG.fixedStep,
+          world.players.map((_, index) => readCommand(index)),
+        ),
       );
       accumulator -= CONFIG.fixedStep;
       count += 1;
@@ -561,6 +605,9 @@ function frame(timestamp: number): void {
 
 if (__TEST_BUILD__) {
   installTestBridge({
+    afterStep: (events) => {
+      audio.consume(events);
+    },
     getWorld: () => world,
     replaceWorld,
     readCommands: () => {

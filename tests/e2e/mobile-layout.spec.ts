@@ -45,5 +45,36 @@ for (const viewport of viewports) {
       throw new Error('Arena missing after disabling touch');
     }
     expect(withoutTouch.width).toBeGreaterThanOrEqual(arena.width - 1);
+
+    const audioSummary = page.locator('.audio-controls > summary');
+    await audioSummary.click();
+    const panel = page.getByRole('group', { name: 'Audio settings', exact: true });
+    await expect(panel).toBeVisible();
+    const panelBox = await panel.boundingBox();
+    if (panelBox === null) {
+      throw new Error('Audio settings panel missing');
+    }
+    expect(panelBox.x).toBeGreaterThanOrEqual(0);
+    expect(panelBox.y).toBeGreaterThanOrEqual(0);
+    expect(panelBox.x + panelBox.width).toBeLessThanOrEqual(viewport.width);
+    expect(panelBox.y + panelBox.height).toBeLessThanOrEqual(viewport.height);
+    const mute = page.getByRole('button', { name: 'Mute audio', exact: true });
+    await mute.click();
+    const muteToggle = page.getByRole('button', { name: /(?:un)?mute audio/i });
+    await expect(muteToggle).toHaveAttribute('aria-pressed', 'true');
+    const music = page.getByRole('slider', { name: 'Music volume', exact: true });
+    await music.focus();
+    await music.press('Home');
+    await music.press('ArrowRight');
+    await expect(music).toHaveValue('0.05');
+    await page.getByRole('button', { name: 'Close audio settings', exact: true }).click();
+    await expect(panel).toBeHidden();
+    await expect(audioSummary).toBeFocused();
+    await audioSummary.press('Enter');
+    await expect(panel).toBeVisible();
+    await music.focus();
+    await music.press('Escape');
+    await expect(panel).toBeHidden();
+    await expect(audioSummary).toBeFocused();
   });
 }

@@ -4,5 +4,5 @@
     "lib": ["ES2023", "DOM"],
     "types": ["node"]
   },
-  "include": ["tests/unit/**/*.ts", "tests/architecture/**/*.ts"]
+  "include": ["tests/unit/**/*.ts", "tests/architecture/**/*.ts", "src/assets.d.ts"]
 }

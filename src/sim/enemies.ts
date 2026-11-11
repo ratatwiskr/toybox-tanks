@@ -1,7 +1,7 @@
 import { CONFIG } from '../config';
 import { hasLOS } from './collision';
 import { shoot } from './combat';
-import type { Tank, World } from './types';
+import type { SimulationEvent, Tank, World } from './types';
 
 export function angleDelta(a: number, b: number): number {
   return Math.atan2(Math.sin(b - a), Math.cos(b - a));
@@ -12,7 +12,12 @@ export function turnToward(a: number, b: number, max: number): number {
   return a + Math.max(-max, Math.min(max, delta));
 }
 
-export function updateEnemy(world: World, enemy: Tank, dt: number): void {
+export function updateEnemy(
+  world: World,
+  enemy: Tank,
+  dt: number,
+  events?: SimulationEvent[],
+): void {
   if (!enemy.alive) {
     return;
   }
@@ -45,7 +50,7 @@ export function updateEnemy(world: World, enemy: Tank, dt: number): void {
       // Require actual barrel alignment and unobstructed shell-radius clearance
       // at the firing instant. No prediction and no planned ricochets.
       if (hasLOS(world, enemy, target)) {
-        shoot(world, enemy);
+        shoot(world, enemy, events);
       }
       enemy.charge = 0;
     }
