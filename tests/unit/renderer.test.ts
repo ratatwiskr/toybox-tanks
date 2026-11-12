@@ -3,8 +3,11 @@ import { describe, expect, it } from 'vitest';
 import { bodyHeading, updateBodyHeading } from '../../src/presentation/body-heading';
 import { createRenderer } from '../../src/render/renderer';
 import type { RenderCanvas, RenderContext } from '../../src/render/renderer';
+import { MAPS } from '../../src/sim/maps';
 import type { Cork, Tank, World } from '../../src/sim/types';
 import { createWorld } from '../../src/sim/world';
+
+const CORK_KEEP_ROOM = MAPS.findIndex((map) => map.name === 'Cork Keep');
 
 class StubContext implements RenderContext {
   globalAlpha = 1;
@@ -154,7 +157,7 @@ function renderDamagedCork(hitsRemaining: 1 | 2): {
   readonly corkX: number;
   readonly corkY: number;
 } {
-  const world = createWorld(3, 'coop');
+  const world = createWorld(CORK_KEEP_ROOM, 'coop');
   const cork = world.corks[0];
   if (cork === undefined) {
     throw new Error('Cork Keep cork missing');
@@ -193,7 +196,7 @@ function snapshot(world: World): World {
 }
 
 function corkKeepCorks(states: readonly (1 | 2 | 3)[]): Cork[] {
-  const world = createWorld(3, 'coop');
+  const world = createWorld(CORK_KEEP_ROOM, 'coop');
   return world.corks.slice(0, states.length).map((cork, index) => ({
     ...cork,
     hitsRemaining: states[index] ?? 3,
@@ -204,7 +207,7 @@ function renderCorks(corks: readonly Cork[]): {
   readonly context: RecordingContext;
   readonly corks: readonly Cork[];
 } {
-  const world = createWorld(3, 'coop');
+  const world = createWorld(CORK_KEEP_ROOM, 'coop');
   world.corks = corks.map((cork) => ({ ...cork }));
 
   const before = snapshot(world);

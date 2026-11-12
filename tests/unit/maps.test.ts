@@ -12,9 +12,10 @@ import type { Wall } from '../../src/sim/types';
 import { createWorld } from '../../src/sim/world';
 
 // Full 24 × 13 grids from before the border was generated automatically. These
-// are the authoritative geometry fixtures for the map-format refactor.
-const LEGACY_GRIDS = [
-  `########################
+// are the authoritative geometry fixtures for the map-format refactor. They are
+// keyed by name because campaign insertion can move a room's index.
+const LEGACY_GRIDS: Readonly<Record<string, string>> = {
+  'First Bounce': `########################
 #......................#
 #......................#
 #...S..##.....##...S...#
@@ -27,7 +28,7 @@ const LEGACY_GRIDS = [
 #...1..............2...#
 #......................#
 ########################`,
-  `########################
+  'Block Party': `########################
 #......................#
 #..S......#..S.........#
 #....#....#........#...#
@@ -40,7 +41,7 @@ const LEGACY_GRIDS = [
 #..1..............2....#
 #......................#
 ########################`,
-  `########################
+  'Together Through': `########################
 #......................#
 #..S..........S........#
 #.........#.....###..S.#
@@ -53,7 +54,7 @@ const LEGACY_GRIDS = [
 #..1.................2.#
 #......................#
 ########################`,
-  `########################
+  'Cork Keep': `########################
 #......................#
 #..S................S..#
 #......................#
@@ -66,7 +67,7 @@ const LEGACY_GRIDS = [
 #......................#
 #...1..............2...#
 ########################`,
-] as const;
+};
 
 function replaceCell(grid: string, x: number, y: number, cell: string): string {
   const rows = grid.split('\n');
@@ -118,28 +119,65 @@ describe('authored maps', () => {
   it('uses only the 22 × 11 interior and preserves room metadata', () => {
     expect(MAPS.map((map) => map.name)).toEqual([
       'First Bounce',
+      'The Courtyard',
       'Block Party',
       'Together Through',
       'Cork Keep',
+      'Crossfire Alley',
+      'Pillars of Salt',
+      'Choke Point',
+      'Cork Sieve',
+      'The Fortress',
+      'Spiral',
+      'Double Bunker',
+      'The Labyrinth',
+      'The Gauntlet',
+      'Ring of Fire',
     ]);
     expect(MAPS.map((map) => map.hint)).toEqual([
       'Try the outer rails: every shell gets one bounce.',
+      'Use the staggered cork blocks for soft cover before advancing.',
       'Take different routes. Corners are cover, not dead ends.',
       'Cover each other. Either surviving player can finish.',
       'Break the cork to reach the guarded tower.',
+      'Coordinate with your partner to cross-fire across parallel corridors.',
+      'Use the isolated blocks to set up steep ricochet angles.',
+      'Control the central gap before breaking into the enemy side.',
+      'Carve your own firing lanes through the destructible wall.',
+      'Chip away at the multi-hit cork walls to force open a breach.',
+      'Work your way inward, or bank a shell over the cork core.',
+      'Clear the cork guards to safely breach each flank.',
+      'Bounce shots around outer walls to hit enemies safely tucked inside.',
+      'Divide forces: one clears the wings, the other holds the middle.',
+      'Enemies completely surround you. Stay mobile and use minimal cover.',
     ]);
-    expect(MAPS.map((map) => map.expectedEnemies)).toEqual([2, 3, 4, 5]);
+    expect(MAPS.map((map) => map.expectedEnemies)).toEqual([
+      2, 2, 3, 4, 5, 4, 6, 4, 4, 6, 4, 6, 4, 5, 9,
+    ]);
 
-    for (const [index, map] of MAPS.entries()) {
+    for (const map of MAPS) {
       const checked = validateMap(map);
       expect(checked.ok, `${map.name}: ${checked.errors.join('; ')}`).toBe(true);
       expect(checked.rows).toHaveLength(MAP_INTERIOR_ROWS);
       expect(checked.rows.every((row) => row.length === MAP_INTERIOR_COLUMNS)).toBe(true);
-      expect(checked.rows).toEqual(
-        rowsOf(LEGACY_GRIDS[index] ?? '')
-          .slice(1, -1)
-          .map((row) => row.slice(1, -1)),
-      );
+
+      const legacy = LEGACY_GRIDS[map.name];
+      if (legacy !== undefined) {
+        expect(checked.rows, map.name).toEqual(
+          rowsOf(legacy)
+            .slice(1, -1)
+            .map((row) => row.slice(1, -1)),
+        );
+      }
+    }
+  });
+
+  it('loads every campaign room with its declared enemy count', () => {
+    for (const [index, map] of MAPS.entries()) {
+      const world = createWorld(index, 'coop');
+      expect(world.room, map.name).toBe(index);
+      expect(world.players, map.name).toHaveLength(2);
+      expect(world.enemies, map.name).toHaveLength(map.expectedEnemies);
     }
   });
 
@@ -190,11 +228,13 @@ describe('authored maps', () => {
   });
 
   it('loads identical wall, player, and enemy geometry to the legacy grids', () => {
-    for (const [index, map] of MAPS.entries()) {
-      const legacyRows = rowsOf(LEGACY_GRIDS[index] ?? '');
+    for (const [name, legacyGrid] of Object.entries(LEGACY_GRIDS)) {
+      const index = MAPS.findIndex((map) => map.name === name);
+      expect(index, name).toBeGreaterThanOrEqual(0);
+      const legacyRows = rowsOf(legacyGrid);
       const world = createWorld(index, 'coop');
 
-      expect(world.walls, map.name).toEqual(wallsFor(legacyRows));
+      expect(world.walls, name).toEqual(wallsFor(legacyRows));
 
       const expectedPlayers = (['1', '2'] as const).map((cell) => {
         const position = positionsFor(legacyRows, cell)[0];

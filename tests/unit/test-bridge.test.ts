@@ -76,8 +76,8 @@ describe('test bridge', () => {
     expect(coop.enemies).toHaveLength(2);
     expect(state.manualClock()).toBe(true);
 
-    const room = bridge.loadScenario('room', { room: 2, mode: 'solo' });
-    expect(room.room).toBe(2);
+    const room = bridge.loadScenario('room', { room: 3, mode: 'solo' });
+    expect(room.room).toBe(3);
     expect(room.mode).toBe('solo');
     expect(room.players).toHaveLength(1);
     expect(room.enemies).toHaveLength(4);

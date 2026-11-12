@@ -85,8 +85,8 @@ describe('cork map validation', () => {
     expect(bordered.every((row) => row[0] === '#' && row[CONFIG.columns - 1] === '#')).toBe(true);
   });
 
-  it('keeps the fourth room initially blocked but clears it after cork destruction', () => {
-    const corkKeep = MAPS[3];
+  it('keeps Cork Keep initially blocked but clears it after cork destruction', () => {
+    const corkKeep = MAPS.find((map) => map.name === 'Cork Keep');
     if (corkKeep === undefined) {
       throw new Error('Cork Keep missing');
     }
