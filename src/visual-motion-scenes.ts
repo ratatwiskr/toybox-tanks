@@ -52,12 +52,7 @@ export function createMotionWorld(name: MotionSceneId): World {
       wall.y === CONFIG.gridY ||
       wall.y === CONFIG.gridY + (CONFIG.rows - 1) * CONFIG.tile,
   );
-  const player = createTank(
-    'p1',
-    'player',
-    name === 'body-wall-slide' ? 325 : 300,
-    270,
-  );
+  const player = createTank('p1', 'player', name === 'body-wall-slide' ? 325 : 300, 270);
   const enemy = createTank('s0', 'enemy', 820, 130);
   enemy.cooldown = 100;
   world.players = [player, createTank('p2', 'player', 760, 450)];
