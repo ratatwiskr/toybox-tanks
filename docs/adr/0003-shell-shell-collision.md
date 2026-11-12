@@ -2,42 +2,44 @@
 
 ## Status
 
-Accepted (pending verification)
+Accepted; shell collision was merged in PR 33 at cb50b79. This documentation
+correction does not establish fresh verification or visual approval.
 
-## Context
+## Decision and current implementation
 
-Previously, shells passed through one another. The product invariant explicitly
-forbade shell-shell collision. Playtesting showed that mid-air shell duels are
-a readable, satisfying interaction that also gives co-op players a way to
-clear incoming fire.
+Any two live shells that touch during the current fixed step are neutralized,
+regardless of owner or faction, including same-owner pairs. Contact uses the
+earliest circle intersection under normalized relative displacement within
+that step, not a future closest-approach estimate. The contact radius is
+`2 * CONFIG.shellRadius` (6 logical pixels at current defaults).
 
-## Decision
+Both shells are marked dead. One existing puffy `poof` effect is emitted at
+the contact midpoint, and the event log records `Shells collided`. The earlier
+`spark` wording in this ADR was stale; it is not the current feedback contract.
+Wall-bounce sparks remain separate.
 
-Any two shells whose swept paths touch within `2 * shellRadius` (6 px) in a
-simulation step are both marked dead and a `spark` effect is spawned at the
-contact point. This applies regardless of faction: P1 vs P2, player vs enemy,
-and enemy vs enemy all collide.
+Candidate contacts are ordered by contact time and canonical shell IDs, with
+each shell resolving at most once. Earlier terrain/tank contact, including
+conservative near-ties, takes priority over a later shell-shell contact.
 
-A shell that hits a tank, wall, or cork earlier in the same step is not popped
-by a later shell-shell contact; the earlier terrain/tank contact wins.
+The normal 23-pixel muzzle sweep still handles terrain/tank travel through
+advanceShell. The separate muzzle-shell detector was removed after premature
+neutralization was observed. Shell-shell detection belongs to
+resolveShellCollisions during world stepping; do not describe the removed
+muzzle detector as active or restore it through visual-test setup.
 
-The 23 px muzzle sweep in `shoot` also tests against existing shells using a
-segment-to-point distance check, since other shells have not advanced yet in
-that step.
+## Limits and verification
 
-## Consequences
+Reflected path remainders are not chained into the same step's pair-contact
+search. Dynamic-terrain event ordering, reflected remainder and muzzle
+interaction examples remain separate behavioral verification work; this ADR
+does not certify those cases or expand the visual slice into changing them.
 
-- `AGENTS.md` product invariant updated: "no shell-shell collision" removed,
-  replaced with the all-faction collision rule.
-- Co-op players can now deliberately trade shots to clear incoming fire.
-- Reflected paths after a bounce are not chained in the same step's collision
-  test; the residual miss window after a bounce is sub-step and bounded.
-- Contact radius (6 px) is a starting point, subject to playtest tuning.
+Keep shell collision geometry, owner/faction pairings, timing, near-miss and
+ordering tests independent of screenshots. The new head-on visual sequence
+uses actual shared world stepping and samples before/contact/aged/cleared
+states. Its images are candidates until explicit owner review and promotion.
 
-## Verification
-
-- Unit tests in `tests/unit/shell-collision.test.ts` cover head-on, crossing,
-  near-miss, same-faction, order independence, terrain-priority, muzzle sweep,
-  and post-bounce cases.
-- Local verification (`npm run verify:fast`, `npm run verify`) and browser
-  smoke are pending; this PR is a draft until those pass.
+No local formatter, compiler, unit, browser or release check was executed by
+this API-authored documentation/fixture change. Record actual final-head
+commands, exits, source context, environment and artifacts in progress evidence.

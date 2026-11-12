@@ -116,7 +116,8 @@ PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:e2e
 - `test:visual` — captures nine scenes under `test-results/visual-candidates/`: menu,
   co-op gameplay, active shot, disabled player, pause, clear, defeat, completion, and
   resized gameplay. It does **not** compare against committed snapshots and does **not**
-  claim aesthetic approval.
+  claim aesthetic approval. `test:visual:compare` is the separate opt-in development
+  comparison against `docs/visual-catalogue/current/`; it is not part of `verify`.
 - `test:release` — rebuilds both releases, serves `dist/` through Vite preview, and opens
   `dist-single/index.html` through `file://` in Chromium. Each artifact runs a normal smoke
   test plus a `?test=1` check proving `window.__TOYBOX_TEST__` is absent.
@@ -143,11 +144,16 @@ physical controller verification.
 ## Visual approval gate
 
 The visual regression gate is **pending**. `test:visual` captures nine candidate scenes
-for human review but no baselines are approved, so no comparison suite runs. See
-`docs/adr/0001-visual-gate-pending.md`. Do not auto-approve snapshots, commit generated
+for human review but no baselines are approved, so no formal reference comparison runs.
+See `docs/adr/0001-visual-gate-pending.md`. Do not auto-approve snapshots, commit generated
 baselines, or describe candidate capture as an approved visual suite. Approval must cover
 menu, co-op gameplay, active shot, disabled player, pause, clear, defeat, completion, and
 resized gameplay.
+
+Separately, `npm run test:visual:compare` is an opt-in development check that compares
+fresh actuals against the overwriteable checkpoint in `docs/visual-catalogue/current/`.
+It is not part of `verify` or CI and does not constitute the pending approval gate. See
+`docs/development-workflow.md` for capture, comparison and report commands.
 
 ## CI
 

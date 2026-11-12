@@ -81,6 +81,37 @@ not declared complete.
 - Preserve hosted and offline single-HTML releases without external resources.
   Keep test bridges out of all production builds, even with `?test=1`.
 
+## Development screenshot coverage
+
+- For every assigned change with visible effects, explicitly consider screenshot
+  coverage as part of implementation, not a follow-up someone must remember.
+  Add or update deterministic scenes for new states, damage stages, effects,
+  interactions, map situations and relevant responsive/orientation/fullscreen
+  layouts. Explain any visible aspect left uncovered.
+- Extend the shared registry in `tests/visual/catalogue-support.ts` and existing
+  production-renderer/test-bridge fixtures. Reuse named scenes and standard view
+  kinds. Do not build a separate renderer, fake fullscreen, rely on fixed sleeps,
+  duplicate gameplay logic, or turn unrelated backlog into fixture work.
+- Read `docs/development-workflow.md`. The three primary commands are
+  `npm run capture:visual:baseline`, `npm run test:visual:compare`, and
+  `npm run test:visual:report`. Browser paths and ports are handled internally.
+- The checkpoint in `docs/visual-catalogue/current/` is overwriteable development
+  documentation, not a formally approved regression expectation. Compare against
+  an existing useful checkpoint before replacing it. Preserve uncommitted owner
+  captures. Refresh it when the assignment includes catalogue/evidence updates;
+  otherwise provide comparison actuals and identify any pending refresh.
+- Do not overwrite a checkpoint merely to hide unexpected differences. A saved
+  screenshot does not assert owner acceptance of aesthetics. Formal reference
+  approval/governance and mandatory regression/CI enforcement are deferred.
+- Record added/changed scene IDs, capture/check commands, actual exit codes,
+  source context, artifact locations and limitations in the task handoff. If
+  screenshots cannot be generated, report the blocker; do not silently omit the
+  coverage or claim appearance was inspected. Images do not replace mechanical
+  tests or brief playtesting of timing, control feel and cooperation.
+- These scope instructions supersede older hash-selection/promotion acceptance
+  steps in this branch's visual task/evidence notes. The inactive approval
+  modules are not the normal development-capture procedure.
+
 ## Verification and guardrails
 
 - Focused tests while iterating; `npm run verify:fast`, `npm run verify`, and
@@ -93,7 +124,9 @@ not declared complete.
   ESLint disables, broad excludes, weakened assertions/coverage, or disabled
   checks to make work pass. Explain any narrowly scoped exception for review.
 - Never silently change validation scripts, CI, guardrail configuration,
-  dependencies, lockfiles, or visual baselines. Obtain specific approval.
+  dependencies, lockfiles, or formal regression references. Obtain specific
+  approval. Development-catalogue updates follow the explicit scope above and
+  must always be reported, not described as aesthetic approval.
 - No automatic screenshot acceptance. An implementing model that cannot inspect
   images must not approve aesthetics. Candidate capture is not visual regression.
 - Test critical collisions, hit assignment, simultaneous deaths, map errors,
@@ -108,8 +141,10 @@ not declared complete.
 - Node `24.22.2`, npm `11.19.1`, pinned via Volta; one npm lockfile.
 - Do not run `npm install`, `npm ci`, package updates, browser downloads, or OS
   installs without separate authorization. Dependencies/browsers are owner-installed.
-- The local launcher sets a non-existent browser path. Do not edit it; prefix
-  Playwright commands with `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright"`.
+- The local launcher sets a non-existent browser path. Do not edit it. The
+  three visual workflow commands handle the installed browser cache. For other
+  raw Playwright commands, prefix with
+  `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright"`.
 - Local Firefox may fail before launch with
   `Sandbox: CanCreateUserNamespace() unshare(CLONE_NEWPID): EPERM` and
   `Could not find profile folder.` Report the blocker; do not weaken the sandbox.
