@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { CONFIG } from '../../src/config';
 import { bodyHeading, updateBodyHeading } from '../../src/presentation/body-heading';
 import { createRenderer } from '../../src/render/renderer';
 import type { RenderCanvas, RenderContext } from '../../src/render/renderer';
@@ -20,19 +21,22 @@ class StubContext implements RenderContext {
   closePath(): void {}
   fill(): void {}
   stroke(): void {}
-  fillRect(): void {}
+  fillRect(_x: number, _y: number, _width: number, _height: number): void {}
   strokeRect(): void {}
   clearRect(): void {}
   moveTo(_x: number, _y: number): void {}
   lineTo(_x: number, _y: number): void {}
   bezierCurveTo(): void {}
-  arc(): void {}
+  arc(_x: number, _y: number, _radius: number, _start: number, _end: number): void {}
   ellipse(): void {}
   roundRect(_x: number, _y: number, _w: number, _h: number, _r?: number): void {}
   translate(): void {}
   rotate(_angle: number): void {}
   setTransform(): void {}
   setLineDash(): void {}
+  createPattern(_image: CanvasImageSource, _repetition: string | null): CanvasPattern | null {
+    return null;
+  }
   fillText(_text: string, _x: number, _y: number): void {}
 }
 
@@ -70,14 +74,51 @@ interface RecordedText {
   readonly rotation: number;
 }
 
+interface RecordedFillRect extends RecordedRect {
+  readonly style: string | CanvasGradient | CanvasPattern;
+}
+
+interface RecordedArc {
+  readonly x: number;
+  readonly y: number;
+  readonly radius: number;
+  readonly style: string;
+  readonly lineWidth: number;
+}
+
 class RecordingContext extends StubContext {
   readonly strokes: RecordedPath[] = [];
   readonly fills: RecordedPath[] = [];
   readonly texts: RecordedText[] = [];
+  readonly fillRects: RecordedFillRect[] = [];
+  readonly arcs: RecordedArc[] = [];
+  readonly createdPattern = {} as unknown as CanvasPattern;
+  patternAvailable = true;
   private points: Array<{ x: number; y: number }> = [];
   private rect: RecordedRect | null = null;
   private rotation = 0;
   private readonly savedRotations: number[] = [];
+
+  override fillRect(x: number, y: number, width: number, height: number): void {
+    this.fillRects.push({ x, y, width, height, style: this.fillStyle });
+  }
+
+  override arc(x: number, y: number, radius: number, _start: number, _end: number): void {
+    this.arcs.push({
+      x,
+      y,
+      radius,
+      style: typeof this.strokeStyle === 'string' ? this.strokeStyle : '',
+      lineWidth: this.lineWidth,
+    });
+  }
+
+  override createPattern(
+    _image: CanvasImageSource,
+    _repetition: string | null,
+  ): CanvasPattern | null {
+    return this.patternAvailable ? this.createdPattern : null;
+  }
 
   override save(): void {
     this.savedRotations.push(this.rotation);
@@ -473,5 +514,52 @@ describe('tank body and turret rendering', () => {
 
     expect(bodyHeading(tank)).toBe(heading);
     expect(snapshot(world)).toEqual(before);
+  });
+});
+
+describe('floor pattern rendering', () => {
+  it('fills the arena with the world-anchored pattern and keeps spawn rings', () => {
+    const world = createWorld(0, 'coop');
+    const canvas = new RecordingCanvas();
+    const renderer = createRenderer(canvas);
+    const image = {} as CanvasImageSource;
+
+    expect(renderer.setFloorPattern(image)).toBe(true);
+
+    const before = snapshot(world);
+    renderer.render(world);
+    expect(snapshot(world)).toEqual(before);
+
+    const floorFill = canvas.recording.fillRects.find(
+      (fill) => fill.style === canvas.recording.createdPattern,
+    );
+    expect(floorFill).toEqual({
+      x: 0,
+      y: 0,
+      width: CONFIG.width,
+      height: CONFIG.height,
+      style: canvas.recording.createdPattern,
+    });
+    expect(canvas.recording.fillRects.some((fill) => fill.style === '#e6d3ac')).toBe(false);
+    expect(canvas.recording.texts.some((entry) => entry.text === 'TOYBOX')).toBe(false);
+    expect(canvas.recording.arcs.filter((arc) => arc.radius === 23)).toHaveLength(
+      world.players.length,
+    );
+  });
+
+  it('keeps the procedural floor when the pattern cannot be created', () => {
+    const world = createWorld(0, 'coop');
+    const canvas = new RecordingCanvas();
+    canvas.recording.patternAvailable = false;
+    const renderer = createRenderer(canvas);
+
+    expect(renderer.setFloorPattern({} as CanvasImageSource)).toBe(false);
+
+    renderer.render(world);
+
+    expect(canvas.recording.fillRects.some((fill) => fill.style === '#e6d3ac')).toBe(true);
+    expect(canvas.recording.arcs.filter((arc) => arc.radius === 23)).toHaveLength(
+      world.players.length,
+    );
   });
 });

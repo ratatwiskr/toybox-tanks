@@ -32,6 +32,7 @@ export type RenderContext = Pick<
   | 'rotate'
   | 'setTransform'
   | 'setLineDash'
+  | 'createPattern'
   | 'fillText'
 >;
 
@@ -45,6 +46,8 @@ export interface RenderCanvas {
 export interface Renderer {
   resize(): void;
   render(world: World, debug?: boolean): void;
+  /** Creates the world-anchored floor pattern; false keeps the procedural floor. */
+  setFloorPattern(image: CanvasImageSource): boolean;
 }
 
 export function createRenderer(canvas: RenderCanvas): Renderer {
@@ -56,6 +59,7 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
   const ctx = context;
   let scaleX = 1;
   let scaleY = 1;
+  let floorPattern: CanvasPattern | null = null;
 
   const rounded = (
     x: number,
@@ -79,37 +83,37 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
   };
 
   const drawFloor = (world: World): void => {
-    ctx.fillStyle = '#e6d3ac';
-    ctx.fillRect(0, 0, CONFIG.width, CONFIG.height);
+    if (floorPattern !== null) {
+      ctx.save();
+      ctx.fillStyle = floorPattern;
+      ctx.fillRect(0, 0, CONFIG.width, CONFIG.height);
+      ctx.restore();
+    } else {
+      ctx.fillStyle = '#e6d3ac';
+      ctx.fillRect(0, 0, CONFIG.width, CONFIG.height);
 
-    for (let y = 0; y < CONFIG.height; y += 45) {
-      ctx.fillStyle = (y / 45) % 2 ? '#e4cea5' : '#ead8b6';
-      ctx.fillRect(0, y, CONFIG.width, 44);
-      ctx.strokeStyle = '#c3a16d25';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(0, y + 0.5);
-      ctx.lineTo(CONFIG.width, y + 0.5);
-      ctx.stroke();
+      for (let y = 0; y < CONFIG.height; y += 45) {
+        ctx.fillStyle = (y / 45) % 2 ? '#e4cea5' : '#ead8b6';
+        ctx.fillRect(0, y, CONFIG.width, 44);
+        ctx.strokeStyle = '#c3a16d25';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, y + 0.5);
+        ctx.lineTo(CONFIG.width, y + 0.5);
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = '#ab89552c';
+      ctx.lineWidth = 0.7;
+      for (let i = 0; i < 38; i += 1) {
+        const x = (i * 151 + 37) % CONFIG.width;
+        const y = (i * 83 + 19) % CONFIG.height;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.bezierCurveTo(x + 20, y - 3, x + 50, y + 4, x + 85, y);
+        ctx.stroke();
+      }
     }
-
-    ctx.strokeStyle = '#ab89552c';
-    ctx.lineWidth = 0.7;
-    for (let i = 0; i < 38; i += 1) {
-      const x = (i * 151 + 37) % CONFIG.width;
-      const y = (i * 83 + 19) % CONFIG.height;
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.bezierCurveTo(x + 20, y - 3, x + 50, y + 4, x + 85, y);
-      ctx.stroke();
-    }
-
-    ctx.fillStyle = '#8c755322';
-    ctx.font = '800 34px system-ui';
-    ctx.textAlign = 'center';
-    ctx.fillText('TOYBOX', CONFIG.width / 2, 286);
-    ctx.font = '11px system-ui';
-    ctx.fillText('ONE BOUNCE • BIG TEAMWORK', CONFIG.width / 2, 307);
 
     for (const player of world.players) {
       ctx.strokeStyle = player.id === 'p1' ? '#297fa43b' : '#be6b303b';
@@ -565,6 +569,15 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
 
       scaleX = width / CONFIG.width;
       scaleY = height / CONFIG.height;
+    },
+
+    setFloorPattern(image: CanvasImageSource): boolean {
+      const pattern = ctx.createPattern(image, 'repeat');
+      if (pattern === null) {
+        return false;
+      }
+      floorPattern = pattern;
+      return true;
     },
 
     render(world: World, debug = false): void {

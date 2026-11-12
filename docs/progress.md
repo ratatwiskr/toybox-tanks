@@ -2,6 +2,78 @@
 
 Updated: 2026-11-12
 
+## Floor artwork step (issue #24, ADR 0004 step 5)
+
+Branch `feature/24-floor-art`, based on `c31435f` (the adapter-hardening head,
+PR #40). Presentation-only: no simulation, collision, muzzle, radius or snapshot
+change. The floor is decoded before the first frame; a failure keeps the
+procedural floor and reports in the status line instead of leaving a blank arena.
+
+### What changed
+
+- `src/render/floor-data.ts`: `wood-warm` tile (512 px) copied verbatim from the
+  pack's `toybox-floors.js`. Both checked-in copies of that file are byte-identical
+  (`cmp`), and `src/main.ts` imports the data module rather than fetching.
+- `src/render/floor.ts`: `validateFloorDefinition`, `buildFloorSvg`, and
+  `prepareFloorImage`, which decodes once and reuses `AssetLoadError`
+  (`assetId: 'wood-warm'`, `invalid-asset` / `decode-failed`).
+- `src/render/assets.ts`: the SVG decoder is exported as `decodeSvgImage` so the
+  floor shares the same decode path.
+- `src/render/renderer.ts`: `RenderContext` gains `createPattern`; the renderer
+  gains `setFloorPattern(image)`. With a pattern it fills 960×540 under the world
+  transform, so the 512 px tile stays anchored to world 0,0. Without one it draws
+  the existing procedural planks. Spawn rings and the TOYBOX watermark still draw
+  in both cases.
+- `src/main.ts`: top-level `await preloadFloorArtwork()` runs before the bridge
+  and the first render, so captures and gameplay cannot race the decode. Failure
+  writes a non-blocking warning to `#status` with the `.warning` class.
+- `src/styles.css`: `.status.warning` styling.
+- `tests/unit/floor.test.ts`: tile wrapping, single decode, decode failure, and
+  malformed-data rejection (4 tests).
+- `tests/unit/renderer.test.ts`: pattern fill replaces the procedural fill, spawn
+  rings stay, and a failed `createPattern` keeps the procedural floor (13 tests).
+
+### Commands and observed results
+
+| Command                                                                       | Result                                                                 |
+| ----------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `npm run verify:fast`                                                         | pass: format, lint, typecheck, 33 files / 283 unit tests               |
+| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run verify`        | pass: coverage, 23 e2e tests, 1 visual candidate test, 5 release tests |
+| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:browsers` | pass: 9 hosted tests across Chromium, Firefox and WebKit               |
+
+The `verify` row is from before the owner-requested watermark removal. After that
+change the same components were re-run: `verify:fast` (283 tests), 23 e2e tests,
+1 candidate capture, 5 release tests and 9 hosted browser tests all passed. A
+plain re-run of `npm run verify` reused a developer-run `vite` on port 5173 that
+lacks the test bridge, so 18 e2e tests failed with `Test bridge missing`; the
+isolated-port rerun above confirms this was the reused server, not the change.
+
+A temporary Playwright probe (not committed) sampled the live canvas after the
+`coop` scenario rendered: the dominant colours were the `wood-warm` board shades
+(`#d9bc91` / `#ddc298`), 365 of 387 sampled floor points matched exactly one
+tile (512 world px) apart, only 97 of 387 matched at a half tile, and `#status`
+had no warning. That is evidence for world anchoring and a successful preload,
+not an aesthetic approval.
+
+### Candidate screenshots (not baselines)
+
+`test-results/visual-candidates/01-menu.png` through `09-resized-gameplay.png`
+were recaptured from this branch. They are unapproved candidates; the menu shot
+is covered by the overlay, so `02-gameplay.png` is the first floor view.
+
+Owner review on 2026-11-12: the wood-warm floor is approved. The owner also asked
+to remove the TOYBOX watermark (previously kept for the first candidates), so the
+watermark and tagline no longer draw. The recaptured images reflect that removal;
+the floor tile itself is unchanged.
+
+### Limits and open choices
+
+- The rug stays skipped; that remains a later owner choice.
+- The candidate images are not committed reference baselines and no visual
+  comparison threshold was added.
+- The floor PR should target `feature/24-asset-adapter-hardening` until PR #40
+  merges, then retarget to `main`.
+
 ## Asset adapter hardening (issue #24, follow-up to PR #36)
 
 Branch `feature/24-asset-adapter-hardening`, based on `30246e5` (the squash
