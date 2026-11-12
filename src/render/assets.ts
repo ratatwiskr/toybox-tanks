@@ -155,7 +155,7 @@ class CanvasUnavailableError extends Error {
   }
 }
 
-function decodeSvg(source: string): Promise<HTMLImageElement> {
+export function decodeSvgImage(source: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const image = new Image();
     image.onload = () => {
@@ -180,7 +180,7 @@ function createBrowserCanvas(resolution: number): AssetCanvas {
 }
 
 const DEFAULT_PIPELINE: AssetLayerPipeline = {
-  decode: decodeSvg,
+  decode: decodeSvgImage,
   createCanvas: createBrowserCanvas,
 };
 
