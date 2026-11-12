@@ -2,6 +2,50 @@
 
 Updated: 2026-11-12
 
+## Asset adapter hardening (issue #24, follow-up to PR #36)
+
+Branch `feature/24-asset-adapter-hardening`, based on `30246e5` (the squash
+merge of PR #36). This slice is presentation-only. It adds validation, bounded
+caching, error reporting and the procedural-fallback contract to
+`src/render/assets.ts`. It does not import the adapter from the renderer or
+`src/main.ts`, changes no visuals and adds no screenshot baseline.
+
+### What changed
+
+- `src/render/assets.ts`: registered asset IDs (`tank-blue`, `tank-orange`,
+  `turret-enemy`), a pure `validateAssetDefinition` check (viewBox, anchor,
+  muzzle, shadow, non-empty and unique layer roles), typed `AssetLoadError`
+  codes (`unknown-asset`, `invalid-asset`, `decode-failed`,
+  `canvas-unavailable`, `invalid-resolution`), an LRU layer cache bounded to 16
+  entries by default, in-flight decode deduplication, `preload` that reports
+  failures instead of rejecting the batch, an `onError` hook (default
+  `console.error`), `reset()` for world changes, and `draw()` that returns
+  `false` when the caller must keep drawing procedural art.
+- `tests/unit/assets.test.ts`: 13 tests covering the SVG fragment builder,
+  checked-in definitions, malformed definitions, unknown IDs, invalid
+  definitions, cache reuse, concurrent decode deduplication, LRU eviction,
+  decode failure and retry, the draw fallback contract, draw without mutation,
+  stale in-flight results after reset, and `preload` failure collection.
+
+### Commands and observed results
+
+| Command                                                                       | Result                                                                 |
+| ----------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `npm run verify:fast`                                                         | pass: format, lint, typecheck, 32 files / 277 unit tests               |
+| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run verify`        | pass: coverage, 23 e2e tests, 1 visual candidate test, 5 release tests |
+| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:browsers` | pass: 9 hosted tests across Chromium, Firefox and WebKit               |
+
+### Limits
+
+- The adapter is not part of the shipped bundle yet. The existing hosted SVG
+  probe still proves browser decoding; the adapter's own browser error path is
+  exercised when the tank step wires preload and drawing.
+- The fallback is a tested contract (`draw` returns `false`), not yet a visible
+  in-game message. The visible error surface and procedural drawing switch
+  belong to the wiring step.
+- No candidate screenshots were captured because this slice has no visual
+  change.
+
 ## Issue 22 visual comparison workflow: local verification
 
 Branch `test/22-manual-visual-review`, base commit `d69f818`. All results below
