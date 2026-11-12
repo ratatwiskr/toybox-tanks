@@ -42,8 +42,12 @@ test.describe('hosted release smoke', () => {
         '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" fill="#ff0000"/></svg>';
       const image = new Image();
       const loaded = new Promise<void>((resolve, reject) => {
-        image.onload = () => resolve();
-        image.onerror = () => reject(new Error('SVG decode failed'));
+        image.onload = () => {
+          resolve();
+        };
+        image.onerror = () => {
+          reject(new Error('SVG decode failed'));
+        };
       });
       image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
       await loaded;

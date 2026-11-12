@@ -1,8 +1,4 @@
-import type {
-  AssetDefinition,
-  AssetPart,
-  AssetPartRole,
-} from './asset-data';
+import type { AssetDefinition, AssetPart, AssetPartRole } from './asset-data';
 
 export type PreparedAssetLayer = {
   role: AssetPartRole;
@@ -22,26 +18,27 @@ export function buildLayerSvg(
   part: AssetPart,
   resolution: number = DEFAULT_RESOLUTION,
 ): string {
-  const [x, y, width, height] = asset.viewBox;
+  const viewBox = asset.viewBox.join(' ');
   return (
-    `<svg xmlns="${SVG_NS}" width="${resolution}" height="${resolution}" ` +
-    `viewBox="${x} ${y} ${width} ${height}">${part.svg}</svg>`
+    `<svg xmlns="${SVG_NS}" width="${String(resolution)}" height="${String(resolution)}" ` +
+    `viewBox="${viewBox}">${part.svg}</svg>`
   );
 }
 
 function decodeSvg(source: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error('SVG decode failed'));
+    image.onload = () => {
+      resolve(image);
+    };
+    image.onerror = () => {
+      reject(new Error('SVG decode failed'));
+    };
     image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(source)}`;
   });
 }
 
-async function rasterizeLayer(
-  source: string,
-  resolution: number,
-): Promise<HTMLCanvasElement> {
+async function rasterizeLayer(source: string, resolution: number): Promise<HTMLCanvasElement> {
   const image = await decodeSvg(source);
   const canvas = document.createElement('canvas');
   canvas.width = resolution;
@@ -61,10 +58,7 @@ export async function prepareAssetLayers(
   return Promise.all(
     asset.parts.map(async (part) => ({
       role: part.role,
-      canvas: await rasterizeLayer(
-        buildLayerSvg(asset, part, resolution),
-        resolution,
-      ),
+      canvas: await rasterizeLayer(buildLayerSvg(asset, part, resolution), resolution),
     })),
   );
 }
