@@ -51,15 +51,21 @@ not capture first if your goal is to inspect changes relative to that checkpoint
 
 Exact pixel comparisons remain strict. Environment/provenance metadata and the
 menu fresh-page repeat check remain diagnostic safeguards; do not loosen them
-to hide differences. A deliberate change/revert/pass demonstration and actual
-local verification still need to be recorded; this code commit is not evidence.
+to hide differences. Both visual configs launch Chromium with
+`--disable-partial-raster` because intermittent partial re-rasterization of
+fractional HUD/button edges produced one-pixel differences between otherwise
+identical captures. This is a deterministic rendering setting, not a tolerance,
+mask, retry or sleep; do not remove it or relax the comparison to compensate.
+A deliberate change/revert/pass demonstration and actual local verification
+still need to be recorded; this code commit is not evidence.
 
 ## Fullscreen limitation
 
-The application exposes a real `#fullscreenBtn` and requests the Fullscreen API.
-The desktop and touch fullscreen scenes remain registered and use that real
-control. They must not be replaced by CSS-only fullscreen, viewport resizing, or
-windowed captures mislabeled as fullscreen.
+Fullscreen catalogue coverage is currently deferred, so no fullscreen scene is
+registered. The application still exposes a real `#fullscreenBtn` and requests
+the Fullscreen API; when fullscreen coverage is re-enabled it must use that real
+control. Do not substitute CSS-only fullscreen, viewport resizing, or windowed
+captures mislabeled as fullscreen.
 
 Headless Chromium may deny the browser-level fullscreen request. In that case,
 `capture:visual:baseline` exits with code 2 and a `FULLSCREEN_UNSUPPORTED`
@@ -97,8 +103,9 @@ are unchanged. Installed Node 24 runs the small typed CLI directly. The wrapper
 handles the owner's installed Chromium cache and strict, temporary dev-server
 ports without reusing an arbitrary existing server. No installations occur.
 
-No screenshot generation, aesthetic inspection, formatting, lint, compilation,
-unit/browser execution or local signal/port verification was performed in the
-API authoring session. Run the normal verification commands locally and record
-actual results before merge. Raw catalogue Playwright invocation now stages
-captures only; use capture:visual:baseline for replacement.
+The workflow was exercised locally on 2026-11-12: the checkpoint was recaptured,
+the full comparison passed, and formatting, lint, typecheck, unit, coverage,
+e2e, candidate-capture, release and Chromium/WebKit hosted smoke checks ran.
+Actual commands, exits and limitations are recorded in `docs/progress.md`.
+Raw catalogue Playwright invocation still stages captures only; use
+capture:visual:baseline for replacement.

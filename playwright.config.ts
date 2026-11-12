@@ -42,7 +42,12 @@ export default defineConfig({
     {
       name: 'visual',
       testMatch: /visual\/.*\.spec\.ts/,
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        // Fractional HUD/button edges were intermittently re-rasterized between
+        // identical captures; disabling partial raster keeps strict pixel checks stable.
+        launchOptions: { args: ['--disable-partial-raster'] },
+      },
     },
   ],
   webServer: devServer,

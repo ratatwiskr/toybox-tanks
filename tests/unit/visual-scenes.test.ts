@@ -5,6 +5,7 @@ import { firstTerrain, reflect } from '../../src/sim/collision';
 import { MAPS } from '../../src/sim/maps';
 import { createWorld } from '../../src/sim/world';
 import { snapshotWorld } from '../../src/test-bridge';
+import { MOTION_SCENES } from '../../src/visual-motion-scenes';
 import { createVisualWorld, VISUAL_SCENES } from '../../src/visual-scenes';
 
 describe('curated visual fixtures', () => {
@@ -15,8 +16,11 @@ describe('curated visual fixtures', () => {
       const second = createVisualWorld(scene.id);
       expect(second).toEqual(first);
       expect(second).not.toBe(first);
-      expect(first.time).toBe(0);
       expect(first.players).toHaveLength(2);
+      // Motion fixtures deliberately advance fixed ticks; static scenes stay at time zero.
+      if (!MOTION_SCENES.some((motion) => motion.id === scene.id)) {
+        expect(first.time).toBe(0);
+      }
     }
     expect(JSON.stringify(MAPS)).toBe(maps);
     expect(createWorld(0, 'coop').events).not.toContain('Synthetic visual fixture');

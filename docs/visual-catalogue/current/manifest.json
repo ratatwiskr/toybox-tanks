@@ -5,9 +5,9 @@
   "complete": true,
   "runError": null,
   "source": {
-    "revision": "b4e523102859ab8ba7ff395b4bbbba77ae1f2521",
-    "sourceStatus": " M docs/development-workflow.md\n M playwright.review.config.ts\n M src/visual-motion-scenes.ts\n M tests/e2e/mobile-visual-catalogue.spec.ts\n M tests/unit/visual-promotion.test.ts\n M tests/unit/visual-review-safety.test.ts\n M tests/visual/catalogue-mobile.ts\n M tests/visual/catalogue-page.ts\n M tests/visual/catalogue-support.ts\n M tests/visual/catalogue.capture.ts\n M tests/visual/review-promotion.ts\n M tests/visual/review-safety.ts\n M tests/visual/review.approve.ts\n M tests/visual/review.compare.ts",
-    "sourceTreeSha256": "0fc82183fa599b5fc7e01d99405ac0600b7b07da2790c48c80457c08dbf103eb"
+    "revision": "d69f818eb26b81d7b256c1c8867e1b83cca0b4d6",
+    "sourceStatus": " M playwright.config.ts\n M playwright.review.config.ts\n M src/visual-motion-scenes.ts\n M tests/unit/visual-scenes.test.ts\n M tests/visual/catalogue-support.ts\n M tests/visual/development-cli.ts\n M tsconfig.e2e.json\n M tsconfig.unit.json",
+    "sourceTreeSha256": "93833f0909db1cfa8e917c4da249aa7f6861855dce5485e57e9458747616d33e"
   },
   "environment": {
     "os": "linux",
@@ -21,7 +21,7 @@
     "reducedMotion": "reduce",
     "locale": "en-US",
     "timezoneId": "UTC",
-    "baseURL": "http://127.0.0.1:5183",
+    "baseURL": "http://127.0.0.1:45539",
     "headless": "true"
   },
   "comparisonsPerformed": false,
@@ -631,6 +631,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -642,7 +643,7 @@
       "images": [
         {
           "file": "ui-menu.full.png",
-          "sha256": "c891fe5b2009774a7261c4d25eb73f71b7af5214ecc46ffa4b70856cff9926b5"
+          "sha256": "9ffee189b4a3e22b0f346f9b8a1b10b1d3837fc8a797c4e565a928edda1a08dc"
         },
         {
           "file": "ui-menu.arena.png",
@@ -1256,6 +1257,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -1267,7 +1269,7 @@
       "images": [
         {
           "file": "ui-coop.full.png",
-          "sha256": "e275a62f60dbef59b00c55cf8bd715dd4da13a52385d2e292d170dae1e07e8c8"
+          "sha256": "e294c0c189607341846859a25254738c4eac3e139be96b9d78661a9578f48990"
         },
         {
           "file": "ui-coop.arena.png",
@@ -1893,6 +1895,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -1904,7 +1907,7 @@
       "images": [
         {
           "file": "ui-active-shot.full.png",
-          "sha256": "8839a34432341786fae979622e49d4f68ab7ea3b2d882866427a46850f498acc"
+          "sha256": "ad5c97784db0f646331275a9d6b26f0a6ea8327497b977cb8fe8ed1e81ed1010"
         },
         {
           "file": "ui-active-shot.arena.png",
@@ -2518,6 +2521,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -2529,7 +2533,7 @@
       "images": [
         {
           "file": "ui-disabled-player.full.png",
-          "sha256": "7b5586e76953f7b7032fdeeee5963c7ab3ad1694249483925f874cf154249d37"
+          "sha256": "5c692c85be689c5386cfb5bd38d6e0e05c2dafd428ffbb6c0ca66ec928110d44"
         },
         {
           "file": "ui-disabled-player.arena.png",
@@ -3143,6 +3147,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -3154,7 +3159,7 @@
       "images": [
         {
           "file": "ui-paused.full.png",
-          "sha256": "0a925d4574b52fc3cdcc18d52768d500969749e66d8ba07ecf267d9cdff4f46d"
+          "sha256": "1e55c8ae14b3d55a5342416fd99989756439af83375bbf20d6ac97d3bd41ce4f"
         },
         {
           "file": "ui-paused.arena.png",
@@ -3768,6 +3773,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -3779,7 +3785,7 @@
       "images": [
         {
           "file": "ui-cleared.full.png",
-          "sha256": "66fb793764468f1dffd99ca3643758d0d6087ce6c086ce8a20c0a7428913bfc1"
+          "sha256": "6eb48d47409bebee182d2aad48113a0d7745845cc70c274a0a5fbc1071501672"
         },
         {
           "file": "ui-cleared.arena.png",
@@ -4393,6 +4399,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -4404,7 +4411,7 @@
       "images": [
         {
           "file": "ui-defeat.full.png",
-          "sha256": "e421b10e496075d1f388da64c46f62bb18daa76982f47916afbff54ddddb028e"
+          "sha256": "15414c4b0748dc96386f40de63c9fb59fd7a71f2d1223e9b8d6925288bc6dbad"
         },
         {
           "file": "ui-defeat.arena.png",
@@ -5166,6 +5173,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -5177,7 +5185,7 @@
       "images": [
         {
           "file": "ui-completed.full.png",
-          "sha256": "d737751bd133a6bd8c995e538d8f6afa4efda60c50aea87ed2465045f8f3d99a"
+          "sha256": "bfd318f045c4807e81f0a01f9063b1919d3f3dd921dc9548650d19c0e91f6176"
         },
         {
           "file": "ui-completed.arena.png",
@@ -5791,6 +5799,7 @@
           "height": 720
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -5802,7 +5811,7 @@
       "images": [
         {
           "file": "ui-resized-gameplay.full.png",
-          "sha256": "4ca968dbb071af604a882eb704ad2820ec0184691806f6ec4ca5a011ea8522b1"
+          "sha256": "90fa579ff69f395910cd436c9f10d85db3bcc6bf9bc2f4795f6b4d580e07ef01"
         },
         {
           "file": "ui-resized-gameplay.arena.png",
@@ -6419,6 +6428,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -6430,7 +6440,7 @@
       "images": [
         {
           "file": "campaign-first-bounce-start.full.png",
-          "sha256": "e275a62f60dbef59b00c55cf8bd715dd4da13a52385d2e292d170dae1e07e8c8"
+          "sha256": "e294c0c189607341846859a25254738c4eac3e139be96b9d78661a9578f48990"
         },
         {
           "file": "campaign-first-bounce-start.arena.png",
@@ -7121,6 +7131,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -7132,7 +7143,7 @@
       "images": [
         {
           "file": "campaign-block-party-start.full.png",
-          "sha256": "6aa31ec052b2fffe50f1fadad10be165db1678ed39a2b0456b531b0b3a380f40"
+          "sha256": "6d24e26e7615c53e0f3007579306c7428b059cfa332e4659b318da3e0ced49ab"
         },
         {
           "file": "campaign-block-party-start.arena.png",
@@ -7828,6 +7839,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -7839,7 +7851,7 @@
       "images": [
         {
           "file": "campaign-together-through-start.full.png",
-          "sha256": "58c4cc64eb5493ca48d34e487e4b29472417a46fa0cc553fc41eb029773dd8e7"
+          "sha256": "cc94613751732d78db5a46400b269569525a2c8d87f9868e775927d62a34adec"
         },
         {
           "file": "campaign-together-through-start.arena.png",
@@ -8607,6 +8619,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -8618,7 +8631,7 @@
       "images": [
         {
           "file": "campaign-cork-keep-start.full.png",
-          "sha256": "dec43c3193f52a6e45da3676e0c6da86171b48c37097e971534acc1f4a6bc091"
+          "sha256": "eab70d6ca4ffdcf0ad6ad1c328485665e08920bb19f3bbdb8f7586a06db06d7b"
         },
         {
           "file": "campaign-cork-keep-start.arena.png",
@@ -9181,6 +9194,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -9192,7 +9206,7 @@
       "images": [
         {
           "file": "cork-atlas.full.png",
-          "sha256": "b0cfe71f52d536a24a654eb55e1f233773b4d38ba4db7b0f443c8196001aecc8"
+          "sha256": "36c8edbc277a59a17ee9115ce34dfb3b323297e722e290104de0fa49d54a64f9"
         },
         {
           "file": "cork-atlas.arena.png",
@@ -9741,6 +9755,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -9752,7 +9767,7 @@
       "images": [
         {
           "file": "cork-isolated.full.png",
-          "sha256": "22e7997e1ed3e9df294088f858af50dc7c584a7e9411ea2b7926b8fa7e39bc0d"
+          "sha256": "3a2ff8188d3011903da0acd37a97a4cc83b95ff5d356feecc11174e5996618ca"
         },
         {
           "file": "cork-isolated.arena.png",
@@ -10323,6 +10338,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -10334,7 +10350,7 @@
       "images": [
         {
           "file": "cork-adjacent.full.png",
-          "sha256": "8a3eeb78bdbfb78b9098d9aa3583ad4b4143e43ed4e0930a824a607878a18bea"
+          "sha256": "abada1be4cf61086dc5c7cabd53b1aa6cf264dab3e9845060a3aaa4c5aa80766"
         },
         {
           "file": "cork-adjacent.arena.png",
@@ -10905,6 +10921,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -10916,7 +10933,7 @@
       "images": [
         {
           "file": "cork-reversed.full.png",
-          "sha256": "5d650c82e9538bb235cc0b2395a280155fdff1abeaf8f620bbfd576db7b7ec1c"
+          "sha256": "abada1be4cf61086dc5c7cabd53b1aa6cf264dab3e9845060a3aaa4c5aa80766"
         },
         {
           "file": "cork-reversed.arena.png",
@@ -11460,6 +11477,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -11471,7 +11489,7 @@
       "images": [
         {
           "file": "cork-aim-blocked.full.png",
-          "sha256": "df982db71bec82b8933e8db4a1a0c668e8ced86c20aef4065275af44ff054dac"
+          "sha256": "ee7d8c94432b2d8d3be73476f466f5b7745e75751b92517626a8db6443118806"
         },
         {
           "file": "cork-aim-blocked.arena.png",
@@ -12015,6 +12033,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -12026,7 +12045,7 @@
       "images": [
         {
           "file": "cork-aim-cleared.full.png",
-          "sha256": "03bf0f56afc9007fc033ae403c773ad59ca3886ab80c60a6627b222a252b8c76"
+          "sha256": "880c2a326130212074c9191933815a48433988a7d0caf510db0ef37b3690e869"
         },
         {
           "file": "cork-aim-cleared.arena.png",
@@ -12576,6 +12595,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -12587,7 +12607,7 @@
       "images": [
         {
           "file": "cork-aim-reflected.full.png",
-          "sha256": "3e721a776a138637d8dad5787e409069ec8d82ac7fb4737ade663d6355a759ef"
+          "sha256": "dab0e4eee96d3d8f7f78d86ee8d367c9e5bf3326f039291653f378092fe786e5"
         },
         {
           "file": "cork-aim-reflected.arena.png",
@@ -13172,6 +13192,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -13183,7 +13204,7 @@
       "images": [
         {
           "file": "combat-feedback.full.png",
-          "sha256": "c6f10bbbe2de5f4dff624858eb2e6aa404997971f206d11f41552f1d3073e386"
+          "sha256": "66506d0b5db80f5b9f6100592e6c545cbfecb766e9906c0e126a22856683d5c2"
         },
         {
           "file": "combat-feedback.arena.png",
@@ -13717,6 +13738,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -13728,7 +13750,7 @@
       "images": [
         {
           "file": "body-aim-independent.full.png",
-          "sha256": "beb60502fac070a294e5632a1bbd4d63567097dd15c5e206758af0789c92023f"
+          "sha256": "75f582748ea9b019254876e7e4edd3c636c50bb5085bed8ad5ccaa8ee4b1b9ff"
         },
         {
           "file": "body-aim-independent.arena.png",
@@ -14262,6 +14284,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -14273,7 +14296,7 @@
       "images": [
         {
           "file": "body-diagonal.full.png",
-          "sha256": "27540253f86317e3725209a05fa98b98ce85dc47dc44de0a3ca3924a19bcb4e4"
+          "sha256": "8262223e4b5d88448a6f757168a3fe67a5b5c10466744565bc204ff96d0e2c20"
         },
         {
           "file": "body-diagonal.arena.png",
@@ -14813,6 +14836,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -14824,7 +14848,7 @@
       "images": [
         {
           "file": "body-wall-slide.full.png",
-          "sha256": "4c468d22dbc5dd31025a41fca15667b2fa8ea9c46f0cc7206b2be203c8fca788"
+          "sha256": "7dfb7a64fd366fd5da2e71aee227a0683ba799864420e2e98861e59327daf1cb"
         },
         {
           "file": "body-wall-slide.arena.png",
@@ -15381,6 +15405,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -15392,7 +15417,7 @@
       "images": [
         {
           "file": "shell-head-on-before.full.png",
-          "sha256": "c0ba918f8179addd060dfdabbe724022d1214ee83a2bb021b40dd6a51b2e55f9"
+          "sha256": "bdf83711882c4e720d9cf3e3a513cdc2dd51bc2e0fd08aca8a8c5b3337b6331f"
         },
         {
           "file": "shell-head-on-before.arena.png",
@@ -15935,6 +15960,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -15946,7 +15972,7 @@
       "images": [
         {
           "file": "shell-head-on-contact.full.png",
-          "sha256": "33acaec7c6c0ca673298ed3def47e98ddba240bd5214b04f6b65ff1c5c093477"
+          "sha256": "bc446c7aac122a915ae88ea21620fe035df8cf3b4961c461d4a724027bb3c5ee"
         },
         {
           "file": "shell-head-on-contact.arena.png",
@@ -16489,6 +16515,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -16500,7 +16527,7 @@
       "images": [
         {
           "file": "shell-head-on-aged.full.png",
-          "sha256": "8b37e79ee83154fe0dfbec8ac2bc4a846814e42b65b425810b4eb1ef6f103545"
+          "sha256": "5bf7c3b854c72996a99b2478bf13f1528b651732402dbca41f1b411e244ba0e1"
         },
         {
           "file": "shell-head-on-aged.arena.png",
@@ -16520,7 +16547,7 @@
     {
       "scene": {
         "id": "shell-head-on-cleared",
-        "purpose": "Synthetic fixture: Sixty fixed ticks after contact: both shells and the poof are gone.",
+        "purpose": "Synthetic fixture: Well after contact: both shells and the expired poof are gone.",
         "scenario": "coop",
         "options": {},
         "fixture": "shell-head-on-cleared",
@@ -16535,8 +16562,8 @@
         "room": 0,
         "mode": "coop",
         "state": "playing",
-        "time": 0.5583333333333338,
-        "ticks": 67,
+        "time": 0.5833333333333337,
+        "ticks": 70,
         "nextShell": 2,
         "shots": 2,
         "bounces": 0,
@@ -17008,27 +17035,18 @@
             "spawnX": 820,
             "spawnY": 130,
             "r": 15,
-            "angle": -2.6316296601282234,
+            "angle": -2.679129660128223,
             "hp": 1,
             "alive": true,
             "invuln": 0,
-            "cooldown": 99.44166666666622,
+            "cooldown": 99.4166666666662,
             "charge": 0,
             "targetId": "p2",
             "track": 0
           }
         ],
         "shells": [],
-        "effects": [
-          {
-            "x": 420,
-            "y": 270,
-            "type": "poof",
-            "age": 0.508333333333334,
-            "life": 0.52,
-            "seed": 0.05833333333333333
-          }
-        ],
+        "effects": [],
         "events": ["0.06  Shells collided", "Synthetic visual fixture: shell-head-on-cleared"]
       },
       "renderContext": {
@@ -17043,6 +17061,7 @@
           "height": 1000
         },
         "mobileContext": null,
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 0,
         "fonts": "loaded",
@@ -17054,15 +17073,15 @@
       "images": [
         {
           "file": "shell-head-on-cleared.full.png",
-          "sha256": "29413619b720ee08266eb73733d7ec9d6164ae1ab2abd1fba0e1353b78efc3f8"
+          "sha256": "25025d53413cd35118c8ec78e72507cae58185d3aad580f9f4735cc843a33916"
         },
         {
           "file": "shell-head-on-cleared.arena.png",
-          "sha256": "855bb6bd34052ca8bbc59f3a52b096c62ae7dd6e047dc7bc4a31ab738d54ebf9"
+          "sha256": "12d851223503b0a284e8dbedb531efbad88f5082f6c019aa80f8ebb93f073996"
         },
         {
           "file": "shell-head-on-cleared.detail.png",
-          "sha256": "92fe211b91f6ebe956ad6f96cca3e7106f5650700ca3ceff663d416a6836933a"
+          "sha256": "513800ca8a91fb5f315ec9c1e70839a3083c0a97472fae2e95f1953ccee9b329"
         }
       ],
       "expectedFiles": [
@@ -17681,6 +17700,7 @@
             "height": 203.984375
           }
         },
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 2,
         "fonts": "loaded",
@@ -17692,7 +17712,7 @@
       "images": [
         {
           "file": "touch-landscape-gameplay.full.png",
-          "sha256": "e5785ae230fbc96c0f88ae2390069f8324d92d119151490d9f9ae8c7533385f5"
+          "sha256": "a5a7c68ac025abe7cd3d48874409312a5589dcfc7e57f292d671c7e58839d492"
         },
         {
           "file": "touch-landscape-gameplay.arena.png",
@@ -18299,6 +18319,7 @@
             "height": 844
           }
         },
+        "fullscreenContext": null,
         "deviceScaleFactor": 1,
         "maxTouchPoints": 2,
         "fonts": "loaded",

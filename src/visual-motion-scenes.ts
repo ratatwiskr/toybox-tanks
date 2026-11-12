@@ -27,7 +27,7 @@ export const MOTION_SCENES = [
   },
   {
     id: 'shell-head-on-cleared',
-    purpose: 'Sixty fixed ticks after contact: both shells and the poof are gone.',
+    purpose: 'Well after contact: both shells and the expired poof are gone.',
   },
 ] as const;
 
@@ -113,7 +113,7 @@ export function createMotionWorld(name: MotionSceneId): World {
         'shell-head-on-before': 6,
         'shell-head-on-contact': 7,
         'shell-head-on-aged': 19,
-        'shell-head-on-cleared': 67,
+        'shell-head-on-cleared': 70,
       }[name];
       advance(world, ticks);
       break;

@@ -34,6 +34,7 @@ export default defineConfig({
     locale: 'en-US',
     timezoneId: 'UTC',
     trace: 'retain-on-failure',
+    launchOptions: { args: ['--disable-partial-raster'] },
   },
   webServer: {
     command: `npm run dev:test -- --host 127.0.0.1 --port ${String(port)} --strictPort`,

@@ -1,8 +1,10 @@
-# Mobile visual coverage: authored, pending execution
+# Mobile visual coverage: implemented and captured locally
 
 Adds the remaining two agreed issue-22 scenes after body/shell fixture commit
 8d9bb35. The registry is shared by current catalogue capture and manual
 comparison; no second renderer, fake UI or separately maintained scene list.
+Both scenes were captured and compared locally on 2026-11-12. That is
+development evidence, not aesthetic approval or physical-device certification.
 
 - touch-landscape-gameplay: 640 x 300, real solo room, controlled zero-tick
   state, detected touch capability and actual enabled pads. Full-app and arena
@@ -29,13 +31,15 @@ TOYBOX_REVIEW_SCENES=touch-landscape-gameplay,touch-portrait-paused npm run visu
 npm run visual:report
 ```
 
-Run browser commands sequentially. Capture with visual:capture remains
-independent of references. Missing references fail unapproved; only explicit
-owner-selected reviewed hashes may be promoted, followed by another comparison.
+Run browser commands sequentially. `visual:capture` is an alias for the explicit
+`capture:visual:baseline` checkpoint replacement. Comparison reads the saved
+checkpoint and never updates it implicitly; a deliberate refresh requires a new
+capture after review.
 
-These commands have not been executed in this API session. Formatting, lint,
-typechecking, focused tests, full gates, local captures and review remain
-pending. Preserve current behavioral/renderer/room-start and production/file://
-exclusion checks. Menu variation and intentional-change/revert evidence remain
-required before issue completion. No screenshots/references were generated or
-approved, and no merge, deployment or issue closure is performed.
+The focused unit and browser specs, full comparison, formatting, lint,
+typecheck, coverage, e2e, release and Chromium/WebKit hosted smoke checks passed
+locally on 2026-11-12; actual commands and exits are in `docs/progress.md`.
+Behavioral/renderer/room-start and production/file:// exclusion checks were
+preserved. Menu variation was diagnosed and resolved with the deterministic
+Chromium raster flag. No screenshots/references were approved, and no merge,
+deployment or issue closure is performed.

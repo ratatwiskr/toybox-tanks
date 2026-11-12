@@ -1,8 +1,9 @@
-# Visual motion coverage: authored, pending execution
+# Visual motion coverage: implemented and captured locally
 
 Continuation of issue 22 on PR 23, after workflow/path foundation 37713ed and
-main shell/body features cb50b79 and 4c926b7. This records authored coverage,
-not local execution or appearance approval.
+main shell/body features cb50b79 and 4c926b7. The scenes below are registered in
+the shared catalogue and were captured and compared locally on 2026-11-12. That
+is development evidence, not aesthetic approval or formal reference approval.
 
 ## Added shared-registry scenes
 
@@ -12,7 +13,7 @@ not local execution or appearance approval.
 - shell-head-on-before: tick 6, both shells present, no collision effect.
 - shell-head-on-contact: tick 7, both absent, one actual collision poof.
 - shell-head-on-aged: tick 19, fixed later effect age.
-- shell-head-on-cleared: tick 67, collision effect expired.
+- shell-head-on-cleared: tick 70, collision effect expired.
 
 No cloud is manually injected for this sequence. No body heading is injected
 into simulation state. The loaded world retains its real tank objects and
@@ -34,14 +35,19 @@ TOYBOX_REVIEW_SCENES=body-aim-independent,body-diagonal,body-wall-slide,shell-he
 npm run visual:report
 ```
 
-Missing references are expected to fail unapproved until owner review and
-selected hash-bound promotion. Do not update snapshots implicitly.
+Comparison runs against the saved development checkpoint; it does not use formal
+approved references or implicitly update snapshots. A deliberate scene change
+requires an explicit `capture:visual:baseline` refresh after review.
 
-## Remaining
+## Verification status
 
-Compact landscape touch and portrait pause captures are not implemented in
-this commit. Run formatting, focused tests, verify:fast and applicable full/
-browser/release gates sequentially, preserving production hook exclusion.
-Diagnose unresolved menu variation and demonstrate intentional-change detection
-plus revert/pass before completing issue 22. No local commands above have been
-run in this API session. No screenshots or references were generated/approved.
+The full comparison passed locally, including the paired `ui-menu` repeat check.
+The earlier menu variation was traced to intermittent partial rasterization of
+fractional HUD/button edges and resolved with Chromium's
+`--disable-partial-raster` launch flag, not with sleeps, retries, masks or looser
+tolerances. Actual commands, exits and the deliberate-change experiment are
+recorded in `docs/progress.md`.
+
+Compact landscape touch and portrait pause coverage is now implemented and
+registered. No screenshots or references were approved, and no aesthetic
+acceptance is claimed.

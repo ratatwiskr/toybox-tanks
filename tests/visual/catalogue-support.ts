@@ -148,7 +148,7 @@ export async function sourceProvenance(): Promise<{
     ...sourcePaths,
   ]);
   const digest = createHash('sha256');
-  for (const path of [...new Set(paths.split('\0')).filter(Boolean).sort()]) {
+  for (const path of [...new Set(paths.split('\0').filter(Boolean))].sort()) {
     digest.update(path).update('\0');
     try {
       digest.update(await readFile(path));

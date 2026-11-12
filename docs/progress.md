@@ -1,6 +1,95 @@
 # Toybox Tanks — current progress
 
-Updated: 2026-11-11
+Updated: 2026-11-12
+
+## Issue 22 visual comparison workflow: local verification
+
+Branch `test/22-manual-visual-review`, base commit `d69f818`. All results below
+are from the uncommitted working tree on 2026-11-12, not from a later committed
+head. The development checkpoint in `docs/visual-catalogue/current/` was
+recaptured (30 scenes, 74 images) and remains development evidence, not formal
+reference or aesthetic approval.
+
+### Corrections made while running the gates
+
+- `tests/visual/catalogue-support.ts`: filter empty NUL-separated paths before
+  sorting, so source provenance is typed as `string[]`.
+- `tests/visual/development-cli.ts`: add the `isObject` type predicate and stop
+  deleting `TOYBOX_REVIEW_SCENES`, so the documented subset comparison actually
+  reaches `review.compare.ts`.
+- `tsconfig.e2e.json` and `tsconfig.unit.json`: allow importing `.ts` extensions
+  for the Node-run visual CLI.
+- `src/visual-motion-scenes.ts`: run `shell-head-on-cleared` for 70 ticks so the
+  contact poof has expired; update its purpose text.
+- `tests/unit/visual-scenes.test.ts`: assert the zero-time rule only for static
+  scenes; motion fixtures intentionally advance fixed ticks.
+- `playwright.config.ts` and `playwright.review.config.ts`: launch Chromium with
+  `--disable-partial-raster`.
+
+### Menu variation diagnosis
+
+Repeated fresh-page captures initially differed by 3-9 pixels at fractional
+HUD/button edges (for example x=955/966/967, y=85/86). Tiny RGB/alpha
+antialiasing changes appeared around `ui-menu`, `ui-paused` and `ui-cleared`.
+Launch-flag experiments showed that text flags alone were insufficient.
+`--disable-partial-raster` produced one unique screenshot hash over six repeated
+captures for each of menu, paused and cleared. The setting is a deterministic
+rendering environment fix, not a sleep, retry, mask, tolerance change or
+auto-approval. `ui-menu`'s fresh-page repeat check now passes.
+
+### Intentional-change experiment
+
+A temporary `--ink` colour change from `#303b41` to `#ff0000` in
+`src/styles.css` was detected with exact pixel evidence:
+
+```sh
+TOYBOX_REVIEW_SCENES=ui-menu npm run test:visual:compare
+```
+
+Result: exit 1; `ui-menu.full.png` differed by 8373 pixels and
+`ui-menu.arena.png` by 6157 pixels. The colour was reverted byte-for-byte
+(`git diff -- src/styles.css` empty) and the same command then passed (exit 0,
+2 tests). No reference was changed.
+
+### Commands and observed results
+
+All commands ran from the repository root. Raw browser commands used
+`PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright"` because the launcher
+sets a non-existent cache path.
+
+| Command                                                                                                              | Result                                                                 |
+| -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `npm run verify:fast`                                                                                                | pass: format, lint, typecheck, 31 files / 264 unit tests               |
+| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:e2e`                                             | pass: 23 tests                                                         |
+| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:visual`                                          | pass: 1 candidate-capture test (9 scenes)                              |
+| `npm run test:coverage`                                                                                              | pass; statements 96.58%, branches 94.23%, functions 100%, lines 96.45% |
+| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:release`                                         | pass: 4 tests (hosted + single-file, hook exclusion)                   |
+| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:browsers -- --project=chromium --project=webkit` | pass: 4 hosted tests                                                   |
+| `npm run capture:visual:baseline`                                                                                    | pass: replaced checkpoint after complete capture                       |
+| `npm run test:visual:compare`                                                                                        | pass: 31 tests / 30 scenes, including `ui-menu` repeat                 |
+| `TOYBOX_REVIEW_SCENES=touch-landscape-gameplay,touch-portrait-paused npm run visual:compare`                         | pass: 3 tests, confirming subset forwarding                            |
+
+Firefox hosted smoke was not run: the sandbox still blocks profile creation with
+`CanCreateUserNamespace() unshare(CLONE_NEWPID): EPERM`. That is a blocker, not a
+pass. Chromium and WebKit are the observed local browser results.
+
+### Artifacts and limits
+
+- Development gallery: `docs/visual-catalogue/current/index.html`.
+- Captured source: revision `d69f818` plus the code/config/fixture modifications
+  listed above; the generated manifest records the exact dirty state and local
+  environment at capture time.
+- Comparison actuals/diffs/traces: `test-results/visual-review/`; HTML report:
+  `playwright-report/visual-review/`.
+- The checkpoint is overwriteable development documentation. No formal
+  references, approval metadata or owner aesthetic approval exist.
+- Fullscreen catalogue scenes remain deferred and unregistered; no fullscreen
+  capture or environment result is claimed.
+- The inactive approval modules remain historical code and are not part of the
+  current procedure.
+- Image comparison does not replace behavioural, renderer-read-only,
+  room-start, pause/reset, production or `file://` hook-exclusion checks; those
+  suites passed separately.
 
 ## Audio issue 16: current-main port, not verified
 

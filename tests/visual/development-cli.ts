@@ -36,8 +36,12 @@ function isOwned(name: string): boolean {
   );
 }
 
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
 function object(value: unknown): Record<string, unknown> {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+  if (!isObject(value)) {
     throw new Error('Invalid development catalogue metadata');
   }
   return value;
@@ -210,7 +214,6 @@ function playwright(args: readonly string[], port?: number): Promise<number> {
       process.env.TOYBOX_BROWSER_CACHE ?? join(homedir(), '.cache/ms-playwright'),
     PLAYWRIGHT_HTML_OPEN: 'never',
   };
-  delete env.TOYBOX_REVIEW_SCENES;
   if (port !== undefined) {
     env.TOYBOX_CAPTURE_PORT = String(port);
     env.TOYBOX_REVIEW_PORT = String(port);
