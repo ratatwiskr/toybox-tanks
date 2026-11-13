@@ -2,10 +2,11 @@
 
 Updated: 2026-11-13
 
-## Issue 38 new maps: implementation and test hardening
+## Issue 38 new maps: merged as PR #42
 
-Branch `feature/38-new-maps`, continuing WIP `e9c4b86` on 2026-11-13. All
-results below are from the uncommitted working tree, not a later committed head.
+PR #42 is squash-merged as `f0ce3d4` on 2026-11-13. The branch results below
+were recorded on the uncommitted working tree before that merge; CI is
+authoritative for the merged commit.
 
 - The campaign now contains the 15 rooms from issue #38, authored as 22 × 11
   interiors in the existing schema.
@@ -39,10 +40,13 @@ suites were not run for this update; CI remains authoritative.
 
 ## Floor artwork step (issue #24, ADR 0004 step 5)
 
-Branch `feature/24-floor-art`, based on `c31435f` (the adapter-hardening head,
-PR #40). Presentation-only: no simulation, collision, muzzle, radius or snapshot
-change. The floor is decoded before the first frame; a failure keeps the
-procedural floor and reports in the status line instead of leaving a blank arena.
+PR #41 (`Feature/24 floor art`) was squash-merged into
+`feature/24-asset-adapter-hardening` on 2026-11-12 as `5c3f569`; the combined
+branch is PR #40 against `main`. Commit `19a9865` then refreshed the committed
+development visual catalogue for these visuals. Presentation-only: no
+simulation, collision, muzzle, radius or snapshot change. The floor is decoded
+before the first frame; a failure keeps the procedural floor and reports in the
+status line instead of leaving a blank arena.
 
 ### What changed
 
@@ -57,8 +61,8 @@ procedural floor and reports in the status line instead of leaving a blank arena
 - `src/render/renderer.ts`: `RenderContext` gains `createPattern`; the renderer
   gains `setFloorPattern(image)`. With a pattern it fills 960×540 under the world
   transform, so the 512 px tile stays anchored to world 0,0. Without one it draws
-  the existing procedural planks. Spawn rings and the TOYBOX watermark still draw
-  in both cases.
+  the existing procedural planks. Spawn rings draw in both cases; the watermark
+  and tagline were removed after the owner review below.
 - `src/main.ts`: top-level `await preloadFloorArtwork()` runs before the bridge
   and the first render, so captures and gameplay cannot race the decode. Failure
   writes a non-blocking warning to `#status` with the `.warning` class.
@@ -70,18 +74,19 @@ procedural floor and reports in the status line instead of leaving a blank arena
 
 ### Commands and observed results
 
-| Command                                                                       | Result                                                                 |
-| ----------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| `npm run verify:fast`                                                         | pass: format, lint, typecheck, 33 files / 283 unit tests               |
-| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run verify`        | pass: coverage, 23 e2e tests, 1 visual candidate test, 5 release tests |
-| `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:browsers` | pass: 9 hosted tests across Chromium, Firefox and WebKit               |
+| Command                                            | Result                                                             |
+| -------------------------------------------------- | ------------------------------------------------------------------ |
+| `npm run verify:fast` (head `19a9865`, 2026-11-13) | pass: format, lint, typecheck, 33 files / 285 unit tests           |
+| CI `verify` (run 43404245823, head `19a9865`)      | pass: full `npm run verify` and `test:browsers`                    |
+| Local floor-slice `verify` / `test:browsers`       | pass before the #42 rebase; historical, not evidence for `19a9865` |
 
-The `verify` row is from before the owner-requested watermark removal. After that
-change the same components were re-run: `verify:fast` (283 tests), 23 e2e tests,
-1 candidate capture, 5 release tests and 9 hosted browser tests all passed. A
-plain re-run of `npm run verify` reused a developer-run `vite` on port 5173 that
-lacks the test bridge, so 18 e2e tests failed with `Test bridge missing`; the
-isolated-port rerun above confirms this was the reused server, not the change.
+The floor-slice runs were made before the owner-requested watermark removal and
+before the branch was rebased onto `f0ce3d4`; the same components were re-run
+after watermark removal. A plain `npm run verify` re-used a developer-run `vite`
+on port 5173 that lacks the test bridge, so 18 e2e tests failed with
+`Test bridge missing`; an isolated-port rerun passed. CI remains authoritative.
+The `verify` job for `19a9865` finished successfully; `deploy-pages` and
+`pages-smoke` were skipped on the PR, not passed.
 
 A temporary Playwright probe (not committed) sampled the live canvas after the
 `coop` scenario rendered: the dominant colours were the `wood-warm` board shades
@@ -99,15 +104,18 @@ is covered by the overlay, so `02-gameplay.png` is the first floor view.
 Owner review on 2026-11-12: the wood-warm floor is approved. The owner also asked
 to remove the TOYBOX watermark (previously kept for the first candidates), so the
 watermark and tagline no longer draw. The recaptured images reflect that removal;
-the floor tile itself is unchanged.
+the floor tile itself is unchanged. The committed development checkpoint in
+`docs/visual-catalogue/current/` was refreshed in `19a9865`; it is overwriteable
+development evidence, not a formal baseline or aesthetic approval.
 
 ### Limits and open choices
 
 - The rug stays skipped; that remains a later owner choice.
 - The candidate images are not committed reference baselines and no visual
   comparison threshold was added.
-- The floor PR should target `feature/24-asset-adapter-hardening` until PR #40
-  merges, then retarget to `main`.
+- PR #40 is the combined adapter-hardening and floor-art PR. Its title and body
+  must describe both slices; walls, tanks and shells remain separate PRs per
+  ADR 0004.
 
 ## Asset adapter hardening (issue #24, follow-up to PR #36)
 

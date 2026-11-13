@@ -18,8 +18,13 @@ Do not infer that it is merged because cork is merged. Read docs/progress.md and
 the actual current PR/head for evidence. Old migration and session handoffs are
 historical context, not permission to repeat completed work or push main.
 
-`feature/38-new-maps` adds the issue #38 campaign (15 rooms) and hardens the
-map tests. It is not merged as of 2026-11-13; see docs/progress.md for evidence.
+`feature/38-new-maps` added the issue #38 campaign (15 rooms) and hardened the
+map tests. PR #42 is squash-merged as `f0ce3d4` on 2026-11-13.
+
+Issue #24 asset integration is in progress on
+`feature/24-asset-adapter-hardening` (PR #40): adapter hardening plus PR #41's
+floor art, with the development visual catalogue refreshed in `19a9865`. Read the
+actual PR and its head CI before relying on that state.
 
 ADR 0002 records the accepted cork mechanic and procedural rendering decision.
 Do not implement its superseded SVG proposal. The owner reported successful cork
@@ -160,6 +165,26 @@ not declared complete.
   explicit authorization. Check actual branch state before repository actions.
 - Final reports distinguish changes, deliberate behavior changes, checks actually
   run, artifacts, pending work, and limitations.
+
+## GitHub state and updates
+
+- Read issues and pull requests directly from GitHub rather than keeping local
+  markdown copies. The repository is public and the sandbox allows outbound
+  network, so unauthenticated API reads work, for example:
+  `curl -sS https://api.github.com/repos/ratatwiskr/toybox-tanks/pulls/40`,
+  `/issues/24`, or `/commits/<sha>/check-runs`. Use `git` for local history.
+- Do not create `docs/handoffs/current-issue.md`, `current-pr.md` or similar
+  dumps. The live GitHub state is the source of truth; local dumps go stale and
+  hide which PR, base, head and CI result are current.
+- `gh` is not installed and no GitHub token is available in the sandbox, so
+  GitHub writes (PR title/body, comments, labels, issue updates, merges) fail.
+  Do not attempt unauthenticated writes or claim a write succeeded.
+- When the owner asks for a GitHub update, write the exact proposed text to a
+  temporary, git-ignored file under `.tmp/github/`, for example
+  `.tmp/github/pr-40.md` or `.tmp/github/issue-24.md`. Report the path and let
+  the owner apply it. Keep these drafts out of commits.
+- Never infer merge state from a branch name or local commit graph alone. Query
+  the PR and check CI on the exact head SHA.
 
 ## Deferred work
 
