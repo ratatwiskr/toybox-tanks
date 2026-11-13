@@ -84,6 +84,7 @@ test.describe('synthetic gamepad adapter', () => {
     await page.goto('/');
     await page.waitForFunction(() => window.__TOYBOX_TEST__ !== undefined);
     await page.getByRole('button', { name: 'Start two-player co-op' }).click();
+    await page.getByRole('button', { name: /Roll out!/ }).click();
     await expect(page.locator('#overlay')).toBeHidden();
 
     // Let the real RAF loop take neutral samples before moving the stick;

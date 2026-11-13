@@ -31,7 +31,9 @@ async function loadScene(page: Page, scenario: ScenarioName): Promise<void> {
 }
 
 test.describe('visual candidates (unapproved)', () => {
-  test('captures menu, gameplay, combat, disabled, outcomes, and resize', async ({ page }) => {
+  test('captures menu, level select, gameplay, combat, disabled, outcomes, and resize', async ({
+    page,
+  }) => {
     await page.goto('/');
     await expect(page.locator('#dialogTitle')).toContainText('Small tanks.');
     await page.waitForTimeout(150);
@@ -63,7 +65,10 @@ test.describe('visual candidates (unapproved)', () => {
     await loadScene(page, 'coop');
     paths.push(await capture(page, '09-resized-gameplay'));
 
-    expect(paths).toHaveLength(9);
+    await loadScene(page, 'level-select');
+    paths.push(await capture(page, '10-level-select'));
+
+    expect(paths).toHaveLength(10);
     for (const path of paths) {
       expect(path).toContain('.png');
     }

@@ -18,6 +18,7 @@ test.describe('hosted release smoke', () => {
     await expect(page.locator('#game')).toBeVisible();
 
     await page.getByRole('button', { name: 'Start two-player co-op' }).click();
+    await page.getByRole('button', { name: /Roll out!/ }).click();
     await expect(page.locator('#overlay')).toBeHidden();
 
     await page.keyboard.press('Escape');

@@ -16,6 +16,7 @@ for (const viewport of viewports) {
     });
     await page.goto('/');
     await page.getByRole('button', { name: 'Solo practice', exact: true }).click();
+    await page.getByRole('button', { name: /Roll out!/ }).click();
     await expect(page.locator('#movePad')).toBeVisible();
     await expect(page.locator('#aimPad')).toBeVisible();
     const move = await page.locator('#movePad').boundingBox();

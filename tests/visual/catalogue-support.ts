@@ -53,6 +53,14 @@ export function captureScenes(): CaptureScene[] {
       viewport,
     })),
     {
+      id: 'ui-level-select',
+      purpose: 'Corkboard level select after choosing co-op, with all campaign blueprints.',
+      scenario: 'level-select',
+      options: { mode: 'coop' },
+      viewport,
+      views: ['full'],
+    },
+    {
       id: 'ui-resized-gameplay',
       purpose: 'Gameplay at the existing resized viewport.',
       scenario: 'coop',

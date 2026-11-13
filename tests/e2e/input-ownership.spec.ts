@@ -73,6 +73,7 @@ async function start(page: Page, coop: boolean, touch = true): Promise<BridgeSna
   await page.locator('#touchToggle').setChecked(touch);
   const name = coop ? 'Start two-player co-op' : 'Solo practice';
   await page.getByRole('button', { name, exact: true }).click();
+  await page.getByRole('button', { name: /Roll out!/ }).click();
   await sample(page, 0);
   await frames(page);
   return sample(page);

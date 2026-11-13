@@ -11,6 +11,8 @@ latest commit. Its `playtest-source.json` records the deployed source revision.
 
 - Free movement, independently aimed turrets, and one-bounce shells.
 - Fifteen rooms on a difficulty curve, from First Bounce to Ring of Fire.
+- A tactile corkboard level select: after choosing solo or co-op, pick any room
+  blueprint and roll out.
 - Destructible three-hit cork in later rooms; permanent wooden walls retain
   ordinary bank-shot behavior.
 - Keyboard controls and optional two-gamepad input.

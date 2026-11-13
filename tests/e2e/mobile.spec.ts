@@ -40,6 +40,7 @@ test('landscape native Chromium touch delivery moves and aims together, then tap
   await page.goto('/');
   await expect(page.locator('#touchToggle')).toBeChecked();
   await page.getByRole('button', { name: 'Solo practice', exact: true }).click();
+  await page.getByRole('button', { name: /Roll out!/ }).click();
   const before = await ticks(page);
   expect(before.players).toHaveLength(1);
   await expect(page.locator('#movePad')).toBeVisible();
@@ -94,6 +95,7 @@ test('landscape native Chromium touch delivery moves and aims together, then tap
 test('portrait pauses and returning to landscape requires explicit resume', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Solo practice', exact: true }).click();
+  await page.getByRole('button', { name: /Roll out!/ }).click();
   await ticks(page);
   await page.setViewportSize({ width: 440, height: 900 });
   await expect(page.locator('#rotateHint')).toBeVisible();
@@ -150,6 +152,7 @@ for (const touch of [true, false]) {
     await page.goto('/');
     await page.locator('#touchToggle').setChecked(touch);
     await page.getByRole('button', { name: 'Start two-player co-op', exact: true }).click();
+    await page.getByRole('button', { name: /Roll out!/ }).click();
     await expect(page.locator('#device2')).toContainText(touch ? 'Pad 1' : 'Pad 2');
     const before = await ticks(page);
     expect(before.players).toHaveLength(2);

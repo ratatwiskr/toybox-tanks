@@ -47,6 +47,7 @@ test('published revision loads, starts both modes, and keeps production hooks pr
   await expect(page.locator('#game')).toBeVisible();
 
   await page.getByRole('button', { name: 'Start two-player co-op', exact: true }).click();
+  await page.getByRole('button', { name: /Roll out!/ }).click();
   await expect(page.locator('#overlay')).toBeHidden();
   await expect(page.locator('#modeInfo')).toContainText('Local co-op');
   await page.keyboard.press('Escape');
@@ -57,6 +58,7 @@ test('published revision loads, starts both modes, and keeps production hooks pr
   await page.reload();
   await expect(page.locator('#dialogTitle')).toContainText('Small tanks.');
   await page.getByRole('button', { name: 'Solo practice', exact: true }).click();
+  await page.getByRole('button', { name: /Roll out!/ }).click();
   await expect(page.locator('#overlay')).toBeHidden();
   await expect(page.locator('#modeInfo')).toContainText('Solo practice');
   await expect(page.locator('#hp2')).toContainText('SOLO');

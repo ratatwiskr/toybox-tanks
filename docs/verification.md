@@ -85,9 +85,10 @@ assert its runtime absence in addition to the source/bundle check.
 
 The bridge API is typed in `src/test-bridge.ts`:
 
-- `loadScenario(name, options?)` loads a validated `menu`, `coop`, `solo`, `room`,
-  `active-shot`, `disabled-player`, `paused`, `cleared`, `defeat`, `completed`, or `error`
-  fixture.
+- `loadScenario(name, options?)` loads a validated `menu`, `level-select`, `coop`, `solo`,
+  `room`, `active-shot`, `disabled-player`, `paused`, `cleared`, `defeat`, `completed`, or
+  `error` fixture. `level-select` asks the host to open the level-select overlay for the
+  requested mode.
 - `advanceTicks(count, { commands?, sampleInput? })` steps bounded ticks synchronously.
   `commands` and `sampleInput` are mutually exclusive; `sampleInput` reads the real
   keyboard/gamepad adapters once per tick.
@@ -109,15 +110,18 @@ PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright" npm run test:e2e
 ```
 
 - `test:e2e` — Chromium against the test-mode Vite dev server. Covers page load, canvas
-  paint, keyboard-started co-op, real `d` key movement read from the debug panel, Escape
-  pause/resume, retry/restart, solo mode, and unexpected console/page errors. It also runs
-  bridge scenario/manual-tick tests, real keyboard sampling during explicit ticks, and the
-  synthetic-gamepad flow (move, aim, fire, pause/resume via Start, disconnect cleanup).
-- `test:visual` — captures nine scenes under `test-results/visual-candidates/`: menu,
-  co-op gameplay, active shot, disabled player, pause, clear, defeat, completion, and
-  resized gameplay. It does **not** compare against committed snapshots and does **not**
-  claim aesthetic approval. `test:visual:compare` is the separate opt-in development
-  comparison against `docs/visual-catalogue/current/`; it is not part of `verify`.
+  paint, keyboard-started co-op through the level-select overlay, launching a non-default
+  campaign room, reopening level select from the pause overlay, real `d` key movement read
+  from the debug panel, Escape pause/resume, retry/restart, solo mode, and unexpected
+  console/page errors. It also runs bridge scenario/manual-tick tests, real keyboard
+  sampling during explicit ticks, and the synthetic-gamepad flow (move, aim, fire,
+  pause/resume via Start, disconnect cleanup).
+- `test:visual` — captures ten scenes under `test-results/visual-candidates/`: menu,
+  co-op gameplay, active shot, disabled player, pause, clear, defeat, completion, resized
+  gameplay, and level select. It does **not** compare against committed snapshots and does
+  **not** claim aesthetic approval. `test:visual:compare` is the separate opt-in development
+  comparison against `docs/visual-catalogue/current/`, which includes a `ui-level-select`
+  full-frame scene; it is not part of `verify`.
 - `test:release` — rebuilds both releases, serves `dist/` through Vite preview, and opens
   `dist-single/index.html` through `file://` in Chromium. Each artifact runs a normal smoke
   test plus a `?test=1` check proving `window.__TOYBOX_TEST__` is absent.
@@ -143,12 +147,12 @@ physical controller verification.
 
 ## Visual approval gate
 
-The visual regression gate is **pending**. `test:visual` captures nine candidate scenes
+The visual regression gate is **pending**. `test:visual` captures ten candidate scenes
 for human review but no baselines are approved, so no formal reference comparison runs.
 See `docs/adr/0001-visual-gate-pending.md`. Do not auto-approve snapshots, commit generated
 baselines, or describe candidate capture as an approved visual suite. Approval must cover
-menu, co-op gameplay, active shot, disabled player, pause, clear, defeat, completion, and
-resized gameplay.
+menu, level select, co-op gameplay, active shot, disabled player, pause, clear, defeat,
+completion, and resized gameplay.
 
 Separately, `npm run test:visual:compare` is an opt-in development check that compares
 fresh actuals against the overwriteable checkpoint in `docs/visual-catalogue/current/`.
