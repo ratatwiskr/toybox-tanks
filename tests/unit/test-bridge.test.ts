@@ -10,6 +10,14 @@ function neutral(): Command {
   return { x: 0, y: 0, turn: 0, fire: false };
 }
 
+function roomAt(index: number): (typeof MAPS)[number] {
+  const map = MAPS[index];
+  if (map === undefined) {
+    throw new Error(`Missing map at room ${String(index)}`);
+  }
+  return map;
+}
+
 interface Harness {
   readonly host: TestBridgeHost;
   world(): World;
@@ -73,14 +81,15 @@ describe('test bridge', () => {
     expect(coop.room).toBe(0);
     expect(coop.mode).toBe('coop');
     expect(coop.players).toHaveLength(2);
-    expect(coop.enemies).toHaveLength(2);
+    expect(coop.enemies).toHaveLength(roomAt(0).expectedEnemies);
     expect(state.manualClock()).toBe(true);
 
-    const room = bridge.loadScenario('room', { room: 3, mode: 'solo' });
-    expect(room.room).toBe(3);
+    const roomIndex = MAPS.length - 1;
+    const room = bridge.loadScenario('room', { room: roomIndex, mode: 'solo' });
+    expect(room.room).toBe(roomIndex);
     expect(room.mode).toBe('solo');
     expect(room.players).toHaveLength(1);
-    expect(room.enemies).toHaveLength(4);
+    expect(room.enemies).toHaveLength(roomAt(roomIndex).expectedEnemies);
   });
 
   it('rejects invalid room options and advance counts', () => {

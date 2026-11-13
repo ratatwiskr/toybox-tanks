@@ -5,15 +5,38 @@ import { addMapBorder, MAPS, validateMap } from '../../src/sim/maps';
 import type * as MapsModule from '../../src/sim/maps';
 import { createEmptyWorld, createWorld, stepWorld } from '../../src/sim/world';
 
-// Exercise the real loader with cork without prematurely shipping an invisible
-// cork room. Vitest isolates this fixture from the existing campaign tests.
+// Exercise the real loader with test-owned maps so campaign additions or edits
+// cannot change the cork fixture or its room indices.
 vi.mock('../../src/sim/maps', async (importOriginal) => {
   const actual = await importOriginal<typeof MapsModule>();
+  const openGrid = `......................
+......................
+..S...................
+......................
+......................
+......................
+......................
+......................
+......................
+...1..............2...
+......................`;
+
   return {
     ...actual,
-    MAPS: actual.MAPS.map((map, index) =>
-      index === 0 ? { ...map, grid: `CC${map.grid.slice(2)}` } : map,
-    ),
+    MAPS: [
+      {
+        name: 'Cork Fixture',
+        hint: 'Cork on the authored top-left edge.',
+        expectedEnemies: 1,
+        grid: `CC${openGrid.slice(2)}`,
+      },
+      {
+        name: 'Open Fixture',
+        hint: 'No cork, used to prove room state is independent.',
+        expectedEnemies: 1,
+        grid: openGrid,
+      },
+    ],
   };
 });
 
@@ -85,19 +108,14 @@ describe('cork map validation', () => {
     expect(bordered.every((row) => row[0] === '#' && row[CONFIG.columns - 1] === '#')).toBe(true);
   });
 
-  it('keeps Cork Keep initially blocked but clears it after cork destruction', () => {
-    const corkKeep = MAPS.find((map) => map.name === 'Cork Keep');
-    if (corkKeep === undefined) {
-      throw new Error('Cork Keep missing');
-    }
-
-    const checked = validateMap(corkKeep);
-    expect(checked.ok, checked.errors.join('; ')).toBe(true);
-    expect(checked.initiallyReachable).toBe(false);
+  it('keeps a cork-blocked route unreachable until the cork is cleared', () => {
+    const blocked = validateMap({ grid: partitionGrid('C'), expectedEnemies: 1 });
+    expect(blocked.ok, blocked.errors.join('; ')).toBe(true);
+    expect(blocked.initiallyReachable).toBe(false);
 
     const cleared = validateMap({
-      ...corkKeep,
-      grid: checked.rows.map((row) => row.replaceAll('C', '.')).join('\n'),
+      grid: blocked.rows.map((row) => row.replaceAll('C', '.')).join('\n'),
+      expectedEnemies: 1,
     });
     expect(cleared.ok, cleared.errors.join('; ')).toBe(true);
     expect(cleared.initiallyReachable).toBe(true);

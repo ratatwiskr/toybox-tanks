@@ -7,7 +7,15 @@ import { MAPS } from '../../src/sim/maps';
 import type { Cork, Tank, World } from '../../src/sim/types';
 import { createWorld } from '../../src/sim/world';
 
-const CORK_KEEP_ROOM = MAPS.findIndex((map) => map.name === 'Cork Keep');
+function roomNamed(name: string): number {
+  const index = MAPS.findIndex((map) => map.name === name);
+  if (index < 0) {
+    throw new Error(`Missing map: ${name}`);
+  }
+  return index;
+}
+
+const CORK_KEEP_ROOM = roomNamed('Cork Keep');
 
 class StubContext implements RenderContext {
   globalAlpha = 1;

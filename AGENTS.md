@@ -18,6 +18,9 @@ Do not infer that it is merged because cork is merged. Read docs/progress.md and
 the actual current PR/head for evidence. Old migration and session handoffs are
 historical context, not permission to repeat completed work or push main.
 
+`feature/38-new-maps` adds the issue #38 campaign (15 rooms) and hardens the
+map tests. It is not merged as of 2026-11-13; see docs/progress.md for evidence.
+
 ADR 0002 records the accepted cork mechanic and procedural rendering decision.
 Do not implement its superseded SVG proposal. The owner reported successful cork
 playtesting in the VS Code internal browser on 2026-11-08. Visual regression and
@@ -58,8 +61,10 @@ not declared complete.
 - Same-tick defeat wins over victory. Commit outcomes once, stop combat, and
   clear shells. Restart resets all world and input-adapter state, including
   IDs, timers, effects, and cross-device release gates.
-- Preserve the original three layouts/order and the appended fourth room.
-  Preserve menu, solo/co-op, pause, retry, transition, completion, and replay.
+- Preserve existing campaign rooms and their relative order; map additions or
+  reordering require an explicit assignment. Every authored room must pass map
+  validation. Preserve menu, solo/co-op, pause, retry, transition, completion,
+  and replay.
 - Preserve focus-loss/hidden-tab pause and input clearing, keyboard overlay
   activation, and prevention of game-key browser defaults.
 
