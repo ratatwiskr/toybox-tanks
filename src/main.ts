@@ -8,6 +8,9 @@ import { GamepadAdapter, type GamepadSource } from './input/gamepad';
 import { KeyboardAdapter } from './input/keyboard';
 import { createMobileControls, gamepadMode, gamepadSlot } from './input/mobile';
 import { advanceWorld } from './presentation/body-heading';
+import { AssetLoadError } from './render/assets';
+import { FLOOR_WOOD_WARM } from './render/floor-data';
+import { prepareFloorImage } from './render/floor';
 import { createRenderer } from './render/renderer';
 import { MAPS } from './sim/maps';
 import type { Command, GameState, Mode, World } from './sim/types';
@@ -602,6 +605,32 @@ function frame(timestamp: number): void {
   updateHUD();
   requestAnimationFrame(frame);
 }
+
+function showAssetWarning(message: string): void {
+  console.error(message);
+  statusLine.textContent = message;
+  statusLine.classList.add('warning');
+}
+
+async function preloadFloorArtwork(): Promise<void> {
+  try {
+    const image = await prepareFloorImage(FLOOR_WOOD_WARM);
+    if (!renderer.setFloorPattern(image)) {
+      throw new AssetLoadError(
+        'canvas-unavailable',
+        FLOOR_WOOD_WARM.id,
+        'Could not create the floor pattern',
+      );
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    showAssetWarning(`Floor artwork unavailable — using the simple floor. ${message}`);
+  }
+}
+
+// Preload before the first frame so captures and gameplay never race the decode.
+// A failure keeps the procedural floor and shows the reason in the status line.
+await preloadFloorArtwork();
 
 if (__TEST_BUILD__) {
   installTestBridge({

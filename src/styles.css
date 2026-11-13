@@ -262,6 +262,10 @@ kbd {
   color: #706653;
   text-align: center;
 }
+.status.warning {
+  color: #8a3f18;
+  font-weight: 650;
+}
 .debug {
   position: absolute;
   left: 9px;
