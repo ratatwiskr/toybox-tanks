@@ -5,8 +5,8 @@
   "complete": true,
   "runError": null,
   "source": {
-    "revision": "d0e3990fe8adfe19fcbf2e9d6ac841fcf5fe5359",
-    "sourceStatus": " M README.md\n M docs/architecture.md\n M docs/verification.md\n M src/main.ts\n M src/styles.css\n M src/test-bridge.ts\n M tests/e2e/gamepad.spec.ts\n M tests/e2e/input-ownership.spec.ts\n M tests/e2e/mobile-layout.spec.ts\n M tests/e2e/mobile.spec.ts\n M tests/e2e/smoke.spec.ts\n M tests/release/hosted.spec.ts\n M tests/release/pages.smoke.ts\n M tests/release/single.spec.ts\n M tests/unit/test-bridge.test.ts\n M tests/visual/candidates.spec.ts\n M tests/visual/catalogue-support.ts\n?? reference/toybox_tanks_tactile_menu_diegetic_hud_prototype.html\n?? src/presentation/level-select.ts\n?? tests/unit/level-select.test.ts",
+    "revision": "8ef994e78513bbecefb5669a9c432cf8f99a26c7",
+    "sourceStatus": "",
     "sourceTreeSha256": "624ed95d121385a9f804ed66218c301f9163918229b51934668b6d5f9d04df05"
   },
   "environment": {
@@ -21,7 +21,7 @@
     "reducedMotion": "reduce",
     "locale": "en-US",
     "timezoneId": "UTC",
-    "baseURL": "http://127.0.0.1:35019",
+    "baseURL": "http://127.0.0.1:40547",
     "headless": "true"
   },
   "comparisonsPerformed": false,
