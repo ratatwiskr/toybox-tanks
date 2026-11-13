@@ -8,6 +8,7 @@ import {
   MIN_BODY_TURN_DISTANCE,
   updateBodyHeading,
 } from '../../src/presentation/body-heading';
+import { MAPS } from '../../src/sim/maps';
 import type { Command, Tank, World } from '../../src/sim/types';
 import { createEmptyWorld, createTank, createWorld } from '../../src/sim/world';
 
@@ -47,7 +48,7 @@ function step(world: World, ...commands: readonly Command[]): void {
 
 describe('body heading', () => {
   it('starts facing up for every tank in every room and mode', () => {
-    for (const room of [0, 1, 2, 3]) {
+    for (const room of MAPS.keys()) {
       for (const mode of ['coop', 'solo'] as const) {
         const world = createWorld(room, mode);
         for (const tank of [...world.players, ...world.enemies]) {

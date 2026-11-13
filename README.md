@@ -10,17 +10,17 @@ The testing site shows the last selected branch deployment, not necessarily the
 latest commit. Its `playtest-source.json` records the deployed source revision.
 
 - Free movement, independently aimed turrets, and one-bounce shells.
-- Four rooms: First Bounce, Block Party, Together Through, and Cork Keep.
-- Destructible three-hit cork in the fourth room; permanent wooden walls retain
+- Fifteen rooms on a difficulty curve, from First Bounce to Ring of Fire.
+- Destructible three-hit cork in later rooms; permanent wooden walls retain
   ordinary bank-shot behavior.
 - Keyboard controls and optional two-gamepad input.
 - Static hosted and self-contained single-HTML releases.
 
 ## Status and scope
 
-The TypeScript migration, PR #14's automatic map borders, and the cork feature
-with Cork Keep are implemented. Replacement PR #19 was squash-merged into main
-as `5bec29e3ba4a2779286da406dba0ce113e94dba7` on 2026-11-08. Original PR #15
+The TypeScript migration, PR #14's automatic map borders, the cork feature, and
+the 15-room campaign are implemented. Replacement PR #19 was squash-merged into
+main as `5bec29e3ba4a2779286da406dba0ce113e94dba7` on 2026-11-08. Original PR #15
 was closed without merging; its conflicted stack was replaced, not left as
 pending implementation. See `docs/progress.md` for provenance and evidence.
 

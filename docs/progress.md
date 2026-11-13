@@ -1,6 +1,41 @@
 # Toybox Tanks — current progress
 
-Updated: 2026-11-12
+Updated: 2026-11-13
+
+## Issue 38 new maps: implementation and test hardening
+
+Branch `feature/38-new-maps`, continuing WIP `e9c4b86` on 2026-11-13. All
+results below are from the uncommitted working tree, not a later committed head.
+
+- The campaign now contains the 15 rooms from issue #38, authored as 22 × 11
+  interiors in the existing schema.
+- Fixed `Spiral`: its inner chamber was fully enclosed by permanent wall and
+  failed cleared-reachability validation. The bottom wall now has a two-cell
+  opening, so the room loads and the inner sentry is reachable.
+- Removed test coupling to authored map content. Exact name/hint/enemy arrays and
+  the legacy full-grid copies were dropped. Map-format and loader checks use a
+  test-owned interior; cork loading uses two test-owned maps; name lookups guard
+  missing rooms; campaign sweeps derive expectations from `MAPS` metadata, so
+  adding rooms does not require editing those assertions.
+- Refreshed the development visual checkpoint. The campaign scenes are generated
+  from `MAPS`, so all 15 room-start scenes are present. Full-frame UI captures
+  changed because the HUD/menu now show the 15-room count; this is development
+  evidence, not aesthetic approval or a formal regression reference.
+- Updated the README room summary and the campaign invariant in `AGENTS.md`.
+
+### Verification
+
+| Command                           | Result                                                                                                                       |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `npm run verify:fast`             | passed (format, lint, typecheck, 267 unit tests)                                                                             |
+| `npm run capture:visual:baseline` | passed; development checkpoint replaced                                                                                      |
+| `npm run test:visual:compare`     | 42 passed, exit 0                                                                                                            |
+| `npm run test:visual`             | initially failed on the launcher's missing browser path; passed with `PLAYWRIGHT_BROWSERS_PATH="$HOME/.cache/ms-playwright"` |
+| `npm run test:e2e`                | 23 passed (Chromium, same browser-path override)                                                                             |
+
+The owner previously playtested the added maps. Exact tested SHA, browser, and
+exhaustive room-by-room scenarios were not supplied. Release/browser-matrix
+suites were not run for this update; CI remains authoritative.
 
 ## Issue 22 visual comparison workflow: local verification
 

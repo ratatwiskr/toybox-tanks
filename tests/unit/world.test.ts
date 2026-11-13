@@ -21,7 +21,7 @@ describe('world creation', () => {
     expect(world.time).toBe(0);
     expect(world.room).toBe(0);
     expect(world.players.map((player) => player.id)).toEqual(['p1', 'p2']);
-    expect(world.enemies).toHaveLength(2);
+    expect(world.enemies).toHaveLength(MAPS[0]?.expectedEnemies ?? 0);
     expect(world.walls.length).toBeGreaterThan(0);
     expect(world.players.every((player) => player.hp === CONFIG.playerHealth)).toBe(true);
     expect(world.players.every((player) => player.alive)).toBe(true);
@@ -38,7 +38,8 @@ describe('world creation', () => {
   });
 
   it('rejects unknown rooms and exposes an empty error world helper', () => {
-    expect(() => createWorld(99, 'coop')).toThrow('Unknown room 99');
+    const unknownRoom = MAPS.length;
+    expect(() => createWorld(unknownRoom, 'coop')).toThrow(`Unknown room ${String(unknownRoom)}`);
 
     const empty = createEmptyWorld('solo');
     expect(empty.players).toEqual([]);
