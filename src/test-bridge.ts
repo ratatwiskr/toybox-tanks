@@ -19,6 +19,7 @@ import { createVisualWorld, type VisualSceneId } from './visual-scenes';
 // exposes curated scenarios and stable snapshots, never the mutable world.
 export type ScenarioName =
   | 'menu'
+  | 'level-select'
   | 'coop'
   | 'solo'
   | 'room'
@@ -107,6 +108,7 @@ export interface TestBridgeHost {
   render(): void;
   clearInput(): void;
   showError(message: string): void;
+  showLevelSelect?(mode: Mode): void;
 }
 
 export interface ToyboxTestBridge {
@@ -216,6 +218,11 @@ function scenarioWorld(name: ScenarioName, options: ScenarioOptions): World {
       world.state = 'menu';
       return world;
     }
+    case 'level-select': {
+      const world = createWorld(0, resolveMode(options));
+      world.state = 'menu';
+      return world;
+    }
     case 'coop':
       return createWorld(resolveRoom(options), 'coop');
     case 'solo':
@@ -312,6 +319,9 @@ export function createTestBridge(host: TestBridgeHost): ToyboxTestBridge {
 
       const world = scenarioWorld(name, options);
       host.replaceWorld(world);
+      if (name === 'level-select') {
+        host.showLevelSelect?.(resolveMode(options));
+      }
       host.takeClock();
       return snapshotWorld(host.getWorld());
     },

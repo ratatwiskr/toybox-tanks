@@ -8,6 +8,7 @@ import { GamepadAdapter, type GamepadSource } from './input/gamepad';
 import { KeyboardAdapter } from './input/keyboard';
 import { createMobileControls, gamepadMode, gamepadSlot } from './input/mobile';
 import { advanceWorld } from './presentation/body-heading';
+import { levelSelectMarkup, type MenuScreen } from './presentation/level-select';
 import { AssetLoadError } from './render/assets';
 import { FLOOR_WOOD_WARM } from './render/floor-data';
 import { prepareFloorImage } from './render/floor';
@@ -68,6 +69,9 @@ let lastShownState = '';
 let accumulator = 0;
 let debugEnabled = false;
 let manualClock = false;
+let menuScreen: MenuScreen = 'modes';
+let selectedMode: Mode = 'coop';
+let selectedRoom = 0;
 
 let world: World;
 try {
@@ -178,11 +182,24 @@ interface OverlayContent {
   readonly text: string;
   readonly actions: string;
   readonly extra: string;
+  readonly className?: string;
+  readonly body?: string;
 }
 
 function overlayContent(state: GameState): OverlayContent {
   switch (state) {
     case 'menu':
+      if (menuScreen === 'levels') {
+        return {
+          title: 'Select a stage blueprint',
+          tag: `Corkboard · ${String(MAPS.length)} campaign rooms`,
+          text: `${selectedMode === 'solo' ? 'Solo practice' : 'Local co-op'} · pick any room, then roll out.`,
+          actions: '',
+          extra: '',
+          className: 'level-select',
+          body: levelSelectMarkup({ maps: MAPS, mode: selectedMode, selectedRoom }),
+        };
+      }
       return {
         title: 'Small tanks.<br>Big teamwork.',
         tag: `Toybox Tanks · ${String(MAPS.length)} tabletop rooms`,
@@ -202,6 +219,7 @@ function overlayContent(state: GameState): OverlayContent {
         actions:
           button('Resume', 'resume', true) +
           button('Restart this room', 'retry') +
+          button('Choose a room', 'levels') +
           button('Main menu', 'menu'),
         extra: controlsHTML(),
       };
@@ -211,7 +229,10 @@ function overlayContent(state: GameState): OverlayContent {
         title: 'Room cleared!',
         tag: `Room ${String(world.room + 1)} / ${String(MAPS.length)}`,
         text: `${world.mode === 'solo' ? 'Your tank is repaired' : 'Both tanks are repaired'} for the next room.<br>Next up: ${nextMap?.name ?? 'the next room'}`,
-        actions: button('Next room →', 'next', true) + button('Replay this room', 'retry'),
+        actions:
+          button('Next room →', 'next', true) +
+          button('Replay this room', 'retry') +
+          button('Choose a room', 'levels'),
         extra: '',
       };
     }
@@ -220,7 +241,10 @@ function overlayContent(state: GameState): OverlayContent {
         title: 'A tiny setback',
         tag: world.mode === 'solo' ? 'Tank disabled' : 'Both tanks disabled',
         text: 'A fresh start in this room.<br>No lives to lose. Try a different angle.',
-        actions: button('Retry room · R', 'retry', true) + button('Main menu', 'menu'),
+        actions:
+          button('Retry room · R', 'retry', true) +
+          button('Choose a room', 'levels') +
+          button('Main menu', 'menu'),
         extra: '',
       };
     case 'completed':
@@ -228,7 +252,10 @@ function overlayContent(state: GameState): OverlayContent {
         title: 'A clean toybox sweep!',
         tag: `All ${String(MAPS.length)} rooms complete`,
         text: `You cleared ${MAPS.map((map) => map.name).join(', ')}.<br>The tabletop belongs to the team.`,
-        actions: button('Replay all rooms', 'replay', true) + button('Main menu', 'menu'),
+        actions:
+          button('Replay all rooms', 'replay', true) +
+          button('Choose a room', 'levels') +
+          button('Main menu', 'menu'),
         extra: '',
       };
     case 'error':
@@ -251,11 +278,12 @@ function setOverlay(): void {
     pauseGame('Rotate to landscape, then resume.');
     return;
   }
-  if (lastShownState === world.state) {
+  const overlayKey = world.state === 'menu' ? `menu:${menuScreen}` : world.state;
+  if (lastShownState === overlayKey) {
     return;
   }
 
-  lastShownState = world.state;
+  lastShownState = overlayKey;
   clearInputs();
   accumulator = 0;
   overlay.hidden = world.state === 'playing';
@@ -267,7 +295,9 @@ function setOverlay(): void {
   }
 
   const content = overlayContent(world.state);
-  dialog.innerHTML = `<div class="tag">${content.tag}</div><h1 id="dialogTitle">${content.title}</h1><p id="dialogText">${content.text}</p><div class="buttons">${content.actions}</div>${content.extra}`;
+  dialog.className = content.className === undefined ? 'dialog' : `dialog ${content.className}`;
+  const actions = content.actions === '' ? '' : `<div class="buttons">${content.actions}</div>`;
+  dialog.innerHTML = `<div class="tag">${content.tag}</div><h1 id="dialogTitle">${content.title}</h1><p id="dialogText">${content.text}</p>${actions}${content.extra}${content.body ?? ''}`;
 
   if (world.state === 'error') {
     const dialogText = requireElement('dialogText');
@@ -275,7 +305,10 @@ function setOverlay(): void {
     dialogText.style.whiteSpace = 'pre-wrap';
   }
 
-  const first = dialog.querySelector('button');
+  const first =
+    world.state === 'menu' && menuScreen === 'levels'
+      ? (dialog.querySelector('.stage-card--selected') ?? dialog.querySelector('button'))
+      : dialog.querySelector('button');
   if (first instanceof HTMLButtonElement) {
     first.focus({ preventScroll: true });
   }
@@ -283,6 +316,9 @@ function setOverlay(): void {
 
 function loadRoom(index: number, mode: Mode = world.mode): void {
   audio.reset();
+  selectedMode = mode;
+  selectedRoom = index;
+  menuScreen = 'modes';
   try {
     world = createWorld(index, mode);
     clearInputs();
@@ -310,6 +346,9 @@ function restartRoom(): void {
 function replaceWorld(next: World): void {
   audio.reset();
   world = next;
+  selectedMode = next.mode;
+  selectedRoom = next.room;
+  menuScreen = 'modes';
   clearInputs();
   accumulator = 0;
   lastShownState = '';
@@ -323,6 +362,7 @@ function showError(message: string): void {
   pauseReason = message;
   world = createEmptyWorld(world.mode);
   world.state = 'error';
+  menuScreen = 'modes';
   lastShownState = '';
   clearInputs();
   accumulator = 0;
@@ -364,6 +404,9 @@ function togglePause(): void {
 
 function showMenu(): void {
   audio.reset();
+  menuScreen = 'modes';
+  selectedMode = 'coop';
+  selectedRoom = 0;
   try {
     world = createWorld(0, 'coop');
     world.state = 'menu';
@@ -376,6 +419,7 @@ function showMenu(): void {
 
   lastShownState = '';
   clearInputs();
+  accumulator = 0;
   setOverlay();
   updateHUD();
 }
@@ -387,9 +431,71 @@ function toggleDebug(): void {
   updateHUD();
 }
 
-function act(action: string): void {
+function openLevelSelect(mode: Mode): void {
+  audio.reset();
+  const room =
+    Number.isInteger(world.room) && world.room >= 0 && world.room < MAPS.length ? world.room : 0;
+  selectedMode = mode;
+  selectedRoom = room;
+  menuScreen = 'levels';
+  try {
+    world = createWorld(room, mode);
+    world.state = 'menu';
+    pauseReason = '';
+  } catch (error) {
+    world = createEmptyWorld(mode);
+    world.state = 'error';
+    pauseReason = error instanceof Error ? error.message : String(error);
+  }
+  lastShownState = '';
+  clearInputs();
+  accumulator = 0;
+  setOverlay();
+  updateHUD();
+}
+
+function selectLevel(index: number): void {
+  if (!Number.isInteger(index) || index < 0 || index >= MAPS.length) {
+    return;
+  }
+  selectedRoom = index;
+  for (const card of dialog.querySelectorAll('.stage-card')) {
+    if (!(card instanceof HTMLButtonElement)) {
+      continue;
+    }
+    const isSelected = card.dataset.room === String(index);
+    card.classList.toggle('stage-card--selected', isSelected);
+    card.setAttribute('aria-pressed', String(isSelected));
+  }
+  const title = document.getElementById('selectedStageTitle');
+  const map = MAPS[index];
+  if (title !== null && map !== undefined) {
+    title.textContent = `Mission ${String(index + 1).padStart(2, '0')}: ${map.name}`;
+  }
+  updateHUD();
+}
+
+function launchSelectedLevel(): void {
+  if (world.state !== 'menu' || menuScreen !== 'levels') {
+    return;
+  }
+  loadRoom(selectedRoom, selectedMode);
+}
+
+function act(action: string, actionButton?: HTMLButtonElement): void {
   if (action === 'coop' || action === 'solo') {
-    loadRoom(0, action);
+    openLevelSelect(action);
+  } else if (action === 'level') {
+    selectLevel(Number(actionButton?.dataset.room));
+  } else if (action === 'launch') {
+    launchSelectedLevel();
+  } else if (action === 'back-modes') {
+    menuScreen = 'modes';
+    lastShownState = '';
+    setOverlay();
+    updateHUD();
+  } else if (action === 'levels') {
+    openLevelSelect(world.mode);
   } else if (action === 'resume') {
     resumeGame();
   } else if (action === 'retry') {
@@ -412,13 +518,21 @@ function directionLabel(angle: number): string {
 }
 
 function updateHUD(): void {
-  const map = MAPS[world.room];
+  const choosingLevel = world.state === 'menu' && menuScreen === 'levels';
+  const shownRoom = choosingLevel ? selectedRoom : world.room;
+  const map = MAPS[shownRoom];
   roomName.textContent = map?.name ?? 'Unknown room';
 
-  const remaining = world.enemies.filter((enemy) => enemy.alive).length;
-  roomInfo.textContent = `Room ${String(world.room + 1)} / ${String(MAPS.length)} · ${String(remaining)} ${remaining === 1 ? 'sentry' : 'sentries'} left`;
-  modeInfo.textContent =
-    world.state === 'menu'
+  if (choosingLevel) {
+    const enemies = map?.expectedEnemies ?? 0;
+    roomInfo.textContent = `Stage ${String(shownRoom + 1)} / ${String(MAPS.length)} · ${String(enemies)} ${enemies === 1 ? 'sentry' : 'sentries'}`;
+  } else {
+    const remaining = world.enemies.filter((enemy) => enemy.alive).length;
+    roomInfo.textContent = `Room ${String(world.room + 1)} / ${String(MAPS.length)} · ${String(remaining)} ${remaining === 1 ? 'sentry' : 'sentries'} left`;
+  }
+  modeInfo.textContent = choosingLevel
+    ? `${selectedMode === 'solo' ? 'Solo practice' : 'Local co-op'} · choose any room`
+    : world.state === 'menu'
       ? 'Choose co-op or solo practice'
       : world.mode === 'solo'
         ? 'Solo practice · P1 only'
@@ -506,7 +620,7 @@ dialog.addEventListener('click', (event) => {
 
   const action = actionButton.dataset.action;
   if (action !== undefined) {
-    act(action);
+    act(action, actionButton);
   }
 });
 
@@ -656,6 +770,9 @@ if (__TEST_BUILD__) {
     },
     clearInput: clearInputs,
     showError,
+    showLevelSelect: (mode) => {
+      openLevelSelect(mode);
+    },
   });
 }
 

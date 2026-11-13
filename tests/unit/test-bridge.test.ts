@@ -25,6 +25,7 @@ interface Harness {
   renders(): number;
   cleared(): boolean;
   errors(): string;
+  levelSelectMode(): string | null;
   setCommands(commands: readonly Command[]): void;
 }
 
@@ -34,6 +35,7 @@ function harness(): Harness {
   let renders = 0;
   let clearCalls = 0;
   let errorMessage = '';
+  let levelSelectMode: string | null = null;
   let sampled: readonly Command[] = [neutral(), neutral()];
 
   const host: TestBridgeHost = {
@@ -57,6 +59,9 @@ function harness(): Harness {
       world = createEmptyWorld('coop');
       world.state = 'error';
     },
+    showLevelSelect: (mode) => {
+      levelSelectMode = mode;
+    },
   };
 
   return {
@@ -66,6 +71,7 @@ function harness(): Harness {
     renders: () => renders,
     cleared: () => clearCalls > 0,
     errors: () => errorMessage,
+    levelSelectMode: () => levelSelectMode,
     setCommands: (commands) => {
       sampled = commands;
     },
@@ -90,6 +96,20 @@ describe('test bridge', () => {
     expect(room.mode).toBe('solo');
     expect(room.players).toHaveLength(1);
     expect(room.enemies).toHaveLength(roomAt(roomIndex).expectedEnemies);
+  });
+
+  it('loads the level-select scenario and asks the host to show the overlay', () => {
+    const state = harness();
+    const bridge = createTestBridge(state.host);
+
+    const coop = bridge.loadScenario('level-select');
+    expect(coop.state).toBe('menu');
+    expect(coop.mode).toBe('coop');
+    expect(state.levelSelectMode()).toBe('coop');
+
+    const solo = bridge.loadScenario('level-select', { mode: 'solo' });
+    expect(solo.players).toHaveLength(1);
+    expect(state.levelSelectMode()).toBe('solo');
   });
 
   it('rejects invalid room options and advance counts', () => {

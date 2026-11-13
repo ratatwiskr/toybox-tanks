@@ -57,9 +57,11 @@ test.describe('Toybox Tanks smoke', () => {
     });
     expect(painted).toBe(true);
 
-    // The first overlay action is focused, so Enter must start the game without
-    // the game-key handler swallowing the native button activation.
+    // The selected stage card is focused, so Enter activates it without the
+    // game-key handler swallowing the native button activation.
     await page.keyboard.press('Enter');
+    await expect(page.locator('#dialogTitle')).toContainText('Select a stage blueprint');
+    await page.getByRole('button', { name: /Roll out!/ }).click();
     await expect(page.locator('#overlay')).toBeHidden();
 
     await page.keyboard.press('Backquote');
@@ -96,14 +98,46 @@ test.describe('Toybox Tanks smoke', () => {
     expect(errors, errors.join('\n')).toEqual([]);
   });
 
-  test('solo practice starts with one real player', async ({ page }) => {
+  test('solo practice can launch any campaign room', async ({ page }) => {
     const errors = collectErrors(page);
 
     await page.goto('/');
     await page.getByRole('button', { name: 'Solo practice' }).click();
+    await expect(page.locator('#dialogTitle')).toContainText('Select a stage blueprint');
+    await expect(page.locator('#modeInfo')).toContainText('Solo practice');
+
+    await page.getByRole('button', { name: 'Stage 05: Cork Keep' }).click();
+    await expect(page.locator('#roomName')).toHaveText('Cork Keep');
+    await expect(page.locator('#roomInfo')).toContainText('Stage 5 / 15');
+
+    await page.getByRole('button', { name: /Roll out!/ }).click();
     await expect(page.locator('#overlay')).toBeHidden();
     await expect(page.locator('#hp2')).toHaveText('— SOLO');
     await expect(page.locator('#modeInfo')).toContainText('Solo practice');
+    await expect(page.locator('#roomName')).toHaveText('Cork Keep');
+    await expect(page.locator('#roomInfo')).toContainText('Room 5 / 15');
+
+    expect(errors, errors.join('\n')).toEqual([]);
+  });
+
+  test('the pause overlay can choose a different room', async ({ page }) => {
+    const errors = collectErrors(page);
+
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Start two-player co-op' }).click();
+    await page.getByRole('button', { name: /Roll out!/ }).click();
+    await expect(page.locator('#overlay')).toBeHidden();
+
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#dialogTitle')).toContainText('Tabletop timeout');
+    await page.getByRole('button', { name: 'Choose a room' }).click();
+    await expect(page.locator('#dialogTitle')).toContainText('Select a stage blueprint');
+
+    await page.getByRole('button', { name: 'Stage 02: The Courtyard' }).click();
+    await page.getByRole('button', { name: /Roll out!/ }).click();
+    await expect(page.locator('#overlay')).toBeHidden();
+    await expect(page.locator('#roomName')).toHaveText('The Courtyard');
+    await expect(page.locator('#roomInfo')).toContainText('Room 2 / 15');
 
     expect(errors, errors.join('\n')).toEqual([]);
   });

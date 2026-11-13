@@ -15,8 +15,10 @@ config  ──►  sim  ──►  main (application orchestration)
   or application composition, and it must not touch DOM or Node globals.
 - `src/render/` reads world state and draws it. It never mutates gameplay.
 - `src/input/` turns real input into commands. It never mutates gameplay directly.
-- `src/main.ts` owns the browser lifecycle: menus, pause/retry, the RAF loop, the fixed
-  timestep, HUD, and wiring adapters to the simulation.
+- `src/main.ts` owns the browser lifecycle: menus, the mode-to-level-select flow,
+  pause/retry, the RAF loop, the fixed timestep, HUD, and wiring adapters to the
+  simulation. Level choice is application UI state; the simulation world still starts only
+  when a room is launched.
 
 `tsconfig.sim.json` enforces the DOM-free boundary at compile time. ESLint enforces it
 at lint time with restricted globals, restricted imports, and restricted properties.
@@ -46,21 +48,22 @@ at lint time with restricted globals, restricted imports, and restricted propert
 
 ## Modules
 
-| Module                   | Responsibility                                                                          |
-| ------------------------ | --------------------------------------------------------------------------------------- |
-| `src/config.ts`          | Logical arena size, fixed step, movement, combat, and timing defaults.                  |
-| `src/sim/types.ts`       | Shared plain-data types for factions, commands, tanks, shells, walls, effects, world.   |
-| `src/sim/maps.ts`        | Authored map grids, validation, spawn/sentry placement rules.                           |
-| `src/sim/collision.ts`   | Ray/AABB and ray/circle tests, earliest wall, reflection, tank movement, line of sight. |
-| `src/sim/combat.ts`      | Firing, muzzle sweep, damage, shell bounce/removal, bounded advancement.                |
-| `src/sim/enemies.ts`     | Sentry targeting, LOS, turning, telegraph/cancel, and firing.                           |
-| `src/sim/feedback.ts`    | Bounded event log and spark/poof effect creation.                                       |
-| `src/sim/world.ts`       | Entity creation, room loading, outcome commits, fixed-step orchestration.               |
-| `src/render/renderer.ts` | DPR-aware Canvas rendering, aim/first-bounce guide, effects; read-only canvas surface.  |
-| `src/input/keyboard.ts`  | Key sets, held-key state, focus/overlay guards, command sampling.                       |
-| `src/input/gamepad.ts`   | Optional pad assignment, deadzones, stick/keyboard precedence, fire, Start edges.       |
-| `src/test-bridge.ts`     | Test-build-only scenarios, bounded manual ticks, copied snapshots, events, rendering.   |
-| `src/main.ts`            | Menus, overlays, HUD, pause/retry, RAF loop, fixed-step accumulator, input composition. |
+| Module                             | Responsibility                                                                          |
+| ---------------------------------- | --------------------------------------------------------------------------------------- |
+| `src/config.ts`                    | Logical arena size, fixed step, movement, combat, and timing defaults.                  |
+| `src/sim/types.ts`                 | Shared plain-data types for factions, commands, tanks, shells, walls, effects, world.   |
+| `src/sim/maps.ts`                  | Authored map grids, validation, spawn/sentry placement rules.                           |
+| `src/sim/collision.ts`             | Ray/AABB and ray/circle tests, earliest wall, reflection, tank movement, line of sight. |
+| `src/sim/combat.ts`                | Firing, muzzle sweep, damage, shell bounce/removal, bounded advancement.                |
+| `src/sim/enemies.ts`               | Sentry targeting, LOS, turning, telegraph/cancel, and firing.                           |
+| `src/sim/feedback.ts`              | Bounded event log and spark/poof effect creation.                                       |
+| `src/sim/world.ts`                 | Entity creation, room loading, outcome commits, fixed-step orchestration.               |
+| `src/render/renderer.ts`           | DPR-aware Canvas rendering, aim/first-bounce guide, effects; read-only canvas surface.  |
+| `src/input/keyboard.ts`            | Key sets, held-key state, focus/overlay guards, command sampling.                       |
+| `src/input/gamepad.ts`             | Optional pad assignment, deadzones, stick/keyboard precedence, fire, Start edges.       |
+| `src/presentation/level-select.ts` | Pure level-select markup, stage cards, and blueprint-preview SVG generation.            |
+| `src/test-bridge.ts`               | Test-build-only scenarios, bounded manual ticks, copied snapshots, events, rendering.   |
+| `src/main.ts`                      | Menus, overlays, HUD, pause/retry, RAF loop, fixed-step accumulator, input composition. |
 
 ## Guardrails
 
