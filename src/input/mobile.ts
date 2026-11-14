@@ -1,4 +1,5 @@
 import type { Command, GameState, Mode } from '../sim/types';
+import { retainBackgroundTouchFocus } from './background-touch';
 import { TouchAdapter, type TouchControl } from './touch';
 
 export function gamepadMode(mode: Mode, touchP1: boolean): Mode {
@@ -73,6 +74,13 @@ export function createMobileControls(host: MobileHost): MobileControls {
   let fullscreenFailed = false;
   let immersive = false;
   const surfaces: Surface[] = [];
+
+  retainBackgroundTouchFocus({
+    app: host.app,
+    stage: host.stage,
+    isActive: () => active && toggle.checked && canPlay(),
+    focusGame: () => host.focusGame(),
+  });
 
   function compact(): boolean {
     return capable || toggle.checked || immersive || document.fullscreenElement === host.app;
