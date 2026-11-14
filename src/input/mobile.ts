@@ -71,14 +71,19 @@ export function createMobileControls(host: MobileHost): MobileControls {
 
   let active = false;
   let fullscreenFailed = false;
+  let immersive = false;
   const surfaces: Surface[] = [];
 
   function compact(): boolean {
-    return capable || toggle.checked || document.fullscreenElement === host.app;
+    return capable || toggle.checked || immersive || document.fullscreenElement === host.app;
   }
 
   function canPlay(): boolean {
     return !compact() || landscape.matches;
+  }
+
+  function supportsElementFullscreen(): boolean {
+    return typeof host.app.requestFullscreen === 'function';
   }
 
   function resetVisual(surface: Surface): void {
@@ -111,7 +116,7 @@ export function createMobileControls(host: MobileHost): MobileControls {
     const y = event.clientY - surface.cy;
     const length = Math.hypot(x, y);
     const scale = length > surface.radius ? surface.radius / length : 1;
-    surface.thumb.style.transform = `translate(calc(-50% + ${String(x * scale)}px), calc(-50% + ${String(y * scale)}px))`;
+    surface.thumb.style.transform = `translate(calc(-50% + ${String(x * scale)}px), calc(-50% + ${String(y * scale)}px)`;
   }
 
   function finish(surface: Surface, event: PointerEvent, cancelled: boolean): void {
@@ -215,17 +220,27 @@ export function createMobileControls(host: MobileHost): MobileControls {
 
   async function toggleFullscreen(): Promise<void> {
     fullscreenFailed = false;
-    try {
-      if (document.fullscreenElement === host.app) {
-        await document.exitFullscreen();
-      } else if (document.fullscreenEnabled) {
-        await host.app.requestFullscreen();
-      } else {
-        fullscreenFailed = true;
+
+    if (supportsElementFullscreen()) {
+      try {
+        if (document.fullscreenElement === host.app) {
+          await document.exitFullscreen();
+        } else if (document.fullscreenEnabled) {
+          await host.app.requestFullscreen();
+        } else {
+          immersive = !immersive;
+        }
+      } catch {
+        if (document.fullscreenElement !== host.app) {
+          immersive = !immersive;
+        } else {
+          fullscreenFailed = true;
+        }
       }
-    } catch {
-      fullscreenFailed = true;
+    } else {
+      immersive = !immersive;
     }
+
     fullscreen.title = fullscreenFailed
       ? 'Fullscreen unavailable; play in the browser viewport.'
       : '';
@@ -243,7 +258,15 @@ export function createMobileControls(host: MobileHost): MobileControls {
 
   window.addEventListener('resize', geometryChanged);
   landscape.addEventListener('change', geometryChanged);
-  document.addEventListener('fullscreenchange', geometryChanged);
+  document.addEventListener('fullscreenchange', () => {
+    if (document.fullscreenElement !== host.app) {
+      immersive = false;
+    }
+    geometryChanged();
+  });
+  window.addEventListener('pagehide', () => {
+    immersive = false;
+  });
 
   return {
     get enabled() {
@@ -264,12 +287,13 @@ export function createMobileControls(host: MobileHost): MobileControls {
       active = nextActive;
       layer.hidden = !active;
       host.app.classList.toggle('compact', compact());
+      host.app.classList.toggle('immersive', immersive);
       host.app.classList.toggle('mobile-solo', mode === 'solo');
       host.app.classList.toggle('touch-enabled', toggle.checked);
       rotate.hidden = canPlay();
-      fullscreen.disabled = !document.fullscreenEnabled && document.fullscreenElement !== host.app;
+      fullscreen.disabled = false;
       fullscreen.textContent =
-        document.fullscreenElement === host.app
+        document.fullscreenElement === host.app || immersive
           ? 'Exit fullscreen'
           : fullscreenFailed
             ? 'Fullscreen unavailable'

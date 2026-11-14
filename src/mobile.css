@@ -185,6 +185,52 @@
 .app:fullscreen {
   background: #dfcbaa;
 }
+
+/* Pseudo-fullscreen fallback for browsers without Element Fullscreen support,
+   notably Safari on iPhone. It expands the playable area but cannot remove
+   browser-owned UI. The toolbar remains available so the mode can be exited. */
+.app.immersive {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  max-width: none;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  padding: max(4px, env(safe-area-inset-top, 0px)) max(6px, env(safe-area-inset-right, 0px))
+    max(4px, env(safe-area-inset-bottom, 0px)) max(6px, env(safe-area-inset-left, 0px));
+  overflow: hidden;
+  background: #dfcbaa;
+}
+.app.immersive header {
+  margin: 0 0 4px;
+}
+.app.immersive .eyebrow,
+.app.immersive .hud,
+.app.immersive .foot,
+.app.immersive .status {
+  display: none;
+}
+.app.immersive .stage-wrap {
+  min-height: 0;
+  align-items: center;
+}
+.app.immersive .stage {
+  width: min(
+    100%,
+    calc(
+      (100dvh - 64px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) * 16 / 9
+    )
+  );
+}
+.app.immersive.compact .stage {
+  width: min(
+    100%,
+    calc(
+      (100dvh - 52px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) * 16 / 9
+    )
+  );
+}
 @media (max-width: 600px) {
   .compact .brand {
     display: none;
