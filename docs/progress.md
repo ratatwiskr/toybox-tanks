@@ -1,6 +1,19 @@
 # Toybox Tanks — current progress
 
-Updated: 2026-11-13
+Updated: 2026-11-15
+
+## In progress: enemy kinds, mines & secondary weapon (planning only)
+
+Work is sliced into five independently resumable scopes (A–E) in
+`docs/enemy-kinds-opencode-handoff.md`. That document is self-contained: it
+records the settled decisions, the ported tuning table, the four new room
+grids, and — per scope — the exact files to read, the edits, the acceptance
+criteria, and the fresh-session prompt. Read it plus only the files it lists;
+there is no need to re-read the repository.
+
+Status: no implementation written yet. Branch `feature/add-enemy-types` is clean
+apart from the untracked `reference/toybox-tanks-enemy-prototype*_v*.html`
+sources. Next action: implement Scope A.
 
 ## Issue 38 new maps: merged as PR #42
 
