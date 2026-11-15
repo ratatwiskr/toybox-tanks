@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Locator } from '@playwright/test';
 
 test('missed native touches keep focus without commands; pause remains explicit', async ({
   page,
@@ -24,6 +24,21 @@ test('missed native touches keep focus without commands; pause remains explicit'
   const before = await snapshot();
   const session = await page.context().newCDPSession(page);
   await session.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 2 });
+
+  // Keep control activation on the same native touch path as the missed taps.
+  async function tapControl(control: Locator): Promise<void> {
+    await expect(control).toBeVisible();
+    await expect(control).toBeEnabled();
+    await control.scrollIntoViewIfNeeded();
+    const box = await control.boundingBox();
+    if (box === null) throw new Error('Missing touch control');
+    await session.send('Input.dispatchTouchEvent', {
+      type: 'touchStart',
+      touchPoints: [{ x: box.x + box.width / 2, y: box.y + box.height / 2, id: 1 }],
+    });
+    await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  }
+
   try {
     const app = await page.locator('#app').boundingBox();
     if (app === null) throw new Error('Missing app');
@@ -41,7 +56,11 @@ test('missed native touches keep focus without commands; pause remains explicit'
       expect(after.players[0]?.angle).toBe(before.players[0]?.angle);
       expect(after.shots).toBe(before.shots);
     }
-    await page.locator('#pauseBtn').click();
+    await tapControl(page.locator('#pauseBtn'));
+    await expect(page.locator('#overlay')).toBeVisible();
+    await expect(page.locator('#dialogText')).toHaveText(
+      'Take a breath. No shells move while paused.',
+    );
     expect((await snapshot()).state).toBe('paused');
     await session.send('Input.dispatchTouchEvent', {
       type: 'touchStart',
@@ -49,7 +68,9 @@ test('missed native touches keep focus without commands; pause remains explicit'
     });
     await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
     expect((await snapshot()).state).toBe('paused');
-    await page.getByRole('button', { name: 'Resume', exact: true }).click();
+    await tapControl(page.getByRole('button', { name: 'Resume', exact: true }));
+    await expect(page.locator('#overlay')).toBeHidden();
+    expect((await snapshot()).state).toBe('playing');
     await page.evaluate(() => window.dispatchEvent(new Event('blur')));
     expect((await snapshot()).state).toBe('paused');
   } finally {
