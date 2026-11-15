@@ -1,0 +1,60 @@
+/* Only the explicit fallback toggle changes this layout. Normal compact and
+   native fullscreen remain unchanged. Keep two rows in narrow/portrait views. */
+@media (orientation: landscape) and (min-width: 700px) {
+  .app.compact.immersive {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: 44px minmax(0, 1fr);
+  }
+
+  .app.compact.immersive > header {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    min-width: 0;
+  }
+
+  .app.compact.immersive > header > :first-child,
+  .app.compact.immersive .touch-setting {
+    display: none;
+  }
+
+  .app.compact.immersive > .hud {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+    align-self: stretch;
+  }
+
+  .app.compact.immersive .player-head {
+    flex-wrap: wrap;
+    gap: 0 4px;
+  }
+
+  .app.compact.immersive .pname {
+    font-size: 10px;
+  }
+
+  .app.compact.immersive .room strong {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .app.compact.immersive > .stage-wrap {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    min-width: 0;
+  }
+
+  /* Same 16:9 arena and touch-pad reservation as compact mode; reclaim the
+     removed 36px HUD row and its 4px gap, without changing logical coordinates. */
+  .app.compact.immersive .stage {
+    width: min(
+      100%,
+      calc(
+        (100dvh - 56px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) * 16 / 9
+      )
+    );
+  }
+}

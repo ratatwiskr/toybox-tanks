@@ -185,6 +185,20 @@
 .app:fullscreen {
   background: #dfcbaa;
 }
+
+/* Preserve the compact header/HUD/stage grid in pseudo-fullscreen.
+   Hiding the HUD moves the stage into the fixed-height HUD row. */
+.app.immersive {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  max-width: none;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background: #dfcbaa;
+}
 @media (max-width: 600px) {
   .compact .brand {
     display: none;

@@ -651,7 +651,14 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 
-app.addEventListener('focusout', () => {
+app.addEventListener('focusout', (event) => {
+  // Moving focus between the arena and the app's own controls (Pause, Menu,
+  // audio settings) does not lose the game: those controls handle their own
+  // actions. Only focus leaving the app should pause.
+  const next = event.relatedTarget;
+  if (next instanceof Node && app.contains(next)) {
+    return;
+  }
   queueMicrotask(() => {
     if (!ownsFocus()) {
       clearInputs();
