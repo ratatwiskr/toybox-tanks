@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-test('fullscreen button falls back to immersive mode without Element Fullscreen', async ({ page }) => {
+test('fullscreen button falls back to immersive mode without Element Fullscreen', async ({
+  page,
+}) => {
   const pageErrors: string[] = [];
   page.on('pageerror', (error) => {
     pageErrors.push(error.message);

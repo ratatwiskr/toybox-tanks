@@ -79,7 +79,9 @@ export function createMobileControls(host: MobileHost): MobileControls {
     app: host.app,
     stage: host.stage,
     isActive: () => active && toggle.checked && canPlay(),
-    focusGame: () => host.focusGame(),
+    focusGame: () => {
+      host.focusGame();
+    },
   });
 
   function compact(): boolean {
