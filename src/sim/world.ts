@@ -3,30 +3,74 @@ import { moveTank } from './collision';
 import { advanceShell, resolveShellCollisions, shoot } from './combat';
 import { turnToward, updateEnemy } from './enemies';
 import { record } from './feedback';
+import { KINDS } from './kinds';
 import { addMapBorder, MAPS, validateMap } from './maps';
-import type { Command, Faction, Mode, SimulationEvent, Tank, World } from './types';
+import { nextRandom } from './rng';
+import type { Command, EnemyKind, Faction, Mode, SimulationEvent, Tank, World } from './types';
 
 export { activeShells, damage, shoot } from './combat';
 
 const NEUTRAL_COMMAND: Command = { x: 0, y: 0, turn: 0, fire: false };
 
-export function createTank(id: string, faction: Faction, x: number, y: number): Tank {
+const ENEMY_SYMBOL_KIND: Record<string, EnemyKind> = {
+  S: 'sentry',
+  R: 'roamer',
+  B: 'bruiser',
+  L: 'lobber',
+  M: 'prankster',
+  s: 'sentry',
+  r: 'roamer',
+  b: 'bruiser',
+  l: 'lobber',
+  m: 'prankster',
+};
+
+export function createTank(
+  id: string,
+  faction: Faction,
+  x: number,
+  y: number,
+  kind: EnemyKind | null = faction === 'enemy' ? 'sentry' : null,
+): Tank {
+  const spec = kind === null ? null : KINDS[kind];
+  const hp = faction === 'player' ? CONFIG.playerHealth : (spec?.hp ?? 1);
   return {
     id,
     faction,
+    kind,
+    maxHp: hp,
     x,
     y,
     spawnX: x,
     spawnY: y,
-    r: CONFIG.tankRadius,
+    r: spec?.r ?? CONFIG.tankRadius,
     angle: -Math.PI / 2,
-    hp: faction === 'player' ? CONFIG.playerHealth : 1,
+    heading: -Math.PI / 2,
+    hp,
     alive: true,
     invuln: 0,
     cooldown: 0,
     charge: 0,
+    hurt: 0,
+    stun: 0,
+    phase: 0,
+    vx: 0,
+    vy: 0,
+    mineCooldown: 0,
+    altPrev: false,
     targetId: null,
     track: 0,
+    ai: {
+      mode: 'patrol',
+      path: [],
+      wait: 0,
+      last: null,
+      lost: 99,
+      scan: 0.1,
+      plan: null,
+      srch: null,
+      stuck: 0,
+    },
   };
 }
 
@@ -41,11 +85,15 @@ export function createEmptyWorld(mode: Mode): World {
     players: [],
     enemies: [],
     shells: [],
+    mines: [],
+    poms: [],
     effects: [],
     events: [],
     nextShell: 0,
+    nextMine: 0,
     shots: 0,
     bounces: 0,
+    rngState: 1234,
   };
 }
 
@@ -62,6 +110,7 @@ export function createWorld(index: number, mode: Mode): World {
 
   const world = createEmptyWorld(mode);
   world.room = index;
+  world.rngState = 1234 + index;
 
   addMapBorder(checked.rows).forEach((row, y) => {
     for (let x = 0; x < row.length; x += 1) {
@@ -89,15 +138,28 @@ export function createWorld(index: number, mode: Mode): World {
         world.players.push(
           createTank(`p${cell}`, 'player', px + CONFIG.tile / 2, py + CONFIG.tile / 2),
         );
-      } else if (cell === 'S') {
+      } else if (cell in ENEMY_SYMBOL_KIND) {
+        const kind = ENEMY_SYMBOL_KIND[cell];
+        if (kind === undefined) continue;
+        const isUpper = cell === cell.toUpperCase();
+        if (!isUpper && mode !== 'coop') {
+          continue;
+        }
+        const indexInWorld = world.enemies.length;
         const enemy = createTank(
-          `s${String(world.enemies.length)}`,
+          `${cell.toLowerCase()}${String(indexInWorld)}`,
           'enemy',
           px + CONFIG.tile / 2,
           py + CONFIG.tile / 2,
+          kind,
         );
         enemy.angle = Math.PI / 2;
-        enemy.cooldown = 1.2 + world.enemies.length * 0.38;
+        enemy.heading = Math.PI / 2;
+        const baseCooldown: Partial<Record<EnemyKind, number>> = { bruiser: 2, lobber: 2.5 };
+        enemy.cooldown = (baseCooldown[kind] ?? 1.2) + indexInWorld * 0.38;
+        enemy.mineCooldown = 1.5;
+        enemy.phase = nextRandom(world) * 6;
+        enemy.ai.wait = nextRandom(world) * 0.8;
         world.enemies.push(enemy);
       }
     }
@@ -120,6 +182,8 @@ function commitOutcome(
   world.state = state;
   events?.push({ type: 'outcome', state });
   world.shells.length = 0;
+  world.mines.length = 0;
+  world.poms.length = 0;
   for (const enemy of world.enemies) {
     enemy.charge = 0;
   }
@@ -177,7 +241,11 @@ export function stepWorld(
       my /= length;
     }
 
+    const px = player.x;
+    const py = player.y;
     moveTank(world, player, mx * CONFIG.playerSpeed * dt, my * CONFIG.playerSpeed * dt);
+    player.vx = (player.x - px) / Math.max(dt, 1e-6);
+    player.vy = (player.y - py) / Math.max(dt, 1e-6);
     player.track += Math.hypot(mx, my) * dt * 12;
 
     if (command.aim !== undefined) {
@@ -189,12 +257,14 @@ export function stepWorld(
     if (command.fire) {
       shoot(world, player, events);
     }
+    player.altPrev = command.alt === true;
   });
 
   for (const enemy of world.enemies) {
     updateEnemy(world, enemy, dt, events);
   }
 
+  // mines/poms logic added in later scopes; placeholders keep step order
   resolveShellCollisions(world, dt, events);
 
   for (const shell of world.shells) {
@@ -204,6 +274,8 @@ export function stepWorld(
   }
 
   world.shells = world.shells.filter((shell) => !shell.dead);
+  world.mines = world.mines.filter((mine) => !mine.dead);
+  world.poms = world.poms.filter((pom) => !pom.dead);
 
   for (const effect of world.effects) {
     effect.age += dt;

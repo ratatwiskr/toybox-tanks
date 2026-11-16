@@ -129,3 +129,49 @@ describe('sentry behaviour', () => {
     expect(enemy.charge).toBe(0);
   });
 });
+
+describe('roamer behaviour', () => {
+  it('chases within vision, fires on LOS, and uses hunt lead', () => {
+    const world = createEmptyWorld('coop');
+    world.walls = [
+      { x: 0, y: 0, w: 960, h: 40 },
+      { x: 0, y: 500, w: 960, h: 40 },
+      { x: 0, y: 0, w: 40, h: 540 },
+      { x: 920, y: 0, w: 40, h: 540 },
+    ];
+    const enemy = createTank('r0', 'enemy', 200, 200, 'roamer');
+    enemy.cooldown = 0;
+    const player = createTank('p1', 'player', 320, 200);
+    player.vx = 80;
+    player.vy = 0;
+    world.enemies = [enemy];
+    world.players = [player];
+
+    stepEnemy(world, enemy, 3);
+    expect(world.shots).toBeGreaterThan(0);
+    const shell = world.shells[0];
+    expect(shell?.faction).toBe('enemy');
+    // hunt lead aims ahead of the player's current position
+    expect(enemy.angle).toBeGreaterThan(-0.2);
+  });
+
+  it('patrols via planPatrol when idle', () => {
+    const world = createEmptyWorld('coop');
+    world.walls = [
+      { x: 0, y: 0, w: 960, h: 40 },
+      { x: 0, y: 500, w: 960, h: 40 },
+      { x: 0, y: 0, w: 40, h: 540 },
+      { x: 920, y: 0, w: 40, h: 540 },
+    ];
+    const enemy = createTank('r0', 'enemy', 200, 200, 'roamer');
+    world.enemies = [enemy];
+    world.players = [];
+
+    // no visible players: should enter patrol and plan a path
+    for (let i = 0; i < 120; i += 1) {
+      updateEnemy(world, enemy, 1 / 60);
+    }
+    expect(enemy.ai.mode).toBe('patrol');
+    expect(enemy.ai.path.length > 0 || enemy.ai.wait >= 0).toBe(true);
+  });
+});

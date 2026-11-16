@@ -2,6 +2,7 @@ import { CONFIG } from '../config';
 import { canHit, firstTerrain, rayCircle, reflect } from './collision';
 import type { TerrainHit, WallHit } from './collision';
 import { poof, record } from './feedback';
+import { KINDS } from './kinds';
 import { firstShellContact } from './shell-contact';
 import type { Shell, SimulationEvent, Tank, World } from './types';
 
@@ -15,6 +16,7 @@ export function damage(world: World, tank: Tank, events?: SimulationEvent[]): bo
   }
 
   tank.hp = Math.max(0, tank.hp - 1);
+  tank.hurt = 0.25;
   record(world, `Hit · ${tank.id} · HP ${String(tank.hp)}`);
   poof(world, tank.x, tank.y, 'poof');
 
@@ -22,8 +24,12 @@ export function damage(world: World, tank: Tank, events?: SimulationEvent[]): bo
     tank.alive = false;
     tank.charge = 0;
     record(world, `Disabled · ${tank.id}`);
-  } else {
+  } else if (tank.faction === 'player') {
     tank.invuln = CONFIG.postHitInvulnerability;
+  } else {
+    tank.invuln = 0.2;
+    tank.stun = 0.3;
+    tank.charge = 0;
   }
 
   events?.push({ type: 'damage', faction: tank.faction, destroyed: !tank.alive });
@@ -39,7 +45,12 @@ export function shoot(world: World, tank: Tank, events?: SimulationEvent[]): boo
     return false;
   }
 
-  const speed = CONFIG.shellSpeed * (tank.faction === 'enemy' ? CONFIG.enemyShellSpeedFactor : 1);
+  const kind = tank.faction === 'enemy' ? (tank.kind ?? 'sentry') : null;
+  const shellFactor = kind === null ? 1 : KINDS[kind].shell;
+  if (kind !== null && shellFactor <= 0) {
+    return false;
+  }
+  const speed = CONFIG.shellSpeed * shellFactor;
   world.nextShell += 1;
   const shell: Shell = {
     id: world.nextShell,
@@ -54,7 +65,7 @@ export function shoot(world: World, tank: Tank, events?: SimulationEvent[]): boo
   };
 
   world.shells.push(shell);
-  tank.cooldown = tank.faction === 'player' ? CONFIG.firingCooldown : CONFIG.enemyFiringInterval;
+  tank.cooldown = tank.faction === 'player' ? CONFIG.firingCooldown : KINDS[kind ?? 'sentry'].cd;
   world.shots += 1;
   events?.push({ type: 'shot', faction: tank.faction });
   // Sweep all the way out of the barrel, never spawn beyond nearby terrain.

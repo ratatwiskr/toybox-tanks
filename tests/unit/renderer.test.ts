@@ -236,11 +236,15 @@ function snapshot(world: World): World {
     players: world.players.map((tank) => ({ ...tank })),
     enemies: world.enemies.map((tank) => ({ ...tank })),
     shells: world.shells.map((shell) => ({ ...shell })),
+    mines: world.mines.map((mine) => ({ ...mine })),
+    poms: world.poms.map((pom) => ({ ...pom })),
     effects: world.effects.map((effect) => ({ ...effect })),
     events: [...world.events],
     nextShell: world.nextShell,
+    nextMine: world.nextMine,
     shots: world.shots,
     bounces: world.bounces,
+    rngState: world.rngState,
   };
 }
 
