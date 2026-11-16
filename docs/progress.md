@@ -2,7 +2,7 @@
 
 Updated: 2026-11-15
 
-## In progress: enemy kinds, mines & secondary weapon (planning only)
+## In progress: enemy kinds, mines & secondary weapon (scopes A–C)
 
 Work is sliced into five independently resumable scopes (A–E) in
 `docs/enemy-kinds-opencode-handoff.md`. That document is self-contained: it
@@ -11,9 +11,28 @@ grids, and — per scope — the exact files to read, the edits, the acceptance
 criteria, and the fresh-session prompt. Read it plus only the files it lists;
 there is no need to re-read the repository.
 
-Status: no implementation written yet. Branch `feature/add-enemy-types` is clean
-apart from the untracked `reference/toybox-tanks-enemy-prototype*_v*.html`
-sources. Next action: implement Scope A.
+Status on branch `feature/improve-enemy-variety` (uncommitted working tree):
+Scope A (sim framework, deterministic world RNG, Roamer), Scope B (Bruiser
+bank shots, telegraph plan and rage cadence), and Scope C (Lobber and poms) are
+implemented. Scope B coverage includes a one-bounce solution with two trace
+segments, the no-fire case without a bank or line of sight, and the shortened
+rage interval. Scope C adds `src/sim/poms.ts`, the lobber brain, the
+post-shell-advance pom step, and pom clearing on room end.
+
+Scope D (mines, Prankster and the player secondary weapon) and Scope E (rooms
+16–19, enemy-symbol validation/counts, HUD wording, renderer art, visual
+scenes) remain.
+
+### Verification
+
+| Command                                          | Result                                                     |
+| ------------------------------------------------ | ---------------------------------------------------------- |
+| `npm run verify:fast` (2026-11-16, working tree) | passed: format, lint, typecheck, 37 files / 310 unit tests |
+
+New coverage: `tests/unit/poms.test.ts` (predicted landing, blast damage,
+wall-blocked blast, cork chip), lobber tests in `tests/unit/enemies.test.ts`,
+and pom step/room-clear checks in `tests/unit/world.test.ts`. Scope C is
+sim-only: the renderer still omits pom/mine art, which belongs to Scope E.
 
 ## Issue 38 new maps: merged as PR #42
 

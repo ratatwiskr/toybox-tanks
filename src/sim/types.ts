@@ -120,6 +120,8 @@ export interface Mine {
 export interface Pom {
   readonly id: number;
   readonly faction: Faction;
+  readonly sx: number;
+  readonly sy: number;
   x: number;
   y: number;
   readonly tx: number;

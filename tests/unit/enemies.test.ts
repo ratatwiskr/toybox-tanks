@@ -4,6 +4,7 @@ import { CONFIG } from '../../src/config';
 import { solveBank } from '../../src/sim/ballistics';
 import { hasLOS } from '../../src/sim/collision';
 import { updateEnemy } from '../../src/sim/enemies';
+import { KINDS } from '../../src/sim/kinds';
 import { createEmptyWorld, createTank, stepWorld } from '../../src/sim/world';
 
 function stepEnemy(
@@ -279,5 +280,60 @@ describe('bruiser behaviour', () => {
     // ~20% cadence reduction: allow a generous window around 0.8x.
     expect(raging / normal).toBeGreaterThan(0.6);
     expect(raging / normal).toBeLessThan(0.95);
+  });
+});
+
+describe('lobber behaviour', () => {
+  it('lobs a pom at a stationary target outside minimum range', () => {
+    const world = createEmptyWorld('solo');
+    const enemy = createTank('l0', 'enemy', 100, 260, 'lobber');
+    enemy.cooldown = 0;
+    const player = createTank('p1', 'player', 500, 260);
+    world.enemies = [enemy];
+    world.players = [player];
+
+    stepEnemy(world, enemy, 3);
+
+    expect(world.poms).toHaveLength(1);
+    expect(world.shots).toBe(0);
+    expect(world.poms[0]?.faction).toBe('enemy');
+    expect(world.poms[0]?.tx).toBeCloseTo(500, 6);
+    expect(world.poms[0]?.ty).toBeCloseTo(260, 6);
+  });
+
+  it('never fires while the target is inside minimum range, even with no escape path', () => {
+    const world = createEmptyWorld('coop');
+    world.walls = [
+      { x: 150, y: 200, w: 200, h: 20 },
+      { x: 150, y: 340, w: 200, h: 20 },
+      { x: 150, y: 200, w: 20, h: 160 },
+      { x: 330, y: 200, w: 20, h: 160 },
+    ];
+    const enemy = createTank('l0', 'enemy', 200, 270, 'lobber');
+    enemy.cooldown = 0;
+    const player = createTank('p1', 'player', 280, 270);
+    world.enemies = [enemy];
+    world.players = [player];
+
+    stepEnemy(world, enemy, 5);
+
+    expect(Math.hypot(player.x - enemy.x, player.y - enemy.y)).toBeLessThan(KINDS.lobber.minRange);
+    expect(world.poms).toHaveLength(0);
+    expect(enemy.charge).toBe(0);
+  });
+
+  it.each(['solo', 'coop'] as const)('sets the %s cooldown after lobbing', (mode) => {
+    const world = createEmptyWorld(mode);
+    const enemy = createTank('l0', 'enemy', 100, 260, 'lobber');
+    enemy.cooldown = 0;
+    const player = createTank('p1', 'player', 500, 260);
+    world.enemies = [enemy];
+    world.players = [player];
+
+    stepEnemy(world, enemy, 3);
+
+    expect(world.poms).toHaveLength(1);
+    const expected = KINDS.lobber.cd * (mode === 'coop' ? 0.85 : 1);
+    expect(enemy.cooldown).toBeCloseTo(expected, 8);
   });
 });

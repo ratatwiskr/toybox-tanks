@@ -3,7 +3,8 @@ import { hasLOS, moveTank } from './collision';
 import { shoot } from './combat';
 import { KINDS } from './kinds';
 import { solveBank } from './ballistics';
-import { cellOf, planPatrol, pathTo } from './nav';
+import { cellOf, fleePath, planPatrol, pathTo } from './nav';
+import { spawnPom } from './poms';
 import type { Point, SimulationEvent, Tank, World } from './types';
 
 export function angleDelta(a: number, b: number): number {
@@ -278,6 +279,82 @@ function updateBruiser(world: World, enemy: Tank, dt: number, events?: Simulatio
   }
 }
 
+function updateLobber(world: World, enemy: Tank, dt: number): void {
+  const spec = KINDS.lobber;
+  const target = world.players
+    .filter(
+      (player) => player.alive && Math.hypot(player.x - enemy.x, player.y - enemy.y) <= spec.vision,
+    )
+    .sort(
+      (a, b) => Math.hypot(a.x - enemy.x, a.y - enemy.y) - Math.hypot(b.x - enemy.x, b.y - enemy.y),
+    )[0];
+
+  if (target === undefined) {
+    enemy.charge = 0;
+    enemy.targetId = null;
+    if (enemy.ai.mode !== 'patrol') {
+      enemy.ai.mode = 'patrol';
+      enemy.ai.path = [];
+    }
+    if (enemy.ai.path.length > 0) {
+      followPath(world, enemy, enemy.ai.path, spec.speed, dt);
+    } else if (enemy.ai.wait > 0) {
+      enemy.ai.wait -= dt;
+    } else {
+      enemy.ai.path = planPatrol(world, enemy);
+      enemy.ai.wait = 0.5;
+    }
+    enemy.angle = turnToward(
+      enemy.angle,
+      enemy.heading + Math.sin(world.time * 1.1 + enemy.phase) * 0.7,
+      spec.turn * 0.5 * dt,
+    );
+    return;
+  }
+
+  const distance = Math.hypot(target.x - enemy.x, target.y - enemy.y);
+  const aim = Math.atan2(target.y - enemy.y, target.x - enemy.x);
+  enemy.angle = turnToward(enemy.angle, aim, spec.turn * dt);
+  enemy.targetId = target.id;
+  enemy.ai.last = { x: target.x, y: target.y };
+
+  // Artillery keeps its distance: retreat, and never fire while too close.
+  if (distance < spec.minRange) {
+    enemy.charge = 0;
+    if (enemy.ai.mode !== 'flee') {
+      enemy.ai.mode = 'flee';
+      enemy.ai.path = fleePath(world, enemy, target);
+      enemy.ai.wait = 0.5;
+    } else if (enemy.ai.path.length === 0) {
+      // Re-plan a retreat at a bounded rate if the first path was exhausted.
+      enemy.ai.wait -= dt;
+      if (enemy.ai.wait <= 0) {
+        enemy.ai.path = fleePath(world, enemy, target);
+        enemy.ai.wait = 0.5;
+      }
+    }
+    if (enemy.ai.path.length > 0) {
+      followPath(world, enemy, enemy.ai.path, spec.speed * 1.6, dt);
+    }
+    return;
+  }
+
+  if (enemy.ai.mode === 'flee') {
+    enemy.ai.path = [];
+  }
+  enemy.ai.mode = 'chase';
+
+  if (enemy.cooldown <= 0 && Math.abs(angleDelta(enemy.angle, aim)) < 0.3) {
+    enemy.charge += dt;
+    if (enemy.charge >= spec.tele) {
+      enemy.charge = 0;
+      spawnPom(world, enemy, target);
+    }
+  } else {
+    enemy.charge = 0;
+  }
+}
+
 export function updateEnemy(
   world: World,
   enemy: Tank,
@@ -308,7 +385,11 @@ export function updateEnemy(
     updateBruiser(world, enemy, dt, events);
     return;
   }
-  // lobber/prankster implemented in later scopes
+  if (kind === 'lobber') {
+    updateLobber(world, enemy, dt);
+    return;
+  }
+  // prankster implemented in a later scope
   enemy.vx = 0;
   enemy.vy = 0;
 }

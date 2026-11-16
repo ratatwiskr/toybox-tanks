@@ -5,6 +5,7 @@ import { turnToward, updateEnemy } from './enemies';
 import { record } from './feedback';
 import { KINDS } from './kinds';
 import { addMapBorder, MAPS, validateMap } from './maps';
+import { updatePoms } from './poms';
 import { nextRandom } from './rng';
 import type { Command, EnemyKind, Faction, Mode, SimulationEvent, Tank, World } from './types';
 
@@ -264,7 +265,8 @@ export function stepWorld(
     updateEnemy(world, enemy, dt, events);
   }
 
-  // mines/poms logic added in later scopes; placeholders keep step order
+  // Mines logic is added in a later scope; the shell sweep runs before
+  // shell advance, then lobs land after the shells have moved.
   resolveShellCollisions(world, dt, events);
 
   for (const shell of world.shells) {
@@ -272,6 +274,8 @@ export function stepWorld(
       advanceShell(world, shell, Math.hypot(shell.vx, shell.vy) * dt, events);
     }
   }
+
+  updatePoms(world, dt, events);
 
   world.shells = world.shells.filter((shell) => !shell.dead);
   world.mines = world.mines.filter((mine) => !mine.dead);
