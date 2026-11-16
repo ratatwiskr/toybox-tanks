@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
 import { CONFIG } from '../../src/config';
+import { solveBank } from '../../src/sim/ballistics';
+import { hasLOS } from '../../src/sim/collision';
 import { updateEnemy } from '../../src/sim/enemies';
-import { createEmptyWorld, createTank } from '../../src/sim/world';
+import { createEmptyWorld, createTank, stepWorld } from '../../src/sim/world';
 
 function stepEnemy(
   world: ReturnType<typeof createEmptyWorld>,
@@ -173,5 +175,109 @@ describe('roamer behaviour', () => {
     }
     expect(enemy.ai.mode).toBe('patrol');
     expect(enemy.ai.path.length > 0 || enemy.ai.wait >= 0).toBe(true);
+  });
+});
+
+describe('bruiser behaviour', () => {
+  function bankArena() {
+    const world = createEmptyWorld('coop');
+    world.walls = [
+      { x: 40, y: 40, w: 880, h: 40 }, // top
+      { x: 40, y: 460, w: 880, h: 40 }, // bottom
+      { x: 40, y: 40, w: 40, h: 460 }, // left
+      { x: 880, y: 40, w: 40, h: 460 }, // right
+      { x: 400, y: 40, w: 40, h: 260 }, // divider with a gap at the bottom
+    ];
+    const enemy = createTank('b0', 'enemy', 300, 200, 'bruiser');
+    const player = createTank('p1', 'player', 520, 200);
+    world.enemies = [enemy];
+    world.players = [player];
+    return { world, enemy, player };
+  }
+
+  it('finds a one-bounce bank solution around a corner', () => {
+    const { world, enemy, player } = bankArena();
+
+    // No straight line of sight: the divider blocks it.
+    expect(hasLOS(world, enemy, player)).toBe(false);
+
+    const solution = solveBank(world, enemy, player);
+    expect(solution).not.toBeNull();
+    expect(solution?.segments).toHaveLength(2);
+  });
+
+  it('telegraphs the bank and fires the banked shot', () => {
+    const { world, enemy } = bankArena();
+    enemy.cooldown = 0;
+
+    // step until the plan forms and fires
+    let fired = false;
+    for (let step = 0; step < 400; step += 1) {
+      updateEnemy(world, enemy, 1 / 60);
+      if (world.shots > 0) {
+        fired = true;
+        break;
+      }
+    }
+    expect(fired).toBe(true);
+    expect(enemy.ai.plan).toBeNull();
+    expect(world.shells[0]?.faction).toBe('enemy');
+  });
+
+  it('does not fire when there is neither a bank solution nor line of sight', () => {
+    const world = createEmptyWorld('coop');
+    // Fully enclose the player in a sealed box.
+    world.walls = [
+      { x: 500, y: 100, w: 20, h: 120 },
+      { x: 620, y: 100, w: 20, h: 120 },
+      { x: 500, y: 100, w: 140, h: 20 },
+      { x: 500, y: 200, w: 140, h: 20 },
+    ];
+    const enemy = createTank('b0', 'enemy', 200, 300, 'bruiser');
+    const player = createTank('p1', 'player', 560, 160);
+    world.enemies = [enemy];
+    world.players = [player];
+
+    stepEnemy(world, enemy, 5);
+
+    expect(world.shots).toBe(0);
+  });
+
+  it('shortens the fire interval when raging at hp <= 2', () => {
+    function measureInterval(hp: number): number {
+      const world = createEmptyWorld('coop');
+      world.walls = [
+        { x: 40, y: 40, w: 880, h: 40 },
+        { x: 40, y: 460, w: 880, h: 40 },
+        { x: 40, y: 40, w: 40, h: 460 },
+        { x: 880, y: 40, w: 40, h: 460 },
+      ];
+      const enemy = createTank('b0', 'enemy', 200, 250, 'bruiser');
+      enemy.hp = hp;
+      enemy.cooldown = 0;
+      const player = createTank('p1', 'player', 700, 250);
+      // Keep the target alive so the interval, not player death, is measured.
+      player.hp = 100;
+      world.enemies = [enemy];
+      world.players = [player];
+
+      const shotTimes: number[] = [];
+      const dt = 1 / 60;
+      for (let step = 0; step < 1200; step += 1) {
+        const before = world.shots;
+        stepWorld(world, dt);
+        if (world.shots > before) shotTimes.push(step * dt);
+        if (shotTimes.length >= 4) break;
+      }
+      expect(shotTimes.length).toBeGreaterThanOrEqual(3);
+      return (shotTimes[3] ?? 0) - (shotTimes[2] ?? 0);
+    }
+
+    const normal = measureInterval(5);
+    const raging = measureInterval(1);
+    expect(raging).toBeLessThan(normal);
+    // ~20% cadence reduction: allow a generous window around 0.8x.
+    expect(raging / normal).toBeGreaterThan(0.6);
+    expect(raging / normal).toBeLessThan(0.95);
   });
 });

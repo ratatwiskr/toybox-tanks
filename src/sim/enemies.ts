@@ -2,6 +2,7 @@ import { CONFIG } from '../config';
 import { hasLOS, moveTank } from './collision';
 import { shoot } from './combat';
 import { KINDS } from './kinds';
+import { solveBank } from './ballistics';
 import { cellOf, planPatrol, pathTo } from './nav';
 import type { Point, SimulationEvent, Tank, World } from './types';
 
@@ -162,6 +163,121 @@ function updateRoamer(world: World, enemy: Tank, dt: number, events?: Simulation
   }
 }
 
+function bruiserCooldown(world: World, enemy: Tank): number {
+  const spec = KINDS.bruiser;
+  let cd = spec.cd;
+  if (enemy.hp <= 2) cd *= 0.8;
+  if (world.mode === 'coop') cd *= 0.85;
+  return cd;
+}
+
+function updateBruiser(world: World, enemy: Tank, dt: number, events?: SimulationEvent[]): void {
+  const spec = KINDS.bruiser;
+  const speed = enemy.hp <= 2 ? spec.speed * 1.3 : spec.speed;
+  enemy.ai.lost += dt;
+
+  const inVision = world.players
+    .filter(
+      (player) => player.alive && Math.hypot(player.x - enemy.x, player.y - enemy.y) <= spec.vision,
+    )
+    .sort(
+      (a, b) => Math.hypot(a.x - enemy.x, a.y - enemy.y) - Math.hypot(b.x - enemy.x, b.y - enemy.y),
+    );
+  const visible = inVision.filter((player) => hasLOS(world, enemy, player));
+  const nearest = visible[0] ?? inVision[0];
+
+  if (nearest !== undefined) {
+    enemy.ai.mode = 'chase';
+    enemy.ai.lost = 0;
+    enemy.ai.last = { x: nearest.x, y: nearest.y };
+    enemy.targetId = nearest.id;
+
+    // movement/chase toward nearest in vision
+    const to = cellOf(nearest.x, nearest.y);
+    enemy.ai.path = pathTo(world, cellOf(enemy.x, enemy.y), to);
+    if (enemy.ai.path.length <= 1) enemy.ai.path = [];
+    followPath(world, enemy, enemy.ai.path, speed, dt);
+
+    // if currently telegraphing a bank plan, continue it
+    if (enemy.ai.plan !== null) {
+      enemy.angle = turnToward(enemy.angle, enemy.ai.plan.solution.angle, spec.turn * dt);
+      enemy.ai.plan = { ...enemy.ai.plan, time: enemy.ai.plan.time - dt };
+      if (enemy.ai.plan.time <= 0 && enemy.cooldown <= 0) {
+        enemy.angle = enemy.ai.plan.solution.angle;
+        if (shoot(world, enemy, events)) {
+          enemy.cooldown = bruiserCooldown(world, enemy);
+        }
+        enemy.ai.plan = null;
+        enemy.charge = 0;
+      }
+      return;
+    }
+
+    // try to acquire a bank solution when ready
+    if (enemy.cooldown <= 0) {
+      let bank: ReturnType<typeof solveBank> = null;
+      for (const player of inVision) {
+        const sol = solveBank(world, enemy, player);
+        if (sol !== null && (bank === null || sol.score < bank.score)) bank = sol;
+      }
+      if (bank !== null) {
+        enemy.ai.plan = { solution: bank, time: spec.teleBank };
+        enemy.charge = 0;
+        enemy.angle = turnToward(enemy.angle, bank.angle, spec.turn * dt);
+        return;
+      }
+    }
+
+    // fallback: direct LOS fire
+    enemy.ai.plan = null;
+    if (visible[0] !== undefined) {
+      const directTarget = visible[0];
+      const aim = Math.atan2(directTarget.y - enemy.y, directTarget.x - enemy.x);
+      enemy.angle = turnToward(enemy.angle, aim, spec.turn * dt);
+      if (enemy.cooldown <= 0 && Math.abs(angleDelta(enemy.angle, aim)) < 0.12) {
+        enemy.charge += dt;
+        if (enemy.charge >= spec.tele) {
+          if (hasLOS(world, enemy, directTarget) && shoot(world, enemy, events)) {
+            enemy.cooldown = bruiserCooldown(world, enemy);
+          }
+          enemy.charge = 0;
+        }
+      } else {
+        enemy.charge = 0;
+      }
+      return;
+    }
+
+    enemy.charge = 0;
+    return;
+  }
+
+  enemy.charge = 0;
+  enemy.ai.plan = null;
+  enemy.targetId = null;
+  if (enemy.ai.mode === 'chase' && enemy.ai.lost < 2 && enemy.ai.last !== null) {
+    enemy.ai.path = pathTo(
+      world,
+      cellOf(enemy.x, enemy.y),
+      cellOf(enemy.ai.last.x, enemy.ai.last.y),
+    );
+    if (enemy.ai.path.length > 0) {
+      followPath(world, enemy, enemy.ai.path, speed, dt);
+      return;
+    }
+  }
+  enemy.ai.mode = 'patrol';
+  if (enemy.ai.path.length === 0) {
+    enemy.ai.wait -= dt;
+    if (enemy.ai.wait <= 0) {
+      enemy.ai.path = planPatrol(world, enemy);
+      enemy.ai.wait = 0.4;
+    }
+  } else {
+    followPath(world, enemy, enemy.ai.path, speed, dt);
+  }
+}
+
 export function updateEnemy(
   world: World,
   enemy: Tank,
@@ -189,7 +305,7 @@ export function updateEnemy(
     return;
   }
   if (kind === 'bruiser') {
-    updateRoamer(world, enemy, dt, events);
+    updateBruiser(world, enemy, dt, events);
     return;
   }
   // lobber/prankster implemented in later scopes
