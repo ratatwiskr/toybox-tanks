@@ -19,8 +19,12 @@ export const MAP_INTERIOR_COLUMNS = CONFIG.columns - 2;
 export const MAP_INTERIOR_ROWS = CONFIG.rows - 2;
 
 // Authored grids contain only the interior. # = wood; C = three-hit cork;
-// . = floor; 1/2 = player spawns; S = stationary sentry. The border is automatic.
-// Cork appears in several later campaign rooms.
+// . = floor; 1/2 = player spawns. Enemy symbols: S sentry, R roamer, B bruiser,
+// L lobber, M prankster. Lowercase symbols are co-op-only; solo spawns uppercase
+// only. The border is automatic. Cork appears in several later campaign rooms.
+const ENEMY_SYMBOLS = 'SRBLM';
+const ENEMY_SYMBOLS_ALL = `${ENEMY_SYMBOLS}${ENEMY_SYMBOLS.toLowerCase()}`;
+const VALID_SYMBOLS = `#C.12${ENEMY_SYMBOLS_ALL}`;
 export const MAPS: readonly MapData[] = [
   {
     name: 'First Bounce',
@@ -262,6 +266,70 @@ export const MAPS: readonly MapData[] = [
 ..C...#...C..C...#...C
 ...1..............2...`,
   },
+  {
+    name: 'Roaming Patrol',
+    hint: 'Roamers drive around and shoot on sight. Sentries hold their spot.',
+    expectedEnemies: 3,
+    grid: `......................
+..R...####....####....
+..........C...........
+......##........##....
+......................
+...C......S.......C...
+......................
+......##........##..R.
+..........C...........
+...1..............2...
+......................`,
+  },
+  {
+    name: 'Corner Shark',
+    hint: 'The Bruiser banks shells around corners. Watch the red line, then move! 5 hits to kill.',
+    expectedEnemies: 3,
+    grid: `......................
+..........##..........
+..B.......##.......R..
+..........##..........
+....####......####....
+....#..........#......
+....#....C..C...#..b..
+....####......####....
+......................
+...1..............2...
+......................`,
+  },
+  {
+    name: 'Confetti Cannons',
+    hint: 'Lobbers ignore walls: a red ring shows where the pom lands. Keep moving, then rush them!',
+    expectedEnemies: 5,
+    grid: `......................
+..L.......##.......L..
+..........##..........
+...C......##......C...
+...........l..........
+.....####....####.....
+.....#..........#.....
+.....####....####.....
+..R..............R....
+...1..............2...
+......................`,
+  },
+  {
+    name: 'Prank Alley',
+    hint: 'Pranksters lay jack-in-the-box mines. Shoot them from afar. Your own mine: G / Slash, press again to detonate.',
+    expectedEnemies: 4,
+    grid: `......................
+..M....##......##..M..
+.......##......##.....
+......................
+...C....C....C....C...
+......................
+.....##..........##...
+.....##....R.....##...
+......................
+...1..............2...
+..........m...........`,
+  },
 ];
 
 export function addMapBorder(rows: readonly string[]): string[] {
@@ -305,7 +373,8 @@ export function validateMap(
 ): MapValidation {
   const errors: string[] = [];
   const rows = data.grid.trim().split(/\r?\n/);
-  const counts = { '1': 0, '2': 0, S: 0 };
+  const spawnCounts = { '1': 0, '2': 0 };
+  let enemyCount = 0;
   let initiallyReachable = false;
 
   if (rows.length !== MAP_INTERIOR_ROWS) {
@@ -325,26 +394,29 @@ export function validateMap(
         continue;
       }
 
-      if (!'#C.12S'.includes(cell)) {
+      if (!VALID_SYMBOLS.includes(cell)) {
         errors.push(`Unknown symbol "${cell}" at row ${String(y + 1)}, column ${String(x + 1)}.`);
       }
-      if (cell === '1' || cell === '2' || cell === 'S') {
-        counts[cell] += 1;
+      if (cell === '1' || cell === '2') {
+        spawnCounts[cell] += 1;
+      }
+      if (ENEMY_SYMBOLS_ALL.includes(cell)) {
+        enemyCount += 1;
       }
     }
   });
 
   for (const spawn of ['1', '2'] as const) {
-    if (counts[spawn] !== 1) {
-      errors.push(`Need exactly one player ${spawn} spawn; found ${String(counts[spawn])}.`);
+    if (spawnCounts[spawn] !== 1) {
+      errors.push(`Need exactly one player ${spawn} spawn; found ${String(spawnCounts[spawn])}.`);
     }
   }
 
-  if (counts.S < 1) {
-    errors.push('At least one sentry is required.');
+  if (enemyCount < 1) {
+    errors.push('At least one enemy is required.');
   }
-  if (data.expectedEnemies !== undefined && counts.S !== data.expectedEnemies) {
-    errors.push(`Expected ${String(data.expectedEnemies)} sentries; found ${String(counts.S)}.`);
+  if (data.expectedEnemies !== undefined && enemyCount !== data.expectedEnemies) {
+    errors.push(`Expected ${String(data.expectedEnemies)} enemies; found ${String(enemyCount)}.`);
   }
 
   if (errors.length === 0) {

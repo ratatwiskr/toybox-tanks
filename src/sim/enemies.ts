@@ -1,6 +1,6 @@
 import { CONFIG } from '../config';
 import { hasLOS, moveTank } from './collision';
-import { shoot } from './combat';
+import { layMine, shoot } from './combat';
 import { KINDS } from './kinds';
 import { solveBank } from './ballistics';
 import { cellOf, fleePath, planPatrol, pathTo } from './nav';
@@ -355,6 +355,68 @@ function updateLobber(world: World, enemy: Tank, dt: number): void {
   }
 }
 
+function updatePrankster(world: World, enemy: Tank, dt: number): void {
+  const spec = KINDS.prankster;
+  enemy.mineCooldown = Math.max(0, enemy.mineCooldown - dt);
+
+  const target = world.players
+    .filter(
+      (player) =>
+        player.alive &&
+        Math.hypot(player.x - enemy.x, player.y - enemy.y) <= spec.vision &&
+        hasLOS(world, enemy, player),
+    )
+    .sort(
+      (a, b) => Math.hypot(a.x - enemy.x, a.y - enemy.y) - Math.hypot(b.x - enemy.x, b.y - enemy.y),
+    )[0];
+  const seen = target !== undefined;
+
+  if (target !== undefined) {
+    enemy.ai.mode = 'flee';
+    enemy.ai.last = { x: target.x, y: target.y };
+    enemy.targetId = target.id;
+    if (enemy.ai.path.length === 0) {
+      enemy.ai.path = fleePath(world, enemy, target);
+    }
+  } else {
+    enemy.charge = 0;
+    enemy.targetId = null;
+    if (enemy.ai.mode === 'flee') {
+      enemy.ai.mode = 'patrol';
+      enemy.ai.path = [];
+    }
+  }
+
+  if (enemy.ai.path.length > 0) {
+    followPath(world, enemy, enemy.ai.path, spec.speed * (seen ? 1.4 : 1), dt);
+  } else if (enemy.ai.wait > 0) {
+    enemy.ai.wait -= dt;
+  } else {
+    enemy.ai.path = planPatrol(world, enemy);
+    enemy.ai.wait = 0.5;
+  }
+
+  enemy.angle = enemy.heading;
+
+  const ownMines = world.mines.filter((mine) => mine.owner === enemy && !mine.dead).length;
+  if (
+    enemy.mineCooldown <= 0 &&
+    ownMines < spec.maxMines &&
+    world.players.every(
+      (player) => !player.alive || Math.hypot(player.x - enemy.x, player.y - enemy.y) > 80,
+    ) &&
+    world.mines.every((mine) => mine.dead || Math.hypot(mine.x - enemy.x, mine.y - enemy.y) > 55)
+  ) {
+    layMine(
+      world,
+      enemy,
+      enemy.x - Math.cos(enemy.heading) * 20,
+      enemy.y - Math.sin(enemy.heading) * 20,
+    );
+    enemy.mineCooldown = seen ? spec.mineCdSeen : spec.mineCd;
+  }
+}
+
 export function updateEnemy(
   world: World,
   enemy: Tank,
@@ -389,7 +451,5 @@ export function updateEnemy(
     updateLobber(world, enemy, dt);
     return;
   }
-  // prankster implemented in a later scope
-  enemy.vx = 0;
-  enemy.vy = 0;
+  updatePrankster(world, enemy, dt);
 }

@@ -1,6 +1,6 @@
 import { CONFIG } from '../config';
 import { moveTank } from './collision';
-import { advanceShell, resolveShellCollisions, shoot } from './combat';
+import { advanceShell, altWeapon, resolveShellCollisions, shoot, updateMines } from './combat';
 import { turnToward, updateEnemy } from './enemies';
 import { record } from './feedback';
 import { KINDS } from './kinds';
@@ -225,6 +225,9 @@ export function stepWorld(
   for (const tank of [...world.players, ...world.enemies]) {
     tank.cooldown = Math.max(0, tank.cooldown - dt);
     tank.invuln = Math.max(0, tank.invuln - dt);
+    if (tank.faction === 'player') {
+      tank.mineCooldown = Math.max(0, tank.mineCooldown - dt);
+    }
   }
 
   world.players.forEach((player, index) => {
@@ -258,15 +261,21 @@ export function stepWorld(
     if (command.fire) {
       shoot(world, player, events);
     }
-    player.altPrev = command.alt === true;
+    const alt = command.alt === true;
+    if (alt && !player.altPrev) {
+      altWeapon(world, player);
+    }
+    player.altPrev = alt;
   });
 
   for (const enemy of world.enemies) {
     updateEnemy(world, enemy, dt, events);
   }
 
-  // Mines logic is added in a later scope; the shell sweep runs before
-  // shell advance, then lobs land after the shells have moved.
+  updateMines(world, dt, events);
+
+  // Shell-vs-shell resolution runs before shell advance; lobbed poms land after
+  // the shells have moved and mines have had a chance to detonate.
   resolveShellCollisions(world, dt, events);
 
   for (const shell of world.shells) {

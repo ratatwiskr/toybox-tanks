@@ -4,9 +4,10 @@ import { CONFIG } from '../../src/config';
 import { bodyHeading, updateBodyHeading } from '../../src/presentation/body-heading';
 import { createRenderer } from '../../src/render/renderer';
 import type { RenderCanvas, RenderContext } from '../../src/render/renderer';
+import { KINDS, MINE } from '../../src/sim/kinds';
 import { MAPS } from '../../src/sim/maps';
-import type { Cork, Tank, World } from '../../src/sim/types';
-import { createWorld } from '../../src/sim/world';
+import type { Cork, Mine, Pom, Tank, World } from '../../src/sim/types';
+import { createTank, createWorld } from '../../src/sim/world';
 
 function roomNamed(name: string): number {
   const index = MAPS.findIndex((map) => map.name === name);
@@ -529,6 +530,178 @@ describe('tank body and turret rendering', () => {
 
     expect(bodyHeading(tank)).toBe(heading);
     expect(snapshot(world)).toEqual(before);
+  });
+});
+
+describe('enemy kind rendering', () => {
+  const labels = {
+    sentry: 'S',
+    roamer: 'R',
+    bruiser: 'B',
+    lobber: 'L',
+    prankster: 'M',
+  } as const;
+
+  for (const kind of Object.keys(labels) as (keyof typeof labels)[]) {
+    it(`draws a ${kind} with its own color and label`, () => {
+      const world = createWorld(0, 'coop');
+      world.players = [];
+      world.enemies = [createTank('e0', 'enemy', 480, 200, kind)];
+
+      const context = renderRecorded(world);
+
+      expect(textOf(context, labels[kind]).rotation).toBe(0);
+      expect(context.fills.some((path) => path.style === KINDS[kind].color)).toBe(true);
+    });
+  }
+
+  it('shows one HP pip per max health and fills only remaining health', () => {
+    const world = createWorld(0, 'coop');
+    world.players = [];
+    const bruiser = createTank('b0', 'enemy', 480, 200, 'bruiser');
+    bruiser.hp = 3;
+    world.enemies = [bruiser];
+
+    const context = renderRecorded(world);
+    const pips = context.fillRects.filter((fill) => fill.y === -35);
+
+    expect(pips).toHaveLength(5);
+    expect(pips.filter((pip) => pip.style === '#c77fab')).toHaveLength(3);
+    expect(pips.filter((pip) => pip.style === '#3d1230')).toHaveLength(2);
+  });
+
+  it('omits HP pips for one-hit enemies and shows both pips for damaged lobbers', () => {
+    for (const kind of ['sentry', 'roamer'] as const) {
+      const world = createWorld(0, 'coop');
+      world.players = [];
+      world.enemies = [createTank('e0', 'enemy', 480, 200, kind)];
+      const context = renderRecorded(world);
+      expect(context.fillRects.filter((fill) => fill.y === -35)).toHaveLength(0);
+    }
+
+    const world = createWorld(0, 'coop');
+    world.players = [];
+    const lobber = createTank('l0', 'enemy', 480, 200, 'lobber');
+    lobber.hp = 1;
+    world.enemies = [lobber];
+    const context = renderRecorded(world);
+    const pips = context.fillRects.filter((fill) => fill.y === -35);
+    expect(pips).toHaveLength(2);
+    expect(pips.filter((pip) => pip.style === '#9be4da')).toHaveLength(1);
+  });
+
+  it('draws the full red Bruiser bank telegraph while a plan is active', () => {
+    const world = createWorld(0, 'coop');
+    world.players = [];
+    const bruiser = createTank('b0', 'enemy', 200, 200, 'bruiser');
+    bruiser.ai.plan = {
+      solution: {
+        angle: 0,
+        score: 1,
+        segments: [
+          { x1: 215, y1: 200, x2: 400, y2: 200 },
+          { x1: 400, y1: 200, x2: 520, y2: 300 },
+        ],
+      },
+      time: KINDS.bruiser.teleBank / 2,
+    };
+    world.enemies = [bruiser];
+
+    const context = renderRecorded(world);
+    const telegraphs = context.strokes.filter(
+      (path) => path.style === '#d61f3f' && path.points.length === 4,
+    );
+
+    expect(telegraphs).toHaveLength(1);
+    expect(telegraphs[0]?.points).toEqual([
+      { x: 215, y: 200 },
+      { x: 400, y: 200 },
+      { x: 400, y: 200 },
+      { x: 520, y: 300 },
+    ]);
+  });
+});
+
+describe('mine and pom rendering', () => {
+  it('draws armed and unarmed mines in different states', () => {
+    const world = createWorld(0, 'coop');
+    world.players = [];
+    world.enemies = [];
+    const owner = createTank('p1', 'player', 300, 200);
+    const armed: Mine = {
+      id: 0,
+      owner,
+      x: 300,
+      y: 200,
+      faction: 'player',
+      armed: MINE.armPlayer + 0.2,
+      dead: false,
+    };
+    const unarmed: Mine = {
+      id: 1,
+      owner,
+      x: 500,
+      y: 200,
+      faction: 'player',
+      armed: 0,
+      dead: false,
+    };
+    world.mines = [armed, unarmed];
+
+    const context = renderRecorded(world);
+
+    expect(context.fills.some((path) => path.style === '#e8b23a')).toBe(true);
+    expect(context.fills.some((path) => path.style === '#8b8578')).toBe(true);
+    expect(context.arcs.some((arc) => arc.radius === 13 && arc.style === '#c43b3b')).toBe(true);
+    expect(context.arcs.some((arc) => arc.radius === 12 && arc.style === '#fff4c4')).toBe(true);
+  });
+
+  it('draws a lobbed pom and its red landing ring from world state', () => {
+    const world = createWorld(0, 'coop');
+    world.players = [];
+    world.enemies = [];
+    const pom: Pom = {
+      id: 1,
+      faction: 'enemy',
+      sx: 300,
+      sy: 200,
+      x: 400,
+      y: 260,
+      tx: 500,
+      ty: 300,
+      flight: 0.6,
+      life: 1.1,
+      blast: 46,
+      dead: false,
+    };
+    world.poms = [pom];
+
+    const context = renderRecorded(world);
+
+    expect(context.arcs.some((arc) => arc.radius === pom.blast && arc.style === '#d61f3f')).toBe(
+      true,
+    );
+    expect(context.arcs.some((arc) => arc.radius === 6 && arc.style === '#1d5a52')).toBe(true);
+  });
+});
+
+describe('new effect rendering', () => {
+  it('draws confetti as colored paper and jack-in-the-box as a spring', () => {
+    const world = createWorld(0, 'coop');
+    world.players = [];
+    world.enemies = [];
+    world.effects = [
+      { x: 300, y: 200, type: 'confetti', age: 0.1, life: 0.7, seed: 1.2 },
+      { x: 500, y: 200, type: 'jack', age: 0.1, life: 0.6, seed: 2.4 },
+    ];
+
+    const context = renderRecorded(world);
+
+    expect(context.fillRects.some((fill) => fill.style === '#f26d6d')).toBe(true);
+    expect(context.arcs.some((arc) => arc.style === '#c43b3b')).toBe(true);
+    expect(
+      context.strokes.some((path) => path.style === '#f2c14e' && path.points.length === 4),
+    ).toBe(true);
   });
 });
 

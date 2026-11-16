@@ -90,7 +90,7 @@ describe('cork map validation', () => {
       'Need exactly one player 1 spawn; found 0.',
     );
     expect(validateMap({ grid, expectedEnemies: 2 }).errors).toContain(
-      'Expected 2 sentries; found 1.',
+      'Expected 2 enemies; found 1.',
     );
   });
 

@@ -2,7 +2,7 @@
 
 Updated: 2026-11-15
 
-## In progress: enemy kinds, mines & secondary weapon (scopes A–C)
+## In progress: enemy kinds, mines & secondary weapon (scopes A–D)
 
 Work is sliced into five independently resumable scopes (A–E) in
 `docs/enemy-kinds-opencode-handoff.md`. That document is self-contained: it
@@ -13,26 +13,35 @@ there is no need to re-read the repository.
 
 Status on branch `feature/improve-enemy-variety` (uncommitted working tree):
 Scope A (sim framework, deterministic world RNG, Roamer), Scope B (Bruiser
-bank shots, telegraph plan and rage cadence), and Scope C (Lobber and poms) are
+bank shots, telegraph plan and rage cadence), Scope C (Lobber and poms), and
+Scope D (jack-in-the-box mines, Prankster, player secondary weapon) are
 implemented. Scope B coverage includes a one-bounce solution with two trace
 segments, the no-fire case without a bank or line of sight, and the shortened
 rage interval. Scope C adds `src/sim/poms.ts`, the lobber brain, the
-post-shell-advance pom step, and pom clearing on room end.
+post-shell-advance pom step, and pom clearing on room end. Scope D adds mine
+placement, contact/chain detonation, cork chipping, the 1.2 s player recharge,
+the Prankster brain, and `KeyG`/`Slash` + gamepad `buttons[2]` alt input.
 
-Scope D (mines, Prankster and the player secondary weapon) and Scope E (rooms
-16–19, enemy-symbol validation/counts, HUD wording, renderer art, visual
-scenes) remain.
+Scope E (rooms 16–19, enemy-symbol validation/counts, HUD wording, renderer
+art, visual scenes) remains. Touch input still has no mine button; that is a
+documented limitation, not parity.
 
 ### Verification
 
-| Command                                          | Result                                                     |
-| ------------------------------------------------ | ---------------------------------------------------------- |
-| `npm run verify:fast` (2026-11-16, working tree) | passed: format, lint, typecheck, 37 files / 310 unit tests |
+| Command                                            | Result                                                                     |
+| -------------------------------------------------- | -------------------------------------------------------------------------- |
+| `npm run verify:fast` (2026-11-16, working tree)   | passed: format, lint, typecheck, 38 files / 324 unit tests                 |
+| `npm run test:coverage` (2026-11-16, working tree) | passed: 89.08% statements, 81.79% branches, 95.37% functions, 90.16% lines |
 
 New coverage: `tests/unit/poms.test.ts` (predicted landing, blast damage,
 wall-blocked blast, cork chip), lobber tests in `tests/unit/enemies.test.ts`,
-and pom step/room-clear checks in `tests/unit/world.test.ts`. Scope C is
-sim-only: the renderer still omits pom/mine art, which belongs to Scope E.
+pom step/room-clear checks in `tests/unit/world.test.ts`, mine tests in
+`tests/unit/combat.test.ts`, Prankster boundary/max-mine tests in
+`tests/unit/enemies.test.ts`, alt input tests in
+`tests/unit/keyboard.test.ts` and `tests/unit/gamepad.test.ts`, and mine/alt
+bridge checks in `tests/unit/test-bridge.test.ts`. Scope D is still
+sim/input-only: the renderer omits mine, pom, telegraph and per-kind art,
+which belongs to Scope E.
 
 ## Issue 38 new maps: merged as PR #42
 

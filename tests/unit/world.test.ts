@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import { CONFIG } from '../../src/config';
-import { KINDS } from '../../src/sim/kinds';
+import { layMine } from '../../src/sim/combat';
+import { KINDS, MINE } from '../../src/sim/kinds';
 import { MAPS } from '../../src/sim/maps';
 import {
   activeShells,
@@ -456,6 +457,30 @@ describe('simulation', () => {
 
     expect(world.state).toBe('cleared');
     expect(world.poms).toHaveLength(0);
+  });
+
+  it('updates and clears mines during a step and when the room ends', () => {
+    const world = createEmptyWorld('coop');
+    const player = createTank('p1', 'player', 300, 300);
+    const enemy = createTank('s0', 'enemy', 800, 300);
+    enemy.cooldown = 999;
+    world.players = [player];
+    world.enemies = [enemy];
+
+    const mine = layMine(world, enemy, player.x, player.y);
+    mine.armed = MINE.arm;
+
+    stepWorld(world, CONFIG.fixedStep);
+
+    expect(player.hp).toBe(CONFIG.playerHealth - 1);
+    expect(world.mines).toHaveLength(0);
+
+    layMine(world, enemy, 500, 300);
+    enemy.alive = false;
+    evaluateOutcome(world);
+
+    expect(world.state).toBe('cleared');
+    expect(world.mines).toHaveLength(0);
   });
 
   it('bounds the event log to the seven most recent entries', () => {

@@ -91,9 +91,10 @@ export class GamepadAdapter {
       pad.buttons[0]?.pressed === true ||
       pad.buttons[7]?.pressed === true ||
       (pad.buttons[7]?.value ?? 0) > 0.3;
+    const alt = pad.buttons[2]?.pressed === true;
 
     if (this.neutral[index] !== false) {
-      if (left.x === 0 && left.y === 0 && right.x === 0 && right.y === 0 && !fire) {
+      if (left.x === 0 && left.y === 0 && right.x === 0 && right.y === 0 && !fire && !alt) {
         this.neutral[index] = false;
       }
       return keyboard;
@@ -104,6 +105,7 @@ export class GamepadAdapter {
     const turn = keyboard.turn;
     let aim = keyboard.aim;
     const mergedFire = keyboard.fire || fire;
+    const mergedAlt = keyboard.alt === true || alt;
 
     if (x === 0 && y === 0) {
       x = left.x;
@@ -115,9 +117,9 @@ export class GamepadAdapter {
     }
 
     if (aim === undefined) {
-      return { x, y, turn, fire: mergedFire };
+      return { x, y, turn, fire: mergedFire, alt: mergedAlt };
     }
 
-    return { x, y, turn, fire: mergedFire, aim };
+    return { x, y, turn, fire: mergedFire, aim, alt: mergedAlt };
   }
 }

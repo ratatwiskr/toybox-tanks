@@ -1,5 +1,6 @@
 import { CONFIG } from './config';
-import type { Cork, World } from './sim/types';
+import { KINDS, MINE } from './sim/kinds';
+import type { Cork, Mine, Pom, World } from './sim/types';
 import { createTank, createWorld } from './sim/world';
 import { createMotionWorld, isMotionScene, MOTION_SCENES } from './visual-motion-scenes';
 
@@ -34,6 +35,19 @@ export const VISUAL_SCENES = [
     id: 'combat-feedback',
     purpose:
       'Frozen invulnerability, sentry telegraph, shell factions, bounce ring, spark and poof.',
+  },
+  {
+    id: 'enemy-kinds',
+    purpose:
+      'Sentry, Roamer, Bruiser, Lobber, and Prankster art, colors, labels, HP pips, and bank telegraph.',
+  },
+  {
+    id: 'mines-armed',
+    purpose: 'Unarmed, armed, and chain-fused jack-in-the-box mines on the floor.',
+  },
+  {
+    id: 'lobber-pom',
+    purpose: 'A lobbed pom in flight with its red landing ring above the floor.',
   },
   ...MOTION_SCENES,
 ] as const;
@@ -154,6 +168,99 @@ export function createVisualWorld(name: VisualSceneId): World {
         { x: 520, y: 330, type: 'poof', age: 0.1, life: 0.4, seed: 1.2 },
       ];
       break;
+    case 'enemy-kinds': {
+      const kinds = ['sentry', 'roamer', 'bruiser', 'lobber', 'prankster'] as const;
+      const symbols = {
+        sentry: 's',
+        roamer: 'r',
+        bruiser: 'b',
+        lobber: 'l',
+        prankster: 'm',
+      } as const;
+      world.enemies = kinds.map((kind, index) => {
+        const positioned = createTank(
+          `${symbols[kind]}${String(index)}`,
+          'enemy',
+          240 + index * 155,
+          150,
+          kind,
+        );
+        positioned.angle = -Math.PI / 2 + (index - 2) * 0.4;
+        return positioned;
+      });
+      const bruiser = world.enemies[2];
+      if (bruiser !== undefined) {
+        bruiser.hp = 3;
+        bruiser.ai.plan = {
+          solution: {
+            angle: 0,
+            score: 1,
+            segments: [
+              { x1: bruiser.x + 18, y1: bruiser.y, x2: bruiser.x + 150, y2: bruiser.y - 40 },
+              { x1: bruiser.x + 150, y1: bruiser.y - 40, x2: bruiser.x + 210, y2: bruiser.y + 70 },
+            ],
+          },
+          time: KINDS.bruiser.teleBank / 2,
+        };
+      }
+      break;
+    }
+    case 'mines-armed': {
+      const p1 = world.players[0];
+      const p2 = world.players[1];
+      if (p1 === undefined || p2 === undefined) {
+        throw new Error('Mine fixture players missing');
+      }
+      const prankster = createTank('m0', 'enemy', 760, 210, 'prankster');
+      world.enemies.push(prankster);
+      const mines: Mine[] = [
+        { id: 0, owner: p1, x: 320, y: 300, faction: 'player', armed: 0, dead: false },
+        {
+          id: 1,
+          owner: p1,
+          x: 520,
+          y: 300,
+          faction: 'player',
+          armed: MINE.armPlayer,
+          dead: false,
+        },
+        {
+          id: 2,
+          owner: prankster,
+          x: 700,
+          y: 300,
+          faction: 'enemy',
+          armed: MINE.arm,
+          dead: false,
+          fuse: 0.12,
+        },
+        { id: 3, owner: p2, x: 420, y: 410, faction: 'player', armed: MINE.armPlayer, dead: false },
+      ];
+      world.mines = mines;
+      world.nextMine = mines.length;
+      break;
+    }
+    case 'lobber-pom': {
+      const lobber = createTank('l0', 'enemy', 760, 150, 'lobber');
+      lobber.angle = Math.PI * 0.75;
+      world.enemies.push(lobber);
+      const pom: Pom = {
+        id: 1,
+        faction: 'enemy',
+        sx: lobber.x,
+        sy: lobber.y,
+        x: 560,
+        y: 240,
+        tx: 420,
+        ty: 320,
+        flight: KINDS.lobber.flight / 2,
+        life: KINDS.lobber.flight,
+        blast: KINDS.lobber.blast,
+        dead: false,
+      };
+      world.poms = [pom];
+      break;
+    }
   }
 
   return world;

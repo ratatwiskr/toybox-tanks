@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { CONFIG } from '../../src/config';
 import { solveBank } from '../../src/sim/ballistics';
 import { hasLOS } from '../../src/sim/collision';
+import { layMine } from '../../src/sim/combat';
 import { updateEnemy } from '../../src/sim/enemies';
 import { KINDS } from '../../src/sim/kinds';
 import { createEmptyWorld, createTank, stepWorld } from '../../src/sim/world';
@@ -335,5 +336,56 @@ describe('lobber behaviour', () => {
     expect(world.poms).toHaveLength(1);
     const expected = KINDS.lobber.cd * (mode === 'coop' ? 0.85 : 1);
     expect(enemy.cooldown).toBeCloseTo(expected, 8);
+  });
+});
+
+describe('prankster behaviour', () => {
+  it('stops laying once it owns maxMines live mines', () => {
+    const world = createEmptyWorld('coop');
+    const enemy = createTank('m0', 'enemy', 200, 300, 'prankster');
+    enemy.mineCooldown = 0;
+    world.enemies = [enemy];
+    for (let index = 0; index < KINDS.prankster.maxMines; index += 1) {
+      layMine(world, enemy, 400 + index * 100, 100);
+    }
+    expect(world.mines).toHaveLength(KINDS.prankster.maxMines);
+
+    stepEnemy(world, enemy, 4);
+
+    expect(world.mines.filter((mine) => mine.owner === enemy && !mine.dead)).toHaveLength(
+      KINDS.prankster.maxMines,
+    );
+  });
+
+  it('does not lay a mine while a player is within 80 px', () => {
+    function minesLaid(playerDistance: number): number {
+      const world = createEmptyWorld('coop');
+      const enemy = createTank('m0', 'enemy', 200, 300, 'prankster');
+      enemy.mineCooldown = 0;
+      const player = createTank('p1', 'player', 200 + playerDistance, 300);
+      world.enemies = [enemy];
+      world.players = [player];
+
+      updateEnemy(world, enemy, 1 / 120);
+
+      return world.mines.length;
+    }
+
+    expect(minesLaid(79)).toBe(0);
+    expect(minesLaid(81)).toBe(1);
+  });
+
+  it('flees from a seen player without carrying a gun', () => {
+    const world = createEmptyWorld('coop');
+    const enemy = createTank('m0', 'enemy', 200, 300, 'prankster');
+    const player = createTank('p1', 'player', 500, 300);
+    world.enemies = [enemy];
+    world.players = [player];
+
+    updateEnemy(world, enemy, 1 / 60);
+
+    expect(enemy.ai.mode).toBe('flee');
+    expect(world.shells).toHaveLength(0);
+    expect(world.shots).toBe(0);
   });
 });

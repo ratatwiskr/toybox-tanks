@@ -115,6 +115,7 @@ export class TouchAdapter {
     let turn = fallback.turn;
     let aim = fallback.aim;
     const fire = fallback.fire || this.pendingShot;
+    const alt = fallback.alt;
     this.pendingShot = false;
 
     if (this.movement !== null) {
@@ -130,7 +131,8 @@ export class TouchAdapter {
       }
     }
 
-    return aim === undefined ? { x, y, turn, fire } : { x, y, turn, fire, aim };
+    const command: Command = aim === undefined ? { x, y, turn, fire } : { x, y, turn, fire, aim };
+    return alt === undefined ? command : { ...command, alt };
   }
 
   private find(id: number): Gesture | null {

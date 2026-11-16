@@ -8,6 +8,7 @@ type KeySet = {
   readonly ccw: string;
   readonly cw: string;
   readonly fire: string;
+  readonly alt: string;
 };
 
 export interface KeyboardCallbacks {
@@ -27,6 +28,7 @@ const KEYSETS: readonly KeySet[] = [
     ccw: 'KeyQ',
     cw: 'KeyE',
     fire: 'KeyF',
+    alt: 'KeyG',
   },
   {
     left: 'ArrowLeft',
@@ -36,6 +38,7 @@ const KEYSETS: readonly KeySet[] = [
     ccw: 'Comma',
     cw: 'Period',
     fire: 'Enter',
+    alt: 'Slash',
   },
 ];
 
@@ -68,6 +71,7 @@ export class KeyboardAdapter {
       y: Number(this.held.has(keys.down)) - Number(this.held.has(keys.up)),
       turn: Number(this.held.has(keys.cw)) - Number(this.held.has(keys.ccw)),
       fire: this.held.has(keys.fire),
+      alt: this.held.has(keys.alt),
     };
   }
 
