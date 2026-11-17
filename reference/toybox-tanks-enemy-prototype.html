@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Toybox Tanks - Roamer + Bruiser prototype</title>
+<style>
+body{margin:0;background:#d9c39b;color:#303b41;font:14px system-ui,sans-serif;text-align:center}
+#hud{padding:8px;font-weight:650}#wrap{max-width:960px;margin:auto}
+canvas{width:100%;aspect-ratio:16/9;border-radius:12px;box-shadow:0 0 0 5px #a17b4d;background:#c8ae83}
+small{display:block;padding:8px;color:#645b4a}
+</style></head><body><div id="wrap"><div id="hud"></div><canvas id="game" width="960" height="540"></canvas>
+<small>P1 WASD move, Q/E turret, F fire. P2 arrows, comma/period turret, Enter fire. R retry, N next room, M solo/coop, backtick debug.</small></div>
+<script>
+/* =====================================================================
+ PORTING NOTES (for the implementing agent)
+ Same rules as the shipped game: 960x540, 40px tiles, 24x13 grid with border, 120 Hz fixed step,
+ shells bounce exactly once, no friendly fire, corks take 3 hits. NEW in this prototype:
+ 1. Map symbols: R = Roamer, B = Bruiser (S = existing stationary sentry). Validator must accept
+    R/B and count them in expectedEnemies; minimap/stage-card colours and "sentries" HUD text -> "enemies".
+ 2. Tank entity gets: kind, hull (heading), maxHp, hurt, stun, ai{...}. Enemy hp comes from KINDS.
+ 3. Seams to map onto existing functions: worldHit = w(), moveTank = me(), advance = we(),
+    hurt = ye(), fire = be(), los = he(). Keep your swept shell-vs-shell code (xe); mine is a simple distance check.
+ 4. trace() is the key new piece: it simulates a shell path with the same one-bounce rule. It is used by
+    the Bruiser bank-shot solver AND by the dashed telegraph lines, so both always agree.
+ 5. Use the project RNG instead of L.rnd for deterministic replays. Audio: enemyFire on fire,
+    enemyHit on every non-lethal Bruiser hit, enemyDestroyed on death.
+ ===================================================================== */
+const C={W:960,H:540,T:40,GY:10,COLS:24,ROWS:13,STEP:1/120,SR:3,SHELL:330,PSPD:185,TURN:2.8,CD:.28,MAXSH:3,PHP:2,INV:1.25};
+const KINDS={ // tuning table: everything balance-relevant lives here
+ sentry:{hp:1,r:15,speed:0,hullTurn:0,turn:1.9,shell:.72,cd:2.7,tele:.5,vision:1e9,hunt:0,color:'#e86a6a',dark:'#7f1d1d'},
+ roamer:{hp:1,r:15,speed:68,hullTurn:4,turn:2.2,shell:.72,cd:2.2,tele:.5,vision:420,hunt:.35,color:'#e8a33d',dark:'#7a4a0e'},
+ bruiser:{hp:5,r:18,speed:52,hullTurn:3,turn:2.4,shell:.95,cd:1.7,tele:.55,teleBank:.85,vision:520,hunt:.6,color:'#7a2f57',dark:'#3d1230'}};
+const ROOMS=[
+{name:'Roaming Patrol',hint:'Roamers drive around and shoot on sight. Sentries hold their spot.',grid:
+`......................
+..R...####....####....
+..........C...........
+......##........##....
+......................
+...C......S.......C...
+......................
+......##........##..R.
+..........C...........
+...1..............2...
+......................`},
+{name:'Corner Shark',hint:'The Bruiser banks shells around corners. Watch the red line, then move! 5 hits to kill.',grid:
+`......................
+..........##..........
+..B.......##.......R..
+..........##..........
+....####......####....
+....#..........#......
+....#....C..C...#.....
+....####......####....
+......................
+...1..............2...
+......................`}];
+const angDiff=(a,b)=>Math.atan2(Math.sin(b-a),Math.cos(b-a));
+const turnTo=(a,b,m)=>a+Math.max(-m,Math.min(m,angDiff(a,b)));
+const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y), clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const mulberry=s=>()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const live=o=>o.hits>0, tanks=L=>[...L.players,...L.enemies];
+
+/* ---------- geometry ---------- */
+function rayRect(x,y,dx,dy,r,q){ // swept circle (radius r) vs rect, one-bounce friendly: returns t in [0,1] + normal
+ const x0=q.x-r,x1=q.x+q.w+r,y0=q.y-r,y1=q.y+q.h+r; let a0=-Infinity,a1=Infinity,b0=-Infinity,b1=Infinity;
+ if(Math.abs(dx)<1e-9){if(x<x0||x>x1)return null}else{a0=(x0-x)/dx;a1=(x1-x)/dx;if(a0>a1)[a0,a1]=[a1,a0]}
+ if(Math.abs(dy)<1e-9){if(y<y0||y>y1)return null}else{b0=(y0-y)/dy;b1=(y1-y)/dy;if(b0>b1)[b0,b1]=[b1,b0]}
+ const tin=Math.max(a0,b0),tout=Math.min(a1,b1); if(tin>tout||tout<0||tin<0||tin>1)return null;
+ const amb=Math.abs(a0-b0)<1e-7&&isFinite(a0);
+ return a0>b0?{t:tin,nx:dx>0?-1:1,ny:0,amb}:{t:tin,nx:0,ny:dy>0?-1:1,amb};
+}
+function rayCircle(x,y,dx,dy,c,rad){const ax=x-c.x,ay=y-c.y,cc=ax*ax+ay*ay-rad*rad;if(cc<=0)return 0;
+ const l=dx*dx+dy*dy;if(l<1e-12)return null;const u=ax*dx+ay*dy,d=u*u-l*cc;if(d<0)return null;const t=(-u-Math.sqrt(d))/l;return t>=0&&t<=1?t:null}
+function worldHit(L,x,y,dx,dy,r){let best=null;
+ for(const q of L.walls){const h=rayRect(x,y,dx,dy,r,q);if(h&&(!best||h.t<best.t))best={...h,kind:'wall'}}
+ for(const q of L.corks){if(!live(q))continue;const h=rayRect(x,y,dx,dy,r,q);if(h&&(!best||h.t<best.t))best={...h,kind:'cork',o:q}}
+ return best}
+const los=(L,a,b)=>!worldHit(L,a.x,a.y,b.x-a.x,b.y-a.y,C.SR);
+
+/* trace(): simulate one shell path (<= maxBounce bounces) fired from (x,y) at angle; stops at first opposing tank */
+function trace(L,x,y,ang,faction,maxBounce=1){
+ const segs=[];let px=x,py=y,dx=Math.cos(ang),dy=Math.sin(ang),left=1500,b=0;
+ for(;;){const ex=dx*left,ey=dy*left,wh=worldHit(L,px,py,ex,ey,C.SR);let tt=wh?wh.t:1,who=null;
+  for(const t of tanks(L))if(t.alive&&t.faction!==faction){const c=rayCircle(px,py,ex,ey,t,t.r+C.SR);if(c!==null&&c<tt){tt=c;who=t}}
+  segs.push({x0:px,y0:py,x1:px+ex*tt,y1:py+ey*tt});
+  if(who)return{segs,hit:who,len:segs.reduce((s,g)=>s+Math.hypot(g.x1-g.x0,g.y1-g.y0),0)};
+  if(!wh||wh.kind!=='wall'||wh.amb||b>=maxBounce)return{segs,hit:null,len:0};
+  px+=ex*tt;py+=ey*tt;left*=1-tt;const k=dx*wh.nx+dy*wh.ny;dx-=2*k*wh.nx;dy-=2*k*wh.ny;px+=wh.nx*.025;py+=wh.ny*.025;b++;if(left<1)return{segs,hit:null,len:0}}}
+
+/* Bruiser brain: scan 360 degrees, keep angles whose path bounces ONCE and then hits a player, group them,
+   aim at the centre of the widest/shortest group (robust against tiny angle error). */
+function solveBank(L,e){const groups=[];let cur=null;
+ for(let i=0;i<=360;i++){const a=i*Math.PI/180,r=i<360?trace(L,e.x,e.y,a,'enemy',1):{hit:null,segs:[]},ok=r.hit&&r.segs.length>1;
+  if(ok&&cur&&cur.who===r.hit){cur.n++;cur.last=a;cur.len=Math.min(cur.len,r.len)}
+  else{if(cur)groups.push(cur);cur=ok?{who:r.hit,first:a,last:a,n:1,len:r.len}:null}}
+ let best=null;
+ for(const g of groups){if(g.n<3)continue;const a=(g.first+g.last)/2,r=trace(L,e.x,e.y,a,'enemy',1);if(!(r.hit&&r.segs.length>1))continue;
+  const score=r.len-g.n*15;if(!best||score<best.score)best={angle:a,who:r.hit,segs:r.segs,score}}
+ return best}
+
+/* ---------- grid / pathing ---------- */
+const cellOf=(x,y)=>[Math.floor(x/C.T),Math.floor((y-C.GY)/C.T)];
+const centerOf=(c,r)=>({x:c*C.T+C.T/2,y:C.GY+r*C.T+C.T/2});
+function passable(L,c,r){if(c<0||r<0||c>=C.COLS||r>=C.ROWS||L.grid[r][c]==='#')return false;const k=L.corkAt.get(r*C.COLS+c);return !(k&&live(k))}
+function bfs(L,sc,sr){const prev=new Map(),key=(c,r)=>r*C.COLS+c,q=[[sc,sr]],order=[];prev.set(key(sc,sr),-1);
+ for(let i=0;i<q.length;i++){const[c,r]=q[i];order.push([c,r]);for(const[dc,dr]of[[1,0],[-1,0],[0,1],[0,-1]]){const nc=c+dc,nr=r+dr;
+  if(passable(L,nc,nr)&&!prev.has(key(nc,nr))){prev.set(key(nc,nr),key(c,r));q.push([nc,nr])}}}return{prev,order,key}}
+function pathTo(L,bf,c,r){const out=[];let k=bf.key(c,r);if(!bf.prev.has(k))return out;
+ while(k!==-1){out.push(centerOf(k%C.COLS,Math.floor(k/C.COLS)));k=bf.prev.get(k)}out.reverse();out.shift();return out}
+function planPatrol(L,e){const K=KINDS[e.kind],[c,r]=cellOf(e.x,e.y),bf=bfs(L,c,r);
+ let cand=bf.order.filter(([a,b])=>Math.abs(a-c)+Math.abs(b-r)>=4);if(!cand.length)cand=bf.order;
+ const al=L.players.filter(p=>p.alive);let pick;
+ if(al.length&&L.rnd()<K.hunt){const p=al[Math.floor(L.rnd()*al.length)],[pc,pr]=cellOf(p.x,p.y);
+  cand.sort((a,b)=>Math.abs(a[0]-pc)+Math.abs(a[1]-pr)-Math.abs(b[0]-pc)-Math.abs(b[1]-pr));pick=cand[Math.floor(L.rnd()*Math.min(5,cand.length))]}
+ else pick=cand[Math.floor(L.rnd()*cand.length)];
+ e.ai.path=pathTo(L,bf,pick[0],pick[1])}
+
+/* ---------- movement / combat ---------- */
+function moveTank(L,t,dx,dy){const n=Math.max(1,Math.ceil(Math.max(Math.abs(dx),Math.abs(dy))/5)),rs=[...L.walls,...L.corks.filter(live)];
+ for(let i=0;i<n;i++){t.x+=dx/n;t.y+=dy/n;for(let k=0;k<3;k++){let hit=false;
+  for(const q of rs){const cx=clamp(t.x,q.x,q.x+q.w),cy=clamp(t.y,q.y,q.y+q.h),ox=t.x-cx,oy=t.y-cy,d=Math.hypot(ox,oy);
+   if(d<t.r-1e-8){if(d>1e-8){const p=t.r-d;t.x+=ox/d*p;t.y+=oy/d*p}else{t.x-=dx/n;t.y-=dy/n}hit=true}}
+  if(!hit)break}}}
+const fx=(L,x,y,type)=>L.fx.push({x,y,type,age:0,life:type==='spark'?.22:.52,seed:L.fx.length*1.7+L.time});
+function hurt(L,t){if(!t.alive||t.invuln>0)return;t.hp--;t.hurt=.25;fx(L,t.x,t.y,'poof');
+ if(t.hp<=0){t.alive=false;t.charge=0;if(t.kind==='bruiser'){fx(L,t.x+12,t.y-8,'poof');fx(L,t.x-10,t.y+9,'poof')}}
+ else if(t.faction==='player')t.invuln=C.INV;else{t.invuln=.2;t.stun=.3;t.charge=0}} // enemy: brief stagger, no double-count of one volley
+function advance(L,s,d){for(let n=0;n<4&&d>1e-7&&!s.dead;n++){const sp=Math.hypot(s.vx,s.vy),ex=s.vx/sp*d,ey=s.vy/sp*d,wh=worldHit(L,s.x,s.y,ex,ey,C.SR);let tt=1,who=null;
+  for(const t of tanks(L))if(t.alive&&t.faction!==s.faction){const c=rayCircle(s.x,s.y,ex,ey,t,t.r+C.SR);if(c!==null&&c<tt){tt=c;who=t}}
+  if(who&&(!wh||tt<wh.t-1e-7)){s.x+=ex*tt;s.y+=ey*tt;hurt(L,who);s.dead=true;return}
+  if(!wh){s.x+=ex;s.y+=ey;return}
+  s.x+=ex*wh.t;s.y+=ey*wh.t;d*=1-wh.t;
+  if(wh.kind==='cork'){s.dead=true;if(!wh.amb)wh.o.hits--;fx(L,s.x,s.y,'spark');return}
+  if(wh.amb||s.b>=1){s.dead=true;fx(L,s.x,s.y,'spark');return}
+  const k=s.vx*wh.nx+s.vy*wh.ny;s.vx-=2*k*wh.nx;s.vy-=2*k*wh.ny;s.b++;s.x+=wh.nx*.025;s.y+=wh.ny*.025;fx(L,s.x,s.y,'spark')}
+ if(d>1e-7)s.dead=true}
+function fire(L,t){if(!t.alive||t.cooldown>1e-8)return false;const pl=t.faction==='player',K=KINDS[t.kind];
+ if(pl&&L.shells.filter(s=>s.owner===t&&!s.dead).length>=C.MAXSH)return false;
+ const sp=C.SHELL*(pl?1:K.shell),s={owner:t,faction:t.faction,x:t.x,y:t.y,vx:Math.cos(t.angle)*sp,vy:Math.sin(t.angle)*sp,b:0,dead:false};
+ L.shells.push(s);t.cooldown=pl?C.CD:K.cd*(t.kind==='bruiser'&&t.hp<=2?.8:1);advance(L,s,23);return true}
+
+/* ---------- enemy AI ---------- */
+function followPath(L,e,dt,spd){const ai=e.ai,wp=ai.path[0];if(!wp)return false;
+ const dx=wp.x-e.x,dy=wp.y-e.y,d=Math.hypot(dx,dy);if(d<4){ai.path.shift();return true}
+ const want=Math.atan2(dy,dx);e.hull=turnTo(e.hull,want,KINDS[e.kind].hullTurn*dt);
+ const k=Math.max(0,1-Math.abs(angDiff(e.hull,want))/.9),step=Math.min(d,spd*k*dt),bx=e.x,by=e.y;
+ moveTank(L,e,Math.cos(e.hull)*step,Math.sin(e.hull)*step);const mv=Math.hypot(e.x-bx,e.y-by);e.track+=mv*.35;
+ ai.stuck=step>1e-4&&mv<step*.3?ai.stuck+dt:0;if(ai.stuck>1){ai.path=[];ai.stuck=0}return true}
+function updateEnemy(L,e,dt){const K=KINDS[e.kind],ai=e.ai;e.hurt=Math.max(0,e.hurt-dt);
+ if(e.stun>0){e.stun-=dt;e.charge=0;return}
+ const rage=e.kind==='bruiser'&&e.hp<=2,spd=K.speed*(rage?1.3:1);
+ const seen=L.players.filter(p=>p.alive&&dist(e,p)<=K.vision&&los(L,e,p)).sort((a,b)=>dist(e,a)-dist(e,b))[0];
+ let aim=null,tele=K.tele;
+ if(seen){ai.last={x:seen.x,y:seen.y};ai.lost=0;ai.plan=null;aim=Math.atan2(seen.y-e.y,seen.x-e.x);ai.mode='engage'}
+ else{ai.lost+=dt;
+  if(e.kind==='bruiser'&&(ai.scan-=dt)<=0){ai.scan=.12;ai.plan=solveBank(L,e)}
+  if(e.kind==='bruiser'&&ai.plan){aim=ai.plan.angle;tele=K.teleBank;ai.mode='bank'}
+  else if(ai.last&&ai.lost<3.5)ai.mode='search';else ai.mode='patrol'}
+ if(aim!==null){e.angle=turnTo(e.angle,aim,K.turn*dt);
+  const ok=Math.abs(angDiff(e.angle,aim))<(ai.mode==='bank'?.02:.09);
+  if(e.cooldown<=0&&ok){e.charge+=dt;
+   if(e.charge>=tele){e.charge=0;
+    if(ai.mode==='bank'){const r=trace(L,e.x,e.y,e.angle,'enemy',1);
+     if(r.hit)fire(L,e);else{e.cooldown=.5;ai.plan=null}} // target moved away: abort the shot, re-scan
+    else if(seen&&los(L,e,seen))fire(L,e)}}
+  else e.charge=0}
+ else{e.charge=0;if(spd>0)e.angle=turnTo(e.angle,e.hull+Math.sin(L.time*1.3+e.phase)*.9,K.turn*.5*dt)}
+ if(spd>0&&e.charge<=0&&ai.mode!=='bank'){
+  if(ai.mode==='search'&&ai.srch!==ai.last){ai.srch=ai.last;const[c,r]=cellOf(e.x,e.y),[tc,tr]=cellOf(ai.last.x,ai.last.y);ai.path=pathTo(L,bfs(L,c,r),tc,tr)}
+  if(ai.path.length)followPath(L,e,dt,spd*(ai.mode==='engage'?.5:1));
+  else if(ai.wait>0)ai.wait-=dt;
+  else if(ai.mode==='patrol'){planPatrol(L,e);ai.wait=.3+L.rnd()*.8}}}
+
+/* ---------- level / step ---------- */
+function mk(id,faction,kind,x,y){const K=KINDS[kind]||{hp:C.PHP,r:15};
+ return{id,faction,kind,x,y,r:K.r,angle:-Math.PI/2,hull:-Math.PI/2,hp:K.hp,maxHp:K.hp,alive:true,invuln:0,cooldown:0,charge:0,hurt:0,stun:0,track:0,phase:0}}
+function load(idx,mode){const def=ROOMS[idx],rows=def.grid.split('\n');
+ if(rows.length!==11||rows.some(r=>r.length!==22))throw Error('bad grid '+def.name);
+ const L={idx,mode,state:'playing',time:0,walls:[],corks:[],players:[],enemies:[],shells:[],fx:[],rnd:mulberry(1234+idx),corkAt:new Map(),debug:L0.debug,
+  grid:['#'.repeat(24),...rows.map(r=>'#'+r+'#'),'#'.repeat(24)]};
+ L.grid.forEach((row,r)=>[...row].forEach((ch,c)=>{const x=c*C.T,y=C.GY+r*C.T,cx=x+20,cy=y+20;
+  if(ch==='#')L.walls.push({x,y,w:C.T,h:C.T});
+  else if(ch==='C'){const k={x,y,w:C.T,h:C.T,hits:3};L.corks.push(k);L.corkAt.set(r*C.COLS+c,k)}
+  else if(ch==='1'||(ch==='2'&&mode==='coop')){const p=mk('p'+ch,'player',null,cx,cy);p.color=ch==='1'?'#287ba6':'#b66325';p.dark=ch==='1'?'#16465f':'#6d3a14';L.players.push(p)}
+  else if('SRB'.includes(ch)){const kind={S:'sentry',R:'roamer',B:'bruiser'}[ch],e=mk(ch.toLowerCase()+L.enemies.length,'enemy',kind,cx,cy);
+   e.angle=e.hull=Math.PI/2;e.cooldown=(kind==='bruiser'?2:1.2)+L.enemies.length*.38;e.phase=L.rnd()*6;
+   e.ai={mode:'patrol',path:[],wait:L.rnd()*.8,last:null,lost:99,scan:.1,plan:null,srch:null,stuck:0};L.enemies.push(e)}}));
+ return L}
+function step(L,dt,input){if(L.state!=='playing')return;L.time+=dt;
+ for(const t of tanks(L)){t.cooldown=Math.max(0,t.cooldown-dt);t.invuln=Math.max(0,t.invuln-dt);if(t.faction==='player')t.hurt=Math.max(0,t.hurt-dt)}
+ L.players.forEach((p,i)=>{if(!p.alive)return;const k=input[i]||{x:0,y:0,turn:0,fire:false},l=Math.hypot(k.x,k.y)||1,mx=k.x/Math.max(1,l),my=k.y/Math.max(1,l);
+  moveTank(L,p,mx*C.PSPD*dt,my*C.PSPD*dt);if(mx||my){p.hull=Math.atan2(my,mx);p.track+=Math.hypot(mx,my)*dt*12}
+  p.angle+=k.turn*C.TURN*dt;if(k.fire)fire(L,p)});
+ for(const e of L.enemies)if(e.alive)updateEnemy(L,e,dt);
+ for(const e of L.enemies)if(e.alive&&e.kind!=='sentry')for(const o of tanks(L)){if(o===e||!o.alive)continue;const d=dist(e,o),m=e.r+o.r;
+  if(d<m&&d>1e-6){const p=(m-d)/(o.faction==='enemy'?2:1);moveTank(L,e,(e.x-o.x)/d*p,(e.y-o.y)/d*p)}}
+ for(const s of L.shells)if(!s.dead)advance(L,s,Math.hypot(s.vx,s.vy)*dt);
+ for(let i=0;i<L.shells.length;i++)for(let j=i+1;j<L.shells.length;j++){const a=L.shells[i],b=L.shells[j];
+  if(!a.dead&&!b.dead&&Math.hypot(a.x-b.x,a.y-b.y)<C.SR*2+1){a.dead=b.dead=true;fx(L,a.x,a.y,'poof')}}
+ L.shells=L.shells.filter(s=>!s.dead);for(const f of L.fx)f.age+=dt;L.fx=L.fx.filter(f=>f.age<f.life);
+ if(L.players.every(p=>!p.alive)){L.state='defeat';L.shells=[]}else if(L.enemies.every(e=>!e.alive)){L.state='cleared';L.shells=[]}}
+
+/* ---------- rendering + UI (browser only) ---------- */
+const L0={debug:false};
+if(typeof document!=='undefined'){
+const cv=document.getElementById('game'),g=cv.getContext('2d'),hud=document.getElementById('hud');
+function rr(x,y,w,h,r,f,s){g.beginPath();g.roundRect(x,y,w,h,r);if(f){g.fillStyle=f;g.fill()}if(s){g.strokeStyle=s;g.lineWidth=1.5;g.stroke()}}
+function dashLine(segs,col,a){g.save();g.globalAlpha=a;g.strokeStyle=col;g.lineWidth=2;g.setLineDash([6,6]);g.beginPath();
+ segs.forEach(s=>{g.moveTo(s.x0,s.y0);g.lineTo(s.x1,s.y1)});g.stroke();g.restore()}
+function drawTank(t,L){const s=t.r/15,col=t.color||KINDS[t.kind].color,dk=t.dark||KINDS[t.kind].dark;g.save();g.translate(t.x,t.y);
+ if(!t.alive){g.globalAlpha=.6;g.rotate(t.hull+Math.PI/2);rr(-17*s,-13*s,34*s,30*s,7,'#9a8e79','#7e7769');g.restore();return}
+ if(t.invuln>0&&t.faction==='player')g.globalAlpha=.6+.4*Math.abs(Math.sin(L.time*20));
+ g.save();g.rotate(t.hull+Math.PI/2);g.scale(s,s);rr(-17,-13,9,27,4,'#454e50');rr(8,-13,9,27,4,'#454e50');
+ g.strokeStyle='#87918a';g.lineWidth=1.5;for(let y=-9;y<12;y+=5){const o=t.track%5;g.beginPath();g.moveTo(-15,y+o-2);g.lineTo(-10,y+o-2);g.moveTo(10,y+o-2);g.lineTo(15,y+o-2);g.stroke()}
+ g.fillStyle=col;g.strokeStyle=dk;g.beginPath();g.moveTo(0,-17);g.lineTo(14,-5);g.lineTo(12,13);g.lineTo(-12,13);g.lineTo(-14,-5);g.closePath();g.fill();g.stroke();
+ if(t.kind==='bruiser'){rr(-11,-6,22,5,2,dk);rr(-11,3,22,5,2,dk);g.fillStyle='#e9c46a';for(const x of[-8,0,8]){g.beginPath();g.arc(x,-3.5,1.4,0,7);g.fill()}}
+ g.restore();g.save();g.rotate(t.angle);g.scale(s,s);rr(2,-4.5,t.kind==='bruiser'?25:21,9,3,dk);rr(7,-3,17,6,2,col);rr(20,-5,5,10,2,dk);
+ if(t.charge>0&&t.faction==='enemy'){const k=Math.min(1,t.charge/(KINDS[t.kind].teleBank&&t.ai.mode==='bank'?KINDS[t.kind].teleBank:KINDS[t.kind].tele));
+  g.fillStyle=`rgba(255,238,138,${.35+k*.65})`;g.beginPath();g.arc(25,0,5+k*7,0,7);g.fill()}
+ g.restore();g.fillStyle=dk;g.beginPath();g.arc(0,0,10*s,0,7);g.fill();g.fillStyle=col;g.beginPath();g.arc(0,-1,8*s,0,7);g.fill();
+ if(t.hurt>0){g.fillStyle=`rgba(255,255,255,${t.hurt*2.2})`;g.beginPath();g.arc(0,0,20*s,0,7);g.fill()}
+ if(t.maxHp>1&&t.faction==='enemy')for(let i=0;i<t.maxHp;i++){g.fillStyle=i<t.hp?'#ffd166':'#5b4a3a';g.beginPath();g.arc((i-(t.maxHp-1)/2)*9,-t.r-11,3.2,0,7);g.fill()}
+ g.restore()}
+function render(L){g.clearRect(0,0,C.W,C.H);g.fillStyle='#c8ae83';g.fillRect(0,0,C.W,C.H);g.strokeStyle='#00000010';
+ for(let x=0;x<C.W;x+=C.T){g.beginPath();g.moveTo(x,0);g.lineTo(x,C.H);g.stroke()}for(let y=C.GY;y<C.H;y+=C.T){g.beginPath();g.moveTo(0,y);g.lineTo(C.W,y);g.stroke()}
+ for(const w of L.walls)rr(w.x+2,w.y+2,w.w-4,w.h-4,4,'#e2c38f','#8a6232');
+ for(const k of L.corks)if(live(k)){rr(k.x+3,k.y+3,k.w-6,k.h-6,5,'#c59563','#6b4423');g.strokeStyle='#6b4423';for(let i=0;i<3-k.hits;i++){g.beginPath();g.moveTo(k.x+8+i*9,k.y+8);g.lineTo(k.x+14+i*9,k.y+30);g.stroke()}}
+ for(const p of L.players)if(p.alive&&L.state==='playing')dashLine(trace(L,p.x,p.y,p.angle,'player',1).segs,'#fff8d0',.45);
+ for(const e of L.enemies)if(e.alive&&e.kind==='bruiser'&&e.ai.mode==='bank'){ // fair-play telegraph of the bank shot
+  const k=e.charge>0?.35+.65*Math.min(1,e.charge/KINDS.bruiser.teleBank):.15;dashLine(trace(L,e.x,e.y,e.angle,'enemy',1).segs,'#e63946',k)}
+ for(const e of L.enemies)drawTank(e,L);for(const p of L.players)drawTank(p,L);
+ for(const s of L.shells){g.save();g.translate(s.x,s.y);g.rotate(Math.atan2(s.vy,s.vx));rr(-5,-3,10,6,3,s.faction==='enemy'?'#f589ac':'#fff5b1','#00000055');
+  if(s.b>0){g.strokeStyle='#fff';g.beginPath();g.arc(0,0,5,0,7);g.stroke()}g.restore()}
+ for(const f of L.fx){const t=f.age/f.life;g.save();g.globalAlpha=1-t;g.fillStyle=g.strokeStyle=f.type==='spark'?'#fff6b7':'#fff6df';
+  for(let i=0;i<(f.type==='spark'?5:6);i++){const a=i*(f.type==='spark'?1.256:Math.PI/3)+f.seed;
+   if(f.type==='spark'){g.beginPath();g.moveTo(f.x+Math.cos(a)*(3+t*12)*.4,f.y+Math.sin(a)*(3+t*12)*.4);g.lineTo(f.x+Math.cos(a)*(3+t*12),f.y+Math.sin(a)*(3+t*12));g.stroke()}
+   else{g.beginPath();g.arc(f.x+Math.cos(a)*t*22,f.y+Math.sin(a)*t*22,3+(1-t)*5,0,7);g.fill()}}g.restore()}
+ if(L.debug)for(const e of L.enemies)if(e.alive){g.strokeStyle='#00f';g.beginPath();g.arc(e.x,e.y,e.r,0,7);g.stroke();
+  e.ai.path.length&&(g.beginPath(),g.moveTo(e.x,e.y),e.ai.path.forEach(p=>g.lineTo(p.x,p.y)),g.stroke());g.fillStyle='#000';g.fillText(e.ai.mode,e.x-12,e.y+e.r+12);
+  if(e.ai.plan)dashLine(e.ai.plan.segs,'#0a0',1)}
+ if(L.state!=='playing'){g.fillStyle='#000a';g.fillRect(0,0,C.W,C.H);g.fillStyle='#fff8e9';g.font='800 40px system-ui';g.textAlign='center';
+  g.fillText(L.state==='cleared'?'Room cleared!':'Defeat',C.W/2,C.H/2-6);g.font='16px system-ui';g.fillText(L.state==='cleared'?'N next room, R replay':'R retry',C.W/2,C.H/2+26);g.textAlign='left'}}
+let L=null,mode='coop',idx=0;const keys=new Set();
+const start=()=>{L0.debug=L?L.debug:false;L=load(idx,mode)};
+addEventListener('keydown',e=>{keys.add(e.code);if(e.code==='KeyR')start();if(e.code==='KeyN'){idx=(idx+1)%ROOMS.length;start()}
+ if(e.code==='KeyM'){mode=mode==='coop'?'solo':'coop';start()}if(e.code==='Backquote')L.debug=!L.debug;
+ if(/Arrow|Space/.test(e.code))e.preventDefault()});
+addEventListener('keyup',e=>keys.delete(e.code));
+const d=(a,b)=>(keys.has(b)?1:0)-(keys.has(a)?1:0);
+const inputs=()=>[{x:d('KeyA','KeyD'),y:d('KeyW','KeyS'),turn:d('KeyQ','KeyE'),fire:keys.has('KeyF')},
+ {x:d('ArrowLeft','ArrowRight'),y:d('ArrowUp','ArrowDown'),turn:d('Comma','Period'),fire:keys.has('Enter')}];
+let last=performance.now(),acc=0;
+function frame(now){acc+=Math.min(.1,(now-last)/1e3);last=now;for(let n=0;acc>=C.STEP&&n<16;n++,acc-=C.STEP)step(L,C.STEP,inputs());
+ render(L);const h=p=>p.alive?'\u2665'.repeat(p.hp):'out';
+ hud.textContent=`${ROOMS[idx].name} - ${L.enemies.filter(e=>e.alive).length}/${L.enemies.length} enemies - ${L.players.map(p=>p.id.toUpperCase()+' '+h(p)).join(' | ')} - ${ROOMS[idx].hint}`;
+ requestAnimationFrame(frame)}
+start();requestAnimationFrame(frame);window.__tt={load,step,trace,solveBank,ROOMS,KINDS,C}}
+else globalThis.__tt={load,step,trace,solveBank,ROOMS,KINDS,C};
+</script></body></html>

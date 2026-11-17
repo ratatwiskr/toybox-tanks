@@ -165,14 +165,14 @@ function button(label: string, action: string, primary = false): string {
 }
 
 const controlHTML =
-  '<div class="keys"><div><b>● BLUE / P1</b><kbd>W A S D</kbd> move<br><kbd>Q</kbd> / <kbd>E</kbd> turn turret · <kbd>F</kbd> fire</div><div><b>■ ORANGE / P2</b><kbd>↑ ← ↓ →</kbd> move<br><kbd>,</kbd> / <kbd>.</kbd> turn turret · <kbd>Enter</kbd> fire</div></div>';
+  '<div class="keys"><div><b>● BLUE / P1</b><kbd>W A S D</kbd> move<br><kbd>Q</kbd> / <kbd>E</kbd> turn turret · <kbd>F</kbd> fire · <kbd>G</kbd> mine</div><div><b>■ ORANGE / P2</b><kbd>↑ ← ↓ →</kbd> move<br><kbd>,</kbd> / <kbd>.</kbd> turn turret · <kbd>Enter</kbd> fire · <kbd>/</kbd> mine</div></div>';
 
 function controlsHTML(): string {
   if (!mobile.compact) {
     return controlHTML;
   }
   return mobile.enabled
-    ? '<p>Touch P1: left pad move; right pad drag to aim, lift to retain, tap to fire.<br>Co-op: first gamepad controls P2. Turn Touch P1 off for two gamepads.</p>'
+    ? '<p>Touch P1: left pad move; right pad drag to aim, lift to retain, tap to fire; the round button above it lays or detonates a mine.<br>Co-op: first gamepad controls P2. Turn Touch P1 off for two gamepads.</p>'
     : '<p>Gamepads: left stick move, right stick aim, A / RT fire, Start pause.<br>Press a controller button if it has not appeared yet.</p>';
 }
 
@@ -209,7 +209,7 @@ function overlayContent(state: GameState): OverlayContent {
           : button('Start two-player co-op', 'coop', true) + button('Solo practice', 'solo'),
         extra:
           controlsHTML() +
-          '<p class="tiny">Two hits per player · three active shells each · no friendly fire.<br>Dashed paths show your aim and first bounce. Muzzle glow means a sentry is about to fire.</p>',
+          '<p class="tiny">Two hits per player · three active shells each · no friendly fire.<br>Dashed paths show your aim and first bounce. Muzzle glow means an enemy is about to fire.<br>Roamers chase, Bruisers bank shots, Lobbers arc poms, Pranksters plant mines.<br>Mines: P1 <kbd>G</kbd> / P2 <kbd>/</kbd> lay one, press again to detonate; touch uses the button above the aim pad.</p>',
       };
     case 'paused':
       return {
@@ -525,10 +525,10 @@ function updateHUD(): void {
 
   if (choosingLevel) {
     const enemies = map?.expectedEnemies ?? 0;
-    roomInfo.textContent = `Stage ${String(shownRoom + 1)} / ${String(MAPS.length)} · ${String(enemies)} ${enemies === 1 ? 'sentry' : 'sentries'}`;
+    roomInfo.textContent = `Stage ${String(shownRoom + 1)} / ${String(MAPS.length)} · ${String(enemies)} ${enemies === 1 ? 'enemy' : 'enemies'}`;
   } else {
     const remaining = world.enemies.filter((enemy) => enemy.alive).length;
-    roomInfo.textContent = `Room ${String(world.room + 1)} / ${String(MAPS.length)} · ${String(remaining)} ${remaining === 1 ? 'sentry' : 'sentries'} left`;
+    roomInfo.textContent = `Room ${String(world.room + 1)} / ${String(MAPS.length)} · ${String(remaining)} ${remaining === 1 ? 'enemy' : 'enemies'} left`;
   }
   modeInfo.textContent = choosingLevel
     ? `${selectedMode === 'solo' ? 'Solo practice' : 'Local co-op'} · choose any room`

@@ -5,7 +5,9 @@ import type {
   Command,
   Cork,
   Effect,
+  Mine,
   Mode,
+  Pom,
   Shell,
   SimulationEvent,
   Tank,
@@ -80,6 +82,29 @@ export interface EffectSnapshot {
   readonly seed: number;
 }
 
+export interface MineSnapshot {
+  readonly id: number;
+  readonly owner: string;
+  readonly faction: Mine['faction'];
+  readonly x: number;
+  readonly y: number;
+  readonly armed: number;
+  readonly dead: boolean;
+  readonly fuse?: number;
+}
+
+export interface PomSnapshot {
+  readonly id: number;
+  readonly faction: Pom['faction'];
+  readonly x: number;
+  readonly y: number;
+  readonly tx: number;
+  readonly ty: number;
+  readonly flight: number;
+  readonly blast: number;
+  readonly dead: boolean;
+}
+
 export interface TestSnapshot {
   readonly room: number;
   readonly mode: Mode;
@@ -87,6 +112,7 @@ export interface TestSnapshot {
   readonly time: number;
   readonly ticks: number;
   readonly nextShell: number;
+  readonly nextMine: number;
   readonly shots: number;
   readonly bounces: number;
   readonly walls: readonly Wall[];
@@ -94,6 +120,8 @@ export interface TestSnapshot {
   readonly players: readonly TankSnapshot[];
   readonly enemies: readonly TankSnapshot[];
   readonly shells: readonly ShellSnapshot[];
+  readonly mines: readonly MineSnapshot[];
+  readonly poms: readonly PomSnapshot[];
   readonly effects: readonly EffectSnapshot[];
   readonly events: readonly string[];
 }
@@ -175,6 +203,33 @@ function snapshotEffect(effect: Effect): EffectSnapshot {
   };
 }
 
+function snapshotMine(mine: Mine): MineSnapshot {
+  return {
+    id: mine.id,
+    owner: mine.owner.id,
+    faction: mine.faction,
+    x: mine.x,
+    y: mine.y,
+    armed: mine.armed,
+    dead: mine.dead,
+    ...(mine.fuse === undefined ? {} : { fuse: mine.fuse }),
+  };
+}
+
+function snapshotPom(pom: Pom): PomSnapshot {
+  return {
+    id: pom.id,
+    faction: pom.faction,
+    x: pom.x,
+    y: pom.y,
+    tx: pom.tx,
+    ty: pom.ty,
+    flight: pom.flight,
+    blast: pom.blast,
+    dead: pom.dead,
+  };
+}
+
 export function snapshotWorld(world: World): TestSnapshot {
   return {
     room: world.room,
@@ -183,6 +238,7 @@ export function snapshotWorld(world: World): TestSnapshot {
     time: world.time,
     ticks: Math.round(world.time / CONFIG.fixedStep),
     nextShell: world.nextShell,
+    nextMine: world.nextMine,
     shots: world.shots,
     bounces: world.bounces,
     walls: world.walls.map((wall) => ({ ...wall })),
@@ -190,6 +246,8 @@ export function snapshotWorld(world: World): TestSnapshot {
     players: world.players.map(snapshotTank),
     enemies: world.enemies.map(snapshotTank),
     shells: world.shells.map(snapshotShell),
+    mines: world.mines.map(snapshotMine),
+    poms: world.poms.map(snapshotPom),
     effects: world.effects.map(snapshotEffect),
     events: [...world.events],
   };
@@ -294,7 +352,7 @@ function normalizeCommand(command: Command | undefined): Command {
     return neutralCommand();
   }
 
-  const { x, y, turn, fire, aim } = command;
+  const { x, y, turn, fire, aim, alt } = command;
   if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(turn)) {
     throw new Error('Command x, y, and turn must be finite numbers.');
   }
@@ -304,8 +362,18 @@ function normalizeCommand(command: Command | undefined): Command {
   if (aim !== undefined && !Number.isFinite(aim)) {
     throw new Error('Command aim must be a finite number when present.');
   }
+  if (alt !== undefined && typeof alt !== 'boolean') {
+    throw new Error('Command alt must be a boolean when present.');
+  }
 
-  return aim === undefined ? { x, y, turn, fire } : { x, y, turn, fire, aim };
+  return {
+    x,
+    y,
+    turn,
+    fire,
+    ...(aim === undefined ? {} : { aim }),
+    ...(alt === undefined ? {} : { alt }),
+  };
 }
 
 export function createTestBridge(host: TestBridgeHost): ToyboxTestBridge {

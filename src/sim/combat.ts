@@ -1,9 +1,19 @@
 import { CONFIG } from '../config';
-import { canHit, firstTerrain, rayCircle, reflect } from './collision';
+import { canHit, firstTerrain, hasLineOfSight, rayCircle, reflect } from './collision';
 import type { TerrainHit, WallHit } from './collision';
 import { poof, record } from './feedback';
+import { KINDS, MINE } from './kinds';
+import { cellOf, passable } from './nav';
 import { firstShellContact } from './shell-contact';
-import type { Shell, SimulationEvent, Tank, World } from './types';
+import type { Mine, Shell, SimulationEvent, Tank, World } from './types';
+
+const MINE_OFFSET = 20;
+const MINE_RECHARGE = 1.2;
+const MINE_CHAIN_FUSE = 0.12;
+
+function clamp(value: number, lo: number, hi: number): number {
+  return Math.max(lo, Math.min(hi, value));
+}
 
 export function activeShells(world: World, owner: string): number {
   return world.shells.filter((shell) => !shell.dead && shell.owner === owner).length;
@@ -15,6 +25,7 @@ export function damage(world: World, tank: Tank, events?: SimulationEvent[]): bo
   }
 
   tank.hp = Math.max(0, tank.hp - 1);
+  tank.hurt = 0.25;
   record(world, `Hit · ${tank.id} · HP ${String(tank.hp)}`);
   poof(world, tank.x, tank.y, 'poof');
 
@@ -22,12 +33,149 @@ export function damage(world: World, tank: Tank, events?: SimulationEvent[]): bo
     tank.alive = false;
     tank.charge = 0;
     record(world, `Disabled · ${tank.id}`);
-  } else {
+  } else if (tank.faction === 'player') {
     tank.invuln = CONFIG.postHitInvulnerability;
+  } else {
+    tank.invuln = 0.2;
+    tank.stun = 0.3;
+    tank.charge = 0;
   }
 
   events?.push({ type: 'damage', faction: tank.faction, destroyed: !tank.alive });
   return true;
+}
+
+export function layMine(world: World, owner: Tank, x = owner.x, y = owner.y): Mine {
+  let mineX = x;
+  let mineY = y;
+  // A placement inside terrain falls back to the owner's current position.
+  if (!passable(world, cellOf(mineX, mineY))) {
+    mineX = owner.x;
+    mineY = owner.y;
+  }
+
+  world.nextMine += 1;
+  const mine: Mine = {
+    id: world.nextMine,
+    owner,
+    x: mineX,
+    y: mineY,
+    faction: owner.faction,
+    armed: 0,
+    dead: false,
+  };
+  world.mines.push(mine);
+  return mine;
+}
+
+export function boom(world: World, mine: Mine, events?: SimulationEvent[]): void {
+  if (mine.dead) {
+    return;
+  }
+
+  mine.dead = true;
+  poof(world, mine.x, mine.y, 'jack');
+  poof(world, mine.x, mine.y, 'confetti');
+
+  if (mine.owner.faction === 'player') {
+    mine.owner.mineCooldown = MINE_RECHARGE;
+  }
+
+  for (const tank of [...world.players, ...world.enemies]) {
+    if (!tank.alive || tank.faction === mine.faction) {
+      continue;
+    }
+    if (Math.hypot(tank.x - mine.x, tank.y - mine.y) >= MINE.blast + tank.r * 0.4) {
+      continue;
+    }
+    // The ground blast is blocked by permanent walls and solid corks.
+    if (!hasLineOfSight(world, mine.x, mine.y, tank.x, tank.y)) {
+      continue;
+    }
+    damage(world, tank, events);
+  }
+
+  for (const cork of world.corks) {
+    if (cork.destroyed || cork.hitsRemaining <= 0) {
+      continue;
+    }
+    const qx = clamp(mine.x, cork.x, cork.x + cork.w);
+    const qy = clamp(mine.y, cork.y, cork.y + cork.h);
+    if (Math.hypot(mine.x - qx, mine.y - qy) >= MINE.blast * 0.8) {
+      continue;
+    }
+    cork.hitsRemaining = Math.max(0, cork.hitsRemaining - 1);
+    cork.destroyed = cork.hitsRemaining === 0;
+  }
+
+  for (const other of world.mines) {
+    if (other.dead || other === mine) {
+      continue;
+    }
+    if (Math.hypot(other.x - mine.x, other.y - mine.y) >= MINE.blast) {
+      continue;
+    }
+    other.fuse = other.fuse === undefined ? MINE_CHAIN_FUSE : Math.min(other.fuse, MINE_CHAIN_FUSE);
+  }
+}
+
+export function updateMines(world: World, dt: number, events?: SimulationEvent[]): void {
+  if (!Number.isFinite(dt) || dt <= 0) {
+    return;
+  }
+
+  for (const mine of world.mines) {
+    if (mine.dead) {
+      continue;
+    }
+
+    mine.armed += dt;
+    if (mine.fuse !== undefined) {
+      mine.fuse -= dt;
+      if (mine.fuse <= 0) {
+        boom(world, mine, events);
+        continue;
+      }
+    }
+
+    const arm = mine.faction === 'player' ? MINE.armPlayer : MINE.arm;
+    if (mine.armed < arm) {
+      continue;
+    }
+
+    for (const tank of [...world.players, ...world.enemies]) {
+      if (!tank.alive || tank.faction === mine.faction) {
+        continue;
+      }
+      if (Math.hypot(tank.x - mine.x, tank.y - mine.y) < tank.r + MINE.r - 2) {
+        boom(world, mine, events);
+        break;
+      }
+    }
+  }
+}
+
+export function altWeapon(world: World, player: Tank): void {
+  if (!player.alive) {
+    return;
+  }
+
+  const mine = world.mines.find((candidate) => candidate.owner === player && !candidate.dead);
+  if (mine !== undefined) {
+    boom(world, mine);
+    return;
+  }
+
+  if (player.mineCooldown > 0) {
+    return;
+  }
+
+  layMine(
+    world,
+    player,
+    player.x - Math.cos(player.angle) * MINE_OFFSET,
+    player.y - Math.sin(player.angle) * MINE_OFFSET,
+  );
 }
 
 export function shoot(world: World, tank: Tank, events?: SimulationEvent[]): boolean {
@@ -39,7 +187,12 @@ export function shoot(world: World, tank: Tank, events?: SimulationEvent[]): boo
     return false;
   }
 
-  const speed = CONFIG.shellSpeed * (tank.faction === 'enemy' ? CONFIG.enemyShellSpeedFactor : 1);
+  const kind = tank.faction === 'enemy' ? (tank.kind ?? 'sentry') : null;
+  const shellFactor = kind === null ? 1 : KINDS[kind].shell;
+  if (kind !== null && shellFactor <= 0) {
+    return false;
+  }
+  const speed = CONFIG.shellSpeed * shellFactor;
   world.nextShell += 1;
   const shell: Shell = {
     id: world.nextShell,
@@ -54,7 +207,7 @@ export function shoot(world: World, tank: Tank, events?: SimulationEvent[]): boo
   };
 
   world.shells.push(shell);
-  tank.cooldown = tank.faction === 'player' ? CONFIG.firingCooldown : CONFIG.enemyFiringInterval;
+  tank.cooldown = tank.faction === 'player' ? CONFIG.firingCooldown : KINDS[kind ?? 'sentry'].cd;
   world.shots += 1;
   events?.push({ type: 'shot', faction: tank.faction });
   // Sweep all the way out of the barrel, never spawn beyond nearby terrain.
@@ -88,6 +241,15 @@ export function resolveShellCollisions(world: World, dt: number, events?: Simula
         continue;
       }
       const hit = rayCircle(shell.x, shell.y, dx, dy, tank);
+      if (hit !== null) {
+        limit = Math.min(limit, hit);
+      }
+    }
+    for (const mine of world.mines) {
+      if (mine.dead || mine.faction === shell.faction) {
+        continue;
+      }
+      const hit = rayCircle(shell.x, shell.y, dx, dy, { x: mine.x, y: mine.y, r: MINE.r });
       if (hit !== null) {
         limit = Math.min(limit, hit);
       }
@@ -222,6 +384,31 @@ export function advanceShell(
         tankHitT = hit;
         hitTank = tank;
       }
+    }
+
+    let hitMine: Mine | null = null;
+    let mineHitT = Infinity;
+    for (const mine of world.mines) {
+      if (mine.dead || mine.faction === shell.faction) {
+        continue;
+      }
+      const hit = rayCircle(shell.x, shell.y, dx, dy, { x: mine.x, y: mine.y, r: MINE.r });
+      if (hit !== null && hit < mineHitT) {
+        mineHitT = hit;
+        hitMine = mine;
+      }
+    }
+
+    if (
+      hitMine !== null &&
+      mineHitT < tankHitT - 1e-7 &&
+      (terrain === null || mineHitT < terrain.t - 1e-7)
+    ) {
+      shell.x += dx * mineHitT;
+      shell.y += dy * mineHitT;
+      shell.dead = true;
+      boom(world, hitMine, events);
+      break;
     }
 
     if (hitTank !== null && (terrain === null || tankHitT < terrain.t - 1e-7)) {

@@ -105,18 +105,23 @@ export async function enterFullscreenCapture(page: Page, scene: CaptureScene): P
     await expect(page.locator('#touchToggle')).toBeChecked();
     await expect(page.locator('#movePad')).toBeVisible();
     await expect(page.locator('#aimPad')).toBeVisible();
+    await expect(page.locator('#altBtn')).toBeVisible();
     const move = await page.locator('#movePad').boundingBox();
     const aim = await page.locator('#aimPad').boundingBox();
-    if (move === null || aim === null) throw new Error('Fullscreen touch pads missing');
+    const alt = await page.locator('#altBtn').boundingBox();
+    if (move === null || aim === null || alt === null)
+      throw new Error('Fullscreen touch pads missing');
     expect(move.x + move.width).toBeLessThanOrEqual(arena.x + 1);
     expect(aim.x).toBeGreaterThanOrEqual(arena.x + arena.width - 1);
-    for (const box of [move, aim]) {
+    expect(alt.x).toBeGreaterThanOrEqual(arena.x + arena.width - 1);
+    expect(aim.y - (alt.y + alt.height)).toBeGreaterThanOrEqual(12);
+    for (const box of [move, aim, alt]) {
       expect(box.x).toBeGreaterThanOrEqual(-1);
       expect(box.y).toBeGreaterThanOrEqual(-1);
       expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 1);
       expect(box.y + box.height).toBeLessThanOrEqual(viewport.height + 1);
     }
-    touchBounds = { move, aim };
+    touchBounds = { move, aim, alt };
   } else {
     await expect(page.locator('#touchToggle')).not.toBeChecked();
     await expect(page.locator('#touchControls')).toBeHidden();

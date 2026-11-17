@@ -25,21 +25,27 @@ at lint time with restricted globals, restricted imports, and restricted propert
 
 ## Simulation contract
 
-- State is plain data (`World`, `Tank`, `Shell`, `Wall`, `Effect`) with no hidden engine
-  objects.
+- State is plain data (`World`, `Tank`, `Shell`, `Wall`, `Mine`, `Pom`, `Effect`) with no
+  hidden engine objects.
 - Time is explicit: `stepWorld(world, dt, commands)` advances the world by `dt` seconds.
   Simulation code must not read wall-clock time, schedule callbacks, or poll devices.
 - Input is explicit: each player receives a `Command` describing movement, turret turn,
-  aim, and fire intent. The input adapter owns key state; the simulation owns results.
+  aim, fire, and secondary-weapon intent. The input adapter owns key state; the simulation
+  owns results.
 - Collision is swept and earliest-hit: shells travel their full distance per step, bounce
   once off a wall and consume the remaining distance, and are removed on a second contact,
   an ambiguous corner, or leaving the arena. Fresh shots sweep 23 px out of the muzzle so
-  they never appear beyond a nearby wall.
-- Sentries are deterministic: nearest visible player, line-of-sight gating, bounded turn
-  rate, telegraph charge, cancel on lost sight/alignment, and no prediction.
-- Feedback is state: spark/poof effects age inside `stepWorld`, and the event log keeps the
-  seven most recent entries. Rendering reads them; simulation owns them.
-- Randomness is not ambient. If gameplay later needs randomness, inject seeded values.
+  they never appear beyond a nearby wall. Mine and pom blasts use the same cork/wall
+  blocking rules.
+- Enemy kinds are deterministic: fixed sentries keep nearest-visible-player targeting,
+  roamers chase within vision, bruisers search one-bounce bank paths, lobbers arc poms to
+  predicted landing points, and pranksters flee and lay mines. All use bounded turning,
+  telegraphs, and no ambient decisions.
+- Feedback is state: spark/poof/confetti/jack effects age inside `stepWorld`, and the event
+  log keeps the seven most recent entries. Rendering reads them; simulation owns them.
+- Randomness comes only from the world's seeded numeric `rngState`, advanced by
+  `nextRandom(world)` and reset with the world. No `Math.random`, clock, or injected
+  closure participates in simulation state.
 - The world state machine is `menu → playing ⇄ paused → cleared/defeat → completed`, plus
   `error` for invalid startup maps. `stepWorld` only advances while `playing`.
 - Outcomes commit once. A same-tick defeat takes precedence over victory, and committing
@@ -51,16 +57,23 @@ at lint time with restricted globals, restricted imports, and restricted propert
 | Module                             | Responsibility                                                                          |
 | ---------------------------------- | --------------------------------------------------------------------------------------- |
 | `src/config.ts`                    | Logical arena size, fixed step, movement, combat, and timing defaults.                  |
-| `src/sim/types.ts`                 | Shared plain-data types for factions, commands, tanks, shells, walls, effects, world.   |
-| `src/sim/maps.ts`                  | Authored map grids, validation, spawn/sentry placement rules.                           |
+| `src/sim/types.ts`                 | Shared plain-data types for factions, commands, tanks, shells, mines, poms, world.      |
+| `src/sim/maps.ts`                  | Authored map grids, validation, spawn and enemy-kind placement rules.                   |
+| `src/sim/rng.ts`                   | Deterministic mulberry32 world RNG advanced in place.                                   |
+| `src/sim/kinds.ts`                 | Declarative enemy-kind tuning and mine constants.                                       |
+| `src/sim/nav.ts`                   | Structural tile-center pathing, patrols, and flee paths.                                |
+| `src/sim/ballistics.ts`            | Bruiser one-bounce trace search and bank solutions.                                     |
 | `src/sim/collision.ts`             | Ray/AABB and ray/circle tests, earliest wall, reflection, tank movement, line of sight. |
-| `src/sim/combat.ts`                | Firing, muzzle sweep, damage, shell bounce/removal, bounded advancement.                |
-| `src/sim/enemies.ts`               | Sentry targeting, LOS, turning, telegraph/cancel, and firing.                           |
-| `src/sim/feedback.ts`              | Bounded event log and spark/poof effect creation.                                       |
+| `src/sim/combat.ts`                | Firing, muzzle sweep, damage, shells, mines, secondary weapon, bounded advancement.     |
+| `src/sim/enemies.ts`               | Per-kind enemy brains: sentry, roamer, bruiser, lobber, and prankster.                  |
+| `src/sim/poms.ts`                  | Lobber pom flight, landing, blast, and cork damage.                                     |
+| `src/sim/feedback.ts`              | Bounded event log and spark/poof/confetti/jack effect creation.                         |
 | `src/sim/world.ts`                 | Entity creation, room loading, outcome commits, fixed-step orchestration.               |
 | `src/render/renderer.ts`           | DPR-aware Canvas rendering, aim/first-bounce guide, effects; read-only canvas surface.  |
 | `src/input/keyboard.ts`            | Key sets, held-key state, focus/overlay guards, command sampling.                       |
 | `src/input/gamepad.ts`             | Optional pad assignment, deadzones, stick/keyboard precedence, fire, Start edges.       |
+| `src/input/touch.ts`               | Touch move/aim gestures, tap-to-fire, and edge-triggered secondary-button state.        |
+| `src/input/mobile.ts`              | Compact touch layout, secondary button, fullscreen, and orientation gating.             |
 | `src/presentation/level-select.ts` | Pure level-select markup, stage cards, and blueprint-preview SVG generation.            |
 | `src/test-bridge.ts`               | Test-build-only scenarios, bounded manual ticks, copied snapshots, events, rendering.   |
 | `src/main.ts`                      | Menus, overlays, HUD, pause/retry, RAF loop, fixed-step accumulator, input composition. |
@@ -99,7 +112,7 @@ reuse the same input/reset discipline as normal room loads.
 ## Scope
 
 Gates C and D complete the behavior-preserving migration. Simulation parity covers config,
-maps/validation, collision, combat, sentry AI, feedback state, and the fixed-step loop.
+maps/validation, collision, combat, enemy-kind AI, feedback state, and the fixed-step loop.
 Gate D adds keyboard/gamepad adapters, rendering parity (aim/bounce guide and effect
 visuals), UI/runtime composition, the typed test-only bridge, manual-tick automation, and
 release proof that the bridge is absent. Gate E owns hardening, delivery, cross-browser CI

@@ -35,6 +35,13 @@ function mapPreviewSvg(map: MapData): string {
   const rows = map.grid.trim().split(/\r?\n/);
   const columns = rows.reduce((widest, row) => Math.max(widest, row.length), 0);
   const cells: string[] = [];
+  const enemyColors: Record<string, string> = {
+    S: '#f87171',
+    R: '#f0b45b',
+    B: '#c86b9e',
+    L: '#59cfc0',
+    M: '#a985e8',
+  };
 
   rows.forEach((row, y) => {
     for (let x = 0; x < row.length; x += 1) {
@@ -51,9 +58,11 @@ function mapPreviewSvg(map: MapData): string {
         cells.push(
           `<circle cx="${String(x + 0.5)}" cy="${String(y + 0.5)}" r="0.34" fill="#4ade80" stroke="#166534" stroke-width="0.08"/>`,
         );
-      } else if (cell === 'S') {
+      } else if (cell !== undefined && enemyColors[cell.toUpperCase()] !== undefined) {
+        const color = enemyColors[cell.toUpperCase()];
+        const radius = cell === cell.toUpperCase() ? 0.32 : 0.24;
         cells.push(
-          `<circle cx="${String(x + 0.5)}" cy="${String(y + 0.5)}" r="0.32" fill="#f87171" stroke="#7f1d1d" stroke-width="0.08"/>`,
+          `<circle cx="${String(x + 0.5)}" cy="${String(y + 0.5)}" r="${String(radius)}" fill="${String(color)}" stroke="#1f2937" stroke-width="0.07"/>`,
         );
       }
     }
@@ -71,7 +80,7 @@ export function levelSelectMarkup(options: LevelSelectOptions): string {
     .map((map, index) => {
       const stage = roomNumber(index);
       const isSelected = index === selected;
-      const enemies = `${String(map.expectedEnemies)} ${map.expectedEnemies === 1 ? 'sentry' : 'sentries'}`;
+      const enemies = `${String(map.expectedEnemies)} ${map.expectedEnemies === 1 ? 'enemy' : 'enemies'}`;
       return `<button type="button" class="stage-card${isSelected ? ' stage-card--selected' : ''}" data-action="level" data-room="${String(index)}" aria-pressed="${String(isSelected)}" aria-label="Stage ${stage}: ${escapeHtml(map.name)}"><span class="stage-card__pin" aria-hidden="true"></span><span class="stage-card__head"><span>STAGE ${stage}</span><span class="stage-card__enemies">${enemies}</span></span><span class="stage-card__preview">${mapPreviewSvg(map)}</span><span class="stage-card__name">${escapeHtml(map.name)}</span><span class="stage-card__hint">${escapeHtml(map.hint)}</span></button>`;
     })
     .join('');

@@ -46,7 +46,7 @@ The earlier menu variation was traced to intermittent partial rasterization of
 fractional HUD/button edges and resolved with Chromium's
 `--disable-partial-raster` launch flag, not with sleeps, retries, masks or looser
 tolerances. Actual commands, exits and the deliberate-change experiment are
-recorded in `docs/progress.md`.
+recorded in `docs/history/visual-and-presentation-2026-11.md`.
 
 Compact landscape touch and portrait pause coverage is now implemented and
 registered. No screenshots or references were approved, and no aesthetic

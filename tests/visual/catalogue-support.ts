@@ -87,7 +87,8 @@ export function captureScenes(): CaptureScene[] {
     })),
     {
       id: 'touch-landscape-gameplay',
-      purpose: 'Real touch UI in compact landscape, whole arena between the pads.',
+      purpose:
+        'Real touch UI in compact landscape, whole arena between the pads plus the separate secondary button.',
       scenario: 'solo',
       options: {},
       viewport: { width: 640, height: 300 },

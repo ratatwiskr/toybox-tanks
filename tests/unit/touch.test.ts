@@ -73,6 +73,31 @@ describe('experimental solo touch gesture adapter', () => {
     expect(adapter.readCommand(neutral()).fire).toBe(false);
   });
 
+  it('keeps a secondary tap for the next tick and clears it once', () => {
+    const adapter = new TouchAdapter();
+    adapter.pressAlt();
+    adapter.releaseAlt();
+    expect(adapter.readCommand(neutral()).alt).toBe(true);
+    expect(adapter.readCommand(neutral()).alt).toBeUndefined();
+  });
+
+  it('holds the secondary input across ticks until release', () => {
+    const adapter = new TouchAdapter();
+    adapter.pressAlt();
+    expect(adapter.readCommand(neutral()).alt).toBe(true);
+    expect(adapter.readCommand(neutral()).alt).toBe(true);
+    adapter.releaseAlt();
+    expect(adapter.readCommand(neutral()).alt).toBeUndefined();
+  });
+
+  it('clears a pending secondary press without disturbing fallback intent', () => {
+    const adapter = new TouchAdapter();
+    adapter.pressAlt();
+    adapter.clear();
+    expect(adapter.readCommand(neutral()).alt).toBeUndefined();
+    expect(adapter.readCommand({ ...neutral(), alt: true }).alt).toBe(true);
+  });
+
   it('fires a short tap exactly once without changing aim', () => {
     const adapter = new TouchAdapter();
     adapter.begin('aim', 1, 35, -20, 50, 0);
@@ -179,5 +204,22 @@ describe('experimental solo touch gesture adapter', () => {
       stepWorld(world, CONFIG.fixedStep, [adapter.readCommand(neutral())]);
     }
     expect(world.shots).toBe(0);
+  });
+
+  it('lays one mine per secondary press and detonates it on the next release and press', () => {
+    const adapter = new TouchAdapter();
+    const world = createWorld(0, 'solo');
+    const liveMines = (): number => world.mines.filter((mine) => !mine.dead).length;
+
+    adapter.pressAlt();
+    stepWorld(world, CONFIG.fixedStep, [adapter.readCommand(neutral())]);
+    stepWorld(world, CONFIG.fixedStep, [adapter.readCommand(neutral())]);
+    expect(liveMines()).toBe(1);
+
+    adapter.releaseAlt();
+    stepWorld(world, CONFIG.fixedStep, [adapter.readCommand(neutral())]);
+    adapter.pressAlt();
+    stepWorld(world, CONFIG.fixedStep, [adapter.readCommand(neutral())]);
+    expect(liveMines()).toBe(0);
   });
 });

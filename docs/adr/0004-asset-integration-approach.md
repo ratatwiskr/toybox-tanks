@@ -3,6 +3,8 @@
 Date: 2026-11-10
 Status: Proposed. The owner asked on 2026-11-10 to proceed with the recommendations below and confirmed D1; they become accepted when this record is approved in review. This record authorizes no production code, gameplay change, screenshot baseline or CI change.
 
+Implementation note (2026-11-17): D1/D2 and D7 were implemented later in PR #40 (typed adapter plus `wood-warm` floor). This note does not mark the whole record accepted and does not authorize the remaining phases.
+
 Related: issue #24, issue #1 (merged as PR #31), `docs/asset-integration-plan.md` (not replaced), ADR 0002 (procedural cork), ADR 0003 (shell-shell collision).
 
 ## Context

@@ -1,6 +1,7 @@
 import { CONFIG } from '../config';
 import { bodyHeading } from '../presentation/body-heading';
 import { firstTerrain, isSolidCork, reflect } from '../sim/collision';
+import { KINDS, MINE } from '../sim/kinds';
 import type { Cork, Effect, Shell, Tank, Wall, World } from '../sim/types';
 
 // Rendering only needs this narrow slice of the Canvas API. Keeping the surface
@@ -49,6 +50,22 @@ export interface Renderer {
   /** Creates the world-anchored floor pattern; false keeps the procedural floor. */
   setFloorPattern(image: CanvasImageSource): boolean;
 }
+
+const ENEMY_LABEL = {
+  sentry: 'S',
+  roamer: 'R',
+  bruiser: 'B',
+  lobber: 'L',
+  prankster: 'M',
+} as const;
+
+const ENEMY_LIGHT = {
+  sentry: '#e4a2b9',
+  roamer: '#ffd79a',
+  bruiser: '#c77fab',
+  lobber: '#9be4da',
+  prankster: '#c9aef1',
+} as const;
 
 export function createRenderer(canvas: RenderCanvas): Renderer {
   const context = canvas.getContext('2d');
@@ -316,9 +333,16 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
 
     const isPlayer = tank.faction === 'player';
     const blue = tank.id === 'p1';
-    const main = isPlayer ? (blue ? '#378ebb' : '#ed9c40') : '#b86280';
-    const dark = isPlayer ? (blue ? '#226080' : '#9d5e27') : '#78384e';
-    const light = isPlayer ? (blue ? '#8bd5ec' : '#ffd18b') : '#e4a2b9';
+    const spec = tank.kind === null ? null : KINDS[tank.kind];
+    const main = isPlayer ? (blue ? '#378ebb' : '#ed9c40') : (spec?.color ?? '#b86280');
+    const dark = isPlayer ? (blue ? '#226080' : '#9d5e27') : (spec?.dark ?? '#78384e');
+    const light = isPlayer
+      ? blue
+        ? '#8bd5ec'
+        : '#ffd18b'
+      : tank.kind === null
+        ? '#e4a2b9'
+        : ENEMY_LIGHT[tank.kind];
 
     // The body art points up, while the heading is a direction angle (0 = east).
     // Body and turret use separate absolute angles around the same pivot.
@@ -386,6 +410,43 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
 
     if (isPlayer) {
       rounded(-12, -14, 24, 28, 6, main, dark);
+    } else if (tank.kind === 'roamer') {
+      rounded(-13, -13, 26, 26, 7, main, dark);
+      rounded(-8, 2, 16, 6, 3, '#00000022');
+    } else if (tank.kind === 'bruiser') {
+      ctx.fillStyle = main;
+      ctx.strokeStyle = dark;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, -18);
+      ctx.lineTo(16, -7);
+      ctx.lineTo(15, 14);
+      ctx.lineTo(0, 16);
+      ctx.lineTo(-15, 14);
+      ctx.lineTo(-16, -7);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      rounded(-13, -10, 6, 18, 2, dark);
+      rounded(7, -10, 6, 18, 2, dark);
+    } else if (tank.kind === 'lobber') {
+      rounded(-12, -13, 24, 26, 9, main, dark);
+      ctx.fillStyle = '#ffffff55';
+      ctx.beginPath();
+      ctx.ellipse(0, -4, 7, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (tank.kind === 'prankster') {
+      ctx.fillStyle = main;
+      ctx.strokeStyle = dark;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, -15);
+      ctx.lineTo(14, 0);
+      ctx.lineTo(0, 15);
+      ctx.lineTo(-14, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
     } else {
       ctx.fillStyle = main;
       ctx.strokeStyle = dark;
@@ -426,7 +487,8 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
     ctx.fillRect(23, -2, 2, 4);
 
     if (tank.charge > 0) {
-      const charge = tank.charge / CONFIG.enemyTelegraph;
+      const telegraph = spec === null || spec.tele <= 0 ? CONFIG.enemyTelegraph : spec.tele;
+      const charge = tank.charge / telegraph;
       ctx.fillStyle = `rgba(255, 238, 138, ${String(0.35 + charge * 0.65)})`;
       ctx.beginPath();
       ctx.arc(25, 0, 5 + charge * 7, 0, 7);
@@ -460,11 +522,161 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
     ctx.fill();
     ctx.restore();
 
-    ctx.fillStyle = isPlayer ? '#263d46' : '#633748';
+    if (!isPlayer && tank.maxHp > 1) {
+      const pipWidth = 4;
+      const pipGap = 1.5;
+      const totalWidth = tank.maxHp * pipWidth + (tank.maxHp - 1) * pipGap;
+      const start = -totalWidth / 2;
+      for (let index = 0; index < tank.maxHp; index += 1) {
+        ctx.fillStyle = index < tank.hp ? light : dark;
+        ctx.fillRect(start + index * (pipWidth + pipGap), -35, pipWidth, 2.5);
+      }
+    }
+
+    ctx.fillStyle = isPlayer ? '#263d46' : dark;
     ctx.font = '800 9px system-ui';
     ctx.textAlign = 'center';
-    ctx.fillText(isPlayer ? tank.id.toUpperCase() : 'S', 0, -23);
+    ctx.fillText(
+      isPlayer ? tank.id.toUpperCase() : tank.kind === null ? 'S' : ENEMY_LABEL[tank.kind],
+      0,
+      -23,
+    );
     ctx.restore();
+  };
+
+  const drawTelegraphs = (world: World): void => {
+    for (const enemy of world.enemies) {
+      if (!enemy.alive || enemy.ai.plan === null) {
+        continue;
+      }
+      const segments = enemy.ai.plan.solution.segments;
+      if (segments.length === 0) {
+        continue;
+      }
+
+      ctx.save();
+      ctx.globalAlpha = 0.7;
+      ctx.strokeStyle = '#d61f3f';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([8, 6]);
+      ctx.beginPath();
+      for (const segment of segments) {
+        ctx.moveTo(segment.x1, segment.y1);
+        ctx.lineTo(segment.x2, segment.y2);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      const last = segments[segments.length - 1];
+      if (last !== undefined) {
+        ctx.beginPath();
+        ctx.arc(last.x2, last.y2, 6, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+  };
+
+  const drawMines = (world: World): void => {
+    for (const mine of world.mines) {
+      if (mine.dead) {
+        continue;
+      }
+      const armed = mine.armed >= (mine.owner.faction === 'player' ? MINE.armPlayer : MINE.arm);
+
+      ctx.save();
+      ctx.translate(mine.x, mine.y);
+      ctx.fillStyle = '#3f322a44';
+      ctx.beginPath();
+      ctx.ellipse(0, 5, 12, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      rounded(-9, -9, 18, 18, 4, armed ? '#e8b23a' : '#8b8578', armed ? '#7c4b0a' : '#5c584e');
+      rounded(-10, -11, 20, 5, 2, armed ? '#c43b3b' : '#6f6a5e', '#4d3a24');
+
+      if (armed) {
+        ctx.globalAlpha = 0.55 + 0.45 * Math.abs(Math.sin(world.time * 7));
+        ctx.fillStyle = '#ffe36e';
+        ctx.beginPath();
+        ctx.arc(0, 0, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.strokeStyle = '#c43b3b';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.arc(0, 0, 13, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      } else {
+        ctx.strokeStyle = '#fff4c4';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([2, 3]);
+        ctx.beginPath();
+        ctx.arc(0, 0, 12, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      ctx.restore();
+    }
+  };
+
+  const drawPomMarkers = (world: World): void => {
+    for (const pom of world.poms) {
+      if (pom.dead) {
+        continue;
+      }
+      const progress = pom.life > 0 ? 1 - pom.flight / pom.life : 1;
+
+      ctx.save();
+      ctx.translate(pom.tx, pom.ty);
+      ctx.globalAlpha = 0.45 + 0.55 * progress;
+      ctx.strokeStyle = '#d61f3f';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 5]);
+      ctx.beginPath();
+      ctx.arc(0, 0, pom.blast, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.moveTo(-6, 0);
+      ctx.lineTo(6, 0);
+      ctx.moveTo(0, -6);
+      ctx.lineTo(0, 6);
+      ctx.stroke();
+      ctx.restore();
+    }
+  };
+
+  const drawPoms = (world: World): void => {
+    for (const pom of world.poms) {
+      if (pom.dead) {
+        continue;
+      }
+      const progress = pom.life > 0 ? 1 - pom.flight / pom.life : 1;
+      const lift = Math.sin(progress * Math.PI) * 18;
+
+      ctx.save();
+      ctx.translate(pom.x, pom.y - lift);
+      ctx.fillStyle = '#46b3a4';
+      ctx.strokeStyle = '#1d5a52';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(0, 0, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#ffffffaa';
+      ctx.beginPath();
+      ctx.arc(-2, -2, 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#d61f3f';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(4, -5);
+      ctx.lineTo(8, -9);
+      ctx.stroke();
+      ctx.restore();
+    }
   };
 
   const drawShell = (shell: Shell): void => {
@@ -505,6 +717,33 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
         ctx.lineTo(effect.x + Math.cos(angle) * radius, effect.y + Math.sin(angle) * radius);
         ctx.stroke();
       }
+    } else if (effect.type === 'confetti') {
+      const colors = ['#f26d6d', '#f2c14e', '#6dd3f2', '#8ee06d'];
+      for (let index = 0; index < 8; index += 1) {
+        const angle = (index * Math.PI) / 4 + effect.seed;
+        const distance = 4 + progress * 26;
+        ctx.fillStyle = colors[index % colors.length] ?? '#f2c14e';
+        ctx.fillRect(
+          effect.x + Math.cos(angle) * distance - 2,
+          effect.y + Math.sin(angle) * distance - 1,
+          4,
+          3,
+        );
+      }
+    } else if (effect.type === 'jack') {
+      ctx.strokeStyle = '#c43b3b';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(effect.x, effect.y, 3 + progress * 10, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = '#f2c14e';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(effect.x - 8, effect.y + 8);
+      ctx.lineTo(effect.x - 3, effect.y + 2);
+      ctx.lineTo(effect.x + 3, effect.y + 8);
+      ctx.lineTo(effect.x + 8, effect.y + 2);
+      ctx.stroke();
     } else {
       ctx.fillStyle = '#fff6df';
       for (let index = 0; index < 6; index += 1) {
@@ -552,6 +791,22 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
       ctx.arc(shell.x, shell.y, CONFIG.shellRadius, 0, 7);
       ctx.stroke();
     }
+    ctx.strokeStyle = '#ffb000';
+    for (const mine of world.mines) {
+      if (!mine.dead) {
+        ctx.beginPath();
+        ctx.arc(mine.x, mine.y, MINE.r, 0, 7);
+        ctx.stroke();
+      }
+    }
+    ctx.strokeStyle = '#00b3ff';
+    for (const pom of world.poms) {
+      if (!pom.dead) {
+        ctx.beginPath();
+        ctx.arc(pom.tx, pom.ty, pom.blast, 0, 7);
+        ctx.stroke();
+      }
+    }
     ctx.restore();
   };
 
@@ -596,6 +851,9 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
           drawCork(cork);
         }
       }
+      drawTelegraphs(world);
+      drawPomMarkers(world);
+      drawMines(world);
       for (const enemy of world.enemies) {
         drawTank(enemy, world);
       }
@@ -605,6 +863,7 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
       for (const shell of world.shells) {
         drawShell(shell);
       }
+      drawPoms(world);
       for (const effect of world.effects) {
         drawEffect(effect);
       }

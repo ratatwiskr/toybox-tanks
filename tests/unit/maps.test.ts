@@ -108,17 +108,33 @@ describe('map validation', () => {
     expect(duplicateSpawn.ok).toBe(false);
     expect(duplicateSpawn.errors).toContain('Need exactly one player 1 spawn; found 2.');
 
-    const wrongSentryCount = validateMap({ grid: FIXTURE_GRID, expectedEnemies: 1 });
-    expect(wrongSentryCount.ok).toBe(false);
-    expect(wrongSentryCount.errors).toContain('Expected 1 sentries; found 4.');
+    const wrongEnemyCount = validateMap({ grid: FIXTURE_GRID, expectedEnemies: 1 });
+    expect(wrongEnemyCount.ok).toBe(false);
+    expect(wrongEnemyCount.errors).toContain('Expected 1 enemies; found 4.');
 
-    let noSentries = replaceCell(FIXTURE_GRID, 2, 2, '.');
-    noSentries = replaceCell(noSentries, 19, 2, '.');
-    noSentries = replaceCell(noSentries, 2, 8, '.');
-    noSentries = replaceCell(noSentries, 19, 8, '.');
-    const missingSentries = validateMap({ grid: noSentries });
-    expect(missingSentries.ok).toBe(false);
-    expect(missingSentries.errors).toContain('At least one sentry is required.');
+    let noEnemies = replaceCell(FIXTURE_GRID, 2, 2, '.');
+    noEnemies = replaceCell(noEnemies, 19, 2, '.');
+    noEnemies = replaceCell(noEnemies, 2, 8, '.');
+    noEnemies = replaceCell(noEnemies, 19, 8, '.');
+    const missingEnemies = validateMap({ grid: noEnemies });
+    expect(missingEnemies.ok).toBe(false);
+    expect(missingEnemies.errors).toContain('At least one enemy is required.');
+  });
+
+  it('accepts every enemy symbol and counts co-op-only lowercase entries', () => {
+    let grid = replaceCell(FIXTURE_GRID, 2, 2, 'R');
+    grid = replaceCell(grid, 19, 2, 'B');
+    grid = replaceCell(grid, 2, 8, 'L');
+    grid = replaceCell(grid, 19, 8, 'M');
+    grid = replaceCell(grid, 4, 5, 's');
+    grid = replaceCell(grid, 5, 5, 'r');
+    grid = replaceCell(grid, 6, 5, 'b');
+    grid = replaceCell(grid, 7, 5, 'l');
+    grid = replaceCell(grid, 8, 5, 'm');
+
+    const checked = validateMap({ grid, expectedEnemies: 9 });
+
+    expect(checked.ok, checked.errors.join('; ')).toBe(true);
   });
 
   it('rejects unreachable interior floor', () => {
@@ -181,7 +197,8 @@ describe('campaign maps', () => {
       const solo = createWorld(index, 'solo');
       expect(solo.room, map.name).toBe(index);
       expect(solo.players, map.name).toHaveLength(1);
-      expect(solo.enemies, map.name).toHaveLength(map.expectedEnemies);
+      const uppercaseEnemies = Array.from(cells).filter((cell) => 'SRBLM'.includes(cell)).length;
+      expect(solo.enemies, map.name).toHaveLength(uppercaseEnemies);
       expect(solo.walls, map.name).toEqual(coop.walls);
       expect(solo.corks, map.name).toEqual(coop.corks);
     }

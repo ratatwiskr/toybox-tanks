@@ -1,51 +1,37 @@
 # Toybox Tanks — agent instructions
 
-## Mission and current scope
+## Mission
 
 Maintain a small browser-based couch-co-op tank game. Reliable local two-player
 controls, readable one-bounce combat, toy-like presentation, and forgiving
 cooperation take priority over infrastructure or extra content.
 
-The TypeScript migration is implemented. PR #14's automatic map borders are
-squash-merged as `d5aa53f`. The cork feature and Cork Keep fourth room are also
-merged: replacement PR #19 was squash-merged as `5bec29e` on 2026-11-08. Original
-PR #15 is closed without merging; it is historical provenance, not an active
-stack to rebase or a pending implementation. Do not repeat the reconstruction,
-open another replacement PR, or reopen #15 as routine cleanup.
-
-PR #17 is the separate mobile/tablet input work on feature/solo-touch-controls.
-Do not infer that it is merged because cork is merged. Read docs/progress.md and
-the actual current PR/head for evidence. Old migration and session handoffs are
-historical context, not permission to repeat completed work or push main.
-
-`feature/38-new-maps` added the issue #38 campaign (15 rooms) and hardened the
-map tests. PR #42 is squash-merged as `f0ce3d4` on 2026-11-13.
-
-Issue #24 asset integration is in progress on
-`feature/24-asset-adapter-hardening` (PR #40): adapter hardening plus PR #41's
-floor art, with the development visual catalogue refreshed in `19a9865`. Read the
-actual PR and its head CI before relying on that state.
-
-ADR 0002 records the accepted cork mechanic and procedural rendering decision.
-Do not implement its superseded SVG proposal. The owner reported successful cork
-playtesting in the VS Code internal browser on 2026-11-08. Visual regression and
-comprehensive visual coverage of cork states are separate work, not unfinished
-cork implementation. No screenshot baselines are approved by this. Gate E is
-not declared complete.
+This file holds durable instructions, not project status. Current branch, PR, CI
+and deployment state lives in `docs/progress.md` and on GitHub. Completed or
+superseded work is summarized in `docs/history/`. Never infer merge state from a
+branch name, a handoff title, or this file.
 
 ## Before editing
 
 - Read this file, applicable nested instructions, `docs/progress.md`,
   `docs/architecture.md`, `docs/verification.md`, relevant ADRs, and tests.
-- Consult `docs/handoff.md`, baseline, and historical migration documents when
-  needed to understand original behavior, not as current task queues.
+- Consult `docs/history/`, `docs/handoff.md`, baseline, and migration documents
+  only to understand original behavior or past decisions, not as task queues.
+- Closed PRs, rejected proposals and superseded handoffs recorded in
+  `docs/history/` must not be reopened or reconstructed as routine cleanup.
 - Inspect existing user changes and preserve them. Make the smallest coherent
-  change for the explicitly assigned task; update progress with actual evidence.
+  change for the explicitly assigned task; update `docs/progress.md` with actual
+  evidence.
+- Keep `docs/progress.md` current-state only. When work merges or is superseded,
+  move detailed evidence to `docs/history/<topic>-<year>-<month>.md` and leave a
+  one-line summary with the link.
 - `reference/toybox-tanks.original.html` and `reference/toybox-tanks.html` are
   immutable references. Do not edit, reformat, overwrite, or load them as runtime.
 - Do not create `docs/migration-handoff.md`; `docs/handoff.md` is the original
   migration contract and `toybox-tanks-opencode-handoff.md` its archive.
 - Do not implement backlog or asset-plan items without a separate assignment.
+- Follow ADRs. ADR 0002 accepts procedural cork; do not implement its superseded
+  SVG proposal.
 
 ## Product invariants
 
@@ -93,34 +79,28 @@ not declared complete.
 
 ## Development screenshot coverage
 
-- For every assigned change with visible effects, explicitly consider screenshot
-  coverage as part of implementation, not a follow-up someone must remember.
-  Add or update deterministic scenes for new states, damage stages, effects,
-  interactions, map situations and relevant responsive/orientation/fullscreen
-  layouts. Explain any visible aspect left uncovered.
+- For every assigned change with visible effects, consider screenshot coverage as
+  part of implementation: new states, damage stages, effects, interactions, map
+  situations, and relevant responsive/orientation/fullscreen layouts. Explain any
+  visible aspect left uncovered.
 - Extend the shared registry in `tests/visual/catalogue-support.ts` and existing
   production-renderer/test-bridge fixtures. Reuse named scenes and standard view
-  kinds. Do not build a separate renderer, fake fullscreen, rely on fixed sleeps,
-  duplicate gameplay logic, or turn unrelated backlog into fixture work.
-- Read `docs/development-workflow.md`. The three primary commands are
+  kinds. Do not add a separate renderer, fake fullscreen, fixed sleeps, duplicated
+  gameplay logic, or unrelated backlog fixtures.
+- `docs/development-workflow.md` is the procedure. The three commands are
   `npm run capture:visual:baseline`, `npm run test:visual:compare`, and
-  `npm run test:visual:report`. Browser paths and ports are handled internally.
-- The checkpoint in `docs/visual-catalogue/current/` is overwriteable development
-  documentation, not a formally approved regression expectation. Compare against
-  an existing useful checkpoint before replacing it. Preserve uncommitted owner
-  captures. Refresh it when the assignment includes catalogue/evidence updates;
-  otherwise provide comparison actuals and identify any pending refresh.
-- Do not overwrite a checkpoint merely to hide unexpected differences. A saved
-  screenshot does not assert owner acceptance of aesthetics. Formal reference
-  approval/governance and mandatory regression/CI enforcement are deferred.
-- Record added/changed scene IDs, capture/check commands, actual exit codes,
-  source context, artifact locations and limitations in the task handoff. If
-  screenshots cannot be generated, report the blocker; do not silently omit the
-  coverage or claim appearance was inspected. Images do not replace mechanical
-  tests or brief playtesting of timing, control feel and cooperation.
-- These scope instructions supersede older hash-selection/promotion acceptance
-  steps in this branch's visual task/evidence notes. The inactive approval
-  modules are not the normal development-capture procedure.
+  `npm run test:visual:report`; they handle browser paths and ports internally.
+- `docs/visual-catalogue/current/` is overwriteable development evidence, not an
+  approved regression expectation or aesthetic approval. Compare before replacing
+  it, preserve uncommitted owner captures, and refresh it only when the assignment
+  includes catalogue/evidence updates.
+- Do not overwrite the checkpoint to hide differences. A saved screenshot does not
+  assert owner acceptance. Formal reference approval and mandatory CI visual
+  regression are deferred (ADR 0001).
+- Record added/changed scene IDs, commands, exit codes, source context, artifacts,
+  and limitations in the task handoff. If captures cannot be generated, report the
+  blocker; do not claim appearance was inspected. Images do not replace mechanical
+  tests or brief playtesting of timing, control feel, and cooperation.
 
 ## Verification and guardrails
 
@@ -171,8 +151,8 @@ not declared complete.
 - Read issues and pull requests directly from GitHub rather than keeping local
   markdown copies. The repository is public and the sandbox allows outbound
   network, so unauthenticated API reads work, for example:
-  `curl -sS https://api.github.com/repos/ratatwiskr/toybox-tanks/pulls/40`,
-  `/issues/24`, or `/commits/<sha>/check-runs`. Use `git` for local history.
+  `curl -sS https://api.github.com/repos/ratatwiskr/toybox-tanks/pulls/<n>`,
+  `/issues/<n>`, or `/commits/<sha>/check-runs`. Use `git` for local history.
 - Do not create `docs/handoffs/current-issue.md`, `current-pr.md` or similar
   dumps. The live GitHub state is the source of truth; local dumps go stale and
   hide which PR, base, head and CI result are current.
@@ -181,14 +161,15 @@ not declared complete.
   Do not attempt unauthenticated writes or claim a write succeeded.
 - When the owner asks for a GitHub update, write the exact proposed text to a
   temporary, git-ignored file under `.tmp/github/`, for example
-  `.tmp/github/pr-40.md` or `.tmp/github/issue-24.md`. Report the path and let
+  `.tmp/github/pr-47.md` or `.tmp/github/issue-24.md`. Report the path and let
   the owner apply it. Keep these drafts out of commits.
 - Never infer merge state from a branch name or local commit graph alone. Query
   the PR and check CI on the exact head SHA.
 
 ## Deferred work
 
-Moving AI, fading tracks, rockets, mines, audio, additional rooms, and broader
-asset integration require separate tasks. Cork and room four are implemented
-feature scope, not deferred migration work. Supplied artwork stays untouched;
-never adjust gameplay geometry to fit it. See the asset plan for future decisions.
+`docs/backlog.md` lists deferred features; `docs/asset-integration-plan.md` covers
+future artwork adoption. Do not start either without a separate assignment. Cork,
+enemy kinds, mines, audio, and campaign rooms 1–19 are implemented scope, not
+deferred migration work. Supplied artwork stays untouched; never adjust gameplay
+geometry to fit it.

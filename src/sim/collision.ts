@@ -147,10 +147,16 @@ export function firstTerrain(
   return best;
 }
 
-export function rayCircle(x: number, y: number, dx: number, dy: number, tank: Tank): number | null {
-  const ox = x - tank.x;
-  const oy = y - tank.y;
-  const radius = tank.r + CONFIG.shellRadius;
+export function rayCircle(
+  x: number,
+  y: number,
+  dx: number,
+  dy: number,
+  target: { readonly x: number; readonly y: number; readonly r: number },
+): number | null {
+  const ox = x - target.x;
+  const oy = y - target.y;
+  const radius = target.r + CONFIG.shellRadius;
   const c = ox * ox + oy * oy - radius * radius;
   if (c <= 0) {
     return 0;
@@ -226,6 +232,16 @@ export function moveTank(world: World, tank: Tank, dx: number, dy: number): void
   }
 }
 
+export function hasLineOfSight(
+  world: World,
+  ax: number,
+  ay: number,
+  bx: number,
+  by: number,
+): boolean {
+  return firstTerrain(world, ax, ay, bx - ax, by - ay, CONFIG.shellRadius) === null;
+}
+
 export function hasLOS(world: World, a: Tank, b: Tank): boolean {
-  return firstTerrain(world, a.x, a.y, b.x - a.x, b.y - a.y, CONFIG.shellRadius) === null;
+  return hasLineOfSight(world, a.x, a.y, b.x, b.y);
 }

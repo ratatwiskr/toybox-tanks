@@ -1,14 +1,22 @@
 # Visual asset integration plan
 
-Updated: 2026-11-07  
-Status: **Proposed — no asset is integrated and no gameplay change is authorized.**  
+Updated: 2026-11-17  
+Status: **Partially implemented.** Phase 0 recorded its decisions in ADR 0004. Phase 1
+(asset adapter hardening) and Phase 2 (`wood-warm` floor art) are merged through PR #40.
+Walls, tanks, turrets, shells, and the future-content sandbox remain proposed. This plan
+authorizes no gameplay change and no further implementation by itself.
+
 Source pack:
 `Perplexity-assets-w-rden-perks-und-etwa-cas-angriffe-zum-spiel-passen-aspekte+handoff/`  
-Related: `docs/gate-e-handoff.md`, `docs/architecture.md`, `docs/adr/0001-visual-gate-pending.md`.
+Related: `docs/adr/0004-asset-integration-approach.md`,
+`docs/development-workflow.md`, `docs/architecture.md`,
+`docs/adr/0001-visual-gate-pending.md`, and
+`docs/history/assets-and-audio-2026-11.md`.
 
 This plan describes how to adopt the already-drafted background and in-game artwork in
-small, reviewable, presentation-only steps. It is not an instruction to start coding. Each
-phase ends in a human visual review and a separately authorized commit.
+small, reviewable, presentation-only steps. It is not an instruction to start coding.
+Phases 0–2 are complete; each remaining phase needs human visual review and a separately
+authorized change.
 
 ## 1. Goal
 
@@ -50,30 +58,35 @@ Inside each directory:
 
 The zip packages are the most complete source (`toybox-assets-kit.zip`,
 `toybox-baukasten-erweiterung.zip`, `toybox-fussboden-kit.zip`,
-`toybox-rand-assets.zip`). Phase 0 should choose one canonical location and remove the
-duplicate copies in a separate, approved cleanup; do not delete user-supplied files
-without asking.
+`toybox-rand-assets.zip`). ADR 0004 (D10) leaves the duplicate copies untouched; a
+canonical-location cleanup needs a separate approved change. Do not delete user-supplied
+files without asking.
 
 ## 3. Verified technical contract
 
 Checked against the committed JavaScript, not only the handoff prose:
 
-### `ToyboxAssets` (vehicle/prop study, v0.1)
+### `ToyboxAssets` (vehicle/prop study)
 
-- Exposes **only** `definitions`, `markup(id, options)`, `svg(id, options)`,
-  `image(id, options)`.
-- The later `prepareLayers` / `drawLayers` API mentioned in the handoff is **not present**
-  in this revision. Do not call it.
-- Parts use `parts[].rotation` with values `body`, `aim`, `loaded`, `fixed` (not `role`).
+Phase 0 (ADR 0004, D1) selected the `toybox-assets (2).js` revision. The checked-in
+`src/render/asset-data.ts` is extracted from it, so the implemented adapter never calls
+the pack's globals.
+
+- The `(2)` revision exposes `definitions`, `markup`, `svg`, `image`, plus
+  `prepareLayers(id, resolution = 256)` and `drawLayers(ctx, layers, x, y, size, options)`.
+- Parts use `parts[].role` with values `body`, `aim`, `loaded`, `fixed`; shadows are
+  `[rx, ry]` arrays. It has no `footprint`, `aimPivot` or `bodyForward` metadata.
+- The earlier `toybox-assets.js` (v0.1 study) used `parts[].rotation`, carried
+  `footprint`/`aimPivot`/`bodyForward`, and had no layer-preparation API. That schema is
+  historical; do not mix it into new data.
 - `markup`/`svg` are synchronous string builders. `image` creates a **new `Image` and data
-  URI per call**, so the adapter must decode once per asset/pose and cache; never call it
-  per frame.
-- ViewBox is `-64 -64 128 128`; default forward is +X; angles are degrees, clockwise on
-  screen; tank muzzle marker `[54, 0]`; art footprint radius `35` is **visual only**.
+  URI per call**, so decode once per asset/pose and cache; never call it per frame.
+- ViewBox is `-64 -64 128 128`; forward is +X; angles are degrees, clockwise on screen;
+  tank muzzle marker `[54, 0]` is visual metadata only.
 - IDs: `tank-blue`, `tank-orange`, `tank-enemy`, `turret-enemy`, `catapult-orange`,
   `catapult-enemy`, `bullet-blue`, `bullet-enemy`, `catapult-ball`, `chick`, `block-wood`,
-  `block-blue`, `block-red`, `block-cork-1`/`-2`/`-3`.
-- Cork states are `block-cork-1..3` with `damageStage` `0..2` (not `0/1/2` IDs).
+  `block-blue`, `block-red`, `block-cork-0`/`-1`/`-2`.
+- Cork states are `block-cork-0..2` with `damageStage` `0..2` (not `1..3`).
 
 ### `ToyboxBlocks` (block expansion)
 
@@ -96,6 +109,9 @@ Checked against the committed JavaScript, not only the handoff prose:
 
 ### `ToyboxBorder`
 
+ADR 0004 (D6) chose **not** to use separate border artwork; the generated outer wall ring
+gets the wall skin. This contract is reference only.
+
 - Exposes `palette`, `pieces`, `segment`, `borderMarkup`, `svg`, `image`.
 - Defaults are `960 × 560` and thickness `36`. The game is `960 × 540`, so every call must
   pass explicit dimensions.
@@ -104,17 +120,17 @@ Checked against the committed JavaScript, not only the handoff prose:
 - Parts use different viewBoxes; do not normalize them as 128-unit centered squares.
 - Inner boundary is the playable edge. Art lives outside it. Seams are not gaps.
 
-## 4. Conflicts with the current game that need an explicit decision
+## 4. Conflicts with the current game
 
-| #   | Conflict                | Current game                                                     | Asset study                                                         | Recommended handling                                                                                                                                   |
-| --- | ----------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1   | Enemy palette           | Pink/magenta hull and shells (`#b86280`, `#f589ac`)              | Charcoal/red                                                        | Keep current enemy colors until a palette change is approved; do not silently switch.                                                                  |
-| 2   | Player projectile color | One shared pale-yellow shell for both players                    | Single `bullet-blue` study asset                                    | Keep the shared shell, or add blue/orange variants only with approval.                                                                                 |
-| 3   | Tank size               | Collision radius `15`; body drawn about `34 × 30`                | Art footprint radius `35`, muzzle `[54, 0]`                         | Scale art to the existing body/muzzle; never change `tankRadius` or the simulation muzzle.                                                             |
-| 4   | Wall cells              | Adjacent `40 × 40` wall cells drawn individually                 | Blocks authored around a 128 viewBox with ~`100 × 58` visual bounds | Choose per-cell inset, merged wall runs, or a parametric skin. Do not add walkable gaps.                                                               |
-| 5   | Border framing          | Canvas is exactly the `960 × 540` arena; no presentation padding | Border art extends outside the playable rectangle                   | Skip the border until framing is approved, or overlay it inside the frame without changing collision. Any arena shrink/padding needs conscious review. |
-| 6   | Floor watermark         | Procedural “TOYBOX” text and spawn rings                         | Wood/carpet tile, optional rug                                      | Preserve spawn readability; decide whether the watermark stays or moves to the rug.                                                                    |
-| 7   | Future content          | Not implemented                                                  | Catapult, chick, cork damage, roofs                                 | Sandbox only. Art does not authorize new mechanics.                                                                                                    |
+| #   | Conflict                | Current game                                                     | Asset study                                                         | Recommended handling                                                                                                             |
+| --- | ----------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Enemy palette           | Pink/magenta hull and shells (`#b86280`, `#f589ac`)              | Charcoal/red                                                        | Keep current enemy colors until a palette change is approved; do not silently switch.                                            |
+| 2   | Player projectile color | One shared pale-yellow shell for both players                    | Single `bullet-blue` study asset                                    | Keep the shared shell, or add blue/orange variants only with approval.                                                           |
+| 3   | Tank size               | Collision radius `15`; body drawn about `34 × 30`                | Muzzle `[54, 0]`; v0.1 footprint radius `35`                        | Scale art to the existing body/muzzle; never change `tankRadius` or the simulation muzzle. See D9.                               |
+| 4   | Wall cells              | Adjacent `40 × 40` wall cells drawn individually                 | Blocks authored around a 128 viewBox with ~`100 × 58` visual bounds | Choose per-cell inset, merged wall runs, or a parametric skin. Do not add walkable gaps.                                         |
+| 5   | Border framing          | Canvas is exactly the `960 × 540` arena; no presentation padding | Border art extends outside the playable rectangle                   | Resolved in ADR 0004 (D6): no separate border art. The generated outer wall ring uses the same wall skin; the arena stays fixed. |
+| 6   | Floor watermark         | Procedural “TOYBOX” text and spawn rings                         | Wood/carpet tile, optional rug                                      | Resolved in PR #40: `wood-warm` floor integrated, watermark/tagline removed, spawn rings preserved, rug skipped.                 |
+| 7   | Future content          | Not implemented                                                  | Catapult, chick, roof props, asset-based cork states                | Sandbox only. Art does not authorize new mechanics.                                                                              |
 
 ## 5. Non-negotiable invariants
 
@@ -133,37 +149,34 @@ Checked against the committed JavaScript, not only the handoff prose:
 - Do not weaken tests or guardrails; add presentation tests rather than widening the
   simulation coverage include set.
 
-## 6. Proposed shape of the change
+## 6. Shape of the change
 
-Keep the current renderer and add one narrow presentation module, for example
-`src/render/assets.ts`:
+The renderer stays in charge; presentation modules sit beside it and never mutate the
+world. Phase 1 added `src/render/assets.ts` with typed data from
+`src/render/asset-data.ts`; Phase 2 added `src/render/floor.ts` and
+`src/render/floor-data.ts`. The adapter is not yet wired into tank, turret, or shell
+drawing:
 
 ```text
 src/render/assets.ts      validate + load + decode + cache + draw (no world mutation)
-src/render/renderer.ts    asks the adapter for floor/wall/tank/shell visuals
-src/main.ts               starts preload before the first gameplay frame, surfaces errors
-src/assets.d.ts           module declarations only if a wrapper needs them
+src/render/asset-data.ts  typed tank/turret layer data extracted from the pack
+src/render/floor.ts       floor validation, SVG decode, pattern preparation
+src/render/floor-data.ts  wood-warm tile data
+src/render/renderer.ts    reads the adapter; no gameplay mutation
+src/main.ts               preloads before the first gameplay frame, surfaces errors
 ```
 
-Packaging options, in preference order:
-
-1. **Typed adapter over checked-in data.** Convert the generated `definitions`/`floors`/
-   `pieces`/JSON data into typed modules (or import the JSON at build time) and draw with
-   our own Canvas code. This avoids `globalThis`, `eval`, and classic-script ordering, and
-   works in the single-file build. It is more work but the most testable.
-2. **Vendored classic scripts plus a thin loader.** Bundle the four generated scripts so
-   their globals exist before the renderer, then call them through a typed wrapper. Smaller
-   diff, but adds implicit globals and makes unit testing harder.
-3. **Raw import + evaluation.** Rejected: CSP/eval concerns, hard to type, easy to break
-   the test boundary.
-
-For rotated entities, option 1 plus per-layer `Image` objects (decoded once from
-self-contained SVG data URIs) is the recommended default. Keep the source SVGs/Markdown in
-the repository, but do not fetch them at runtime.
+ADR 0004 (D1/D2) chose a typed adapter over checked-in data: extract the pack's
+definitions into typed modules, rasterize layers once, draw with `drawImage`, and keep
+procedural drawing as the fallback. Vendored classic scripts plus a loader were considered
+but not chosen; raw import/evaluation is rejected for CSP, typing and test-boundary
+reasons. No runtime fetch, CDN, `eval`, or external resource is allowed.
 
 ## 7. Phased plan
 
 ### Phase 0 — Inventory and decision record (no production code)
+
+**Status: done — ADR 0004.** Duplicate pack copies stay untouched (D10).
 
 - Choose the canonical pack location; note duplicate files and the two prose revisions.
 - Extract/verify `assets.json`, `blocks.json`, `parts.json`, and the `.svg` files.
@@ -175,6 +188,9 @@ the repository, but do not fetch them at runtime.
 **Exit:** written decision record approved by the owner. No visual change yet.
 
 ### Phase 1 — Asset adapter and loading failure path
+
+**Status: done — `src/render/assets.ts` and `src/render/asset-data.ts` merged via PR #40;
+not yet wired into tank/shell drawing.**
 
 - Add the presentation-only adapter with validation, preload, decode-once caching, and
   bounded caches.
@@ -189,6 +205,10 @@ visible and recoverable.
 
 ### Phase 2 — Background first (lowest gameplay risk)
 
+**Status: done — `wood-warm` floor and preload/fallback path merged via PR #40. The
+watermark and tagline were removed after owner review; spawn rings remain; the rug is
+skipped.**
+
 - Apply `wood-warm` as a repeating, world-anchored floor pattern.
 - Keep the rug optional; if enabled, draw it flat under entities and outside collision
   logic.
@@ -198,20 +218,23 @@ visible and recoverable.
 
 **Exit:** side-by-side candidate screenshots at small and large viewports; human review.
 
-### Phase 3 — Walls, then border (framing decision)
+### Phase 3 — Walls (border decision resolved)
+
+**Status: proposed.**
 
 - Reskin wall cells/rectangular runs with natural wood (`block-wood` or
   `block-{shape}-natural`). Keep authoritative wall rectangles byte-identical.
 - Do not use triangular/round/roof shapes as new colliders.
-- Treat the border as a separate decision because it needs presentation padding. If
-  approved, align its inner rectangle to the existing boundary and apply the correct pad;
-  never shrink the playable area silently.
+- ADR 0004 (D6) removed the separate border artwork: the generated outer wall ring uses
+  the same skin as interior walls. Never shrink or pad the playable area silently.
 - Preserve the conservative corner and one-bounce behaviour.
 
 **Exit:** collision/simulation snapshots unchanged; screenshots at 960 × 540 and resized;
-human review of wall contrast and border framing.
+human review of wall contrast.
 
 ### Phase 4 — Existing tanks, turrets, shells
+
+**Status: proposed.**
 
 - Draw hull with body heading and turret with aim heading; keep the shared pivot and
   authoritative muzzle aligned.
@@ -224,6 +247,8 @@ human review of wall contrast and border framing.
 human; synthetic gamepad tests still pass.
 
 ### Phase 5 — Sandbox for future content (still no gameplay)
+
+**Status: proposed.** The existing development visual catalogue is not this sandbox.
 
 Add a presentation sandbox (test-only or a separate dev route) that can show:
 
@@ -241,40 +266,48 @@ conditions.
 
 ## 8. Review and evidence workflow
 
-- Every phase gets its own candidate screenshots in `test-results/visual-candidates/`
-  (or a phase-specific subdirectory) and a human approval note.
-- Candidate PNGs are not committed unless the baseline policy allows it; baselines are
-  committed only after approval.
-- Automated evidence: `npm run verify`, `npm run test:browsers`, bundle grep for
+- Use the current development procedure in `docs/development-workflow.md`. Add or extend
+  deterministic scenes in the shared catalogue; do not create a parallel renderer.
+- `npm run capture:visual:baseline` refreshes the overwriteable checkpoint in
+  `docs/visual-catalogue/current/`; `npm run test:visual:compare` checks against it;
+  `npm run test:visual:report` serves the comparison report. Candidates are ignored
+  output, not committed baselines.
+- A saved screenshot is not owner aesthetic approval. Formal reference approval and
+  mandatory visual regression remain deferred (ADR 0001).
+- Automated evidence: `npm run verify`, `npm run test:browsers`, a bundle grep for
   `__TOYBOX_TEST__`, and a `file://` smoke of `dist-single/index.html`.
 - Manual evidence: real keyboard for both players, pause/focus loss, resize, and the
   smallest supported viewport. Gamepad claims require hardware; otherwise mark NOT RUN.
-- Report PASS / FAIL / NOT RUN / BLOCKED per the asset pack’s `VALIDATION_CHECKLIST.md`.
+- Report PASS / FAIL / NOT RUN / BLOCKED; distinguish authored tests, local runs, CI, and
+  physical-device checks.
 
 ## 9. Risks
 
-| Risk                                               | Mitigation                                                                                                        |
-| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| SVG decoding is async and can fail on first start  | Preload before the first frame, cache results, keep a procedural fallback and a visible error.                    |
-| `image()` allocates a new `Image` per call         | Cache per asset/pose; assert decode counts in unit tests.                                                         |
-| Large generated JS inflates the single-file bundle | Prefer typed data modules and only the assets actually used; check `dist-single` size and load time.              |
-| Border padding changes framing                     | Defer border until the padding decision is approved; keep the arena logical size fixed.                           |
-| Art hides combat cues                              | Draw order: floor → rug → shadows → walls/border → tanks → shells → aim/feedback → HUD. Review at small viewport. |
-| Asset memory grows across rooms/retries            | Static caches are fine; never accumulate per-world/per-entity images.                                             |
-| “Art exists” pressure to add mechanics             | Sandbox only; mechanics need a separate spec and approval.                                                        |
+| Risk                                               | Mitigation                                                                                           |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| SVG decoding is async and can fail on first start  | Preload before the first frame, cache results, keep a procedural fallback and a visible error.       |
+| `image()` allocates a new `Image` per call         | Cache per asset/pose; assert decode counts in unit tests.                                            |
+| Large generated JS inflates the single-file bundle | Prefer typed data modules and only the assets actually used; check `dist-single` size and load time. |
+| Border padding changes framing                     | Resolved by ADR 0004 D6: no separate border art; keep the arena logical size fixed.                  |
+| Art hides combat cues                              | Draw order: floor → shadows → walls → tanks → shells → aim/feedback → HUD. Review at small viewport. |
+| Asset memory grows across rooms/retries            | Static caches are fine; never accumulate per-world/per-entity images.                                |
+| “Art exists” pressure to add mechanics             | Sandbox only; mechanics need a separate spec and approval.                                           |
 
 ## 10. Explicit non-goals
 
-No new enemy AI, movement for the enemy panzer, catapult mechanics, chick decoy
-mechanics, destructible cork, new collision shapes, level editor, engine/framework
-migration, progression/unlocks, or asset-driven map generation.
+This asset plan authorizes no new mechanics. It does not add catapult mechanics, chick
+decoy mechanics, movement for the enemy panzer, new collision shapes, a level editor,
+engine/framework migration, progression/unlocks, or asset-driven map generation. Cork
+destruction and the current enemy kinds are implemented elsewhere; their existence does
+not authorize asset-driven gameplay changes.
 
 ## 11. Starting prompt for the next agent
 
-> Read `AGENTS.md`, `docs/asset-integration-plan.md`, `docs/gate-e-handoff.md`, and the
-> asset pack’s `README.md` and `ASSET_AGENT_INSTRUCTIONS.md`. Do not modify production
-> code yet. Complete phase 0: inventory the actual packages, confirm the API revision
-> (`ToyboxAssets` v0.1 has no `prepareLayers`), list conflicts with the current renderer,
-> propose the smallest presentation-only adapter and the exact files to add, and identify
-> the decisions that need owner approval. Do not change gameplay, collision, world
-> dimensions, controls, or tests, and do not commit or push without authorization.
+> Read `AGENTS.md`, `docs/asset-integration-plan.md`,
+> `docs/adr/0004-asset-integration-approach.md`, and
+> `docs/development-workflow.md`. Confirm the actual branch, PR, and current state first.
+> Phases 0–2 are implemented; do not repeat them. Do not modify production code without a
+> specific assignment for a remaining phase (walls, tanks/turrets/shells, or the future
+> sandbox). Keep `src/sim/**` and all collision geometry untouched, fit art to the existing
+> body and muzzle, do not change gameplay or tests, and do not commit or push without
+> authorization.

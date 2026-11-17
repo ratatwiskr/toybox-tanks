@@ -119,6 +119,25 @@ describe('gamepad adapter', () => {
     expect(adapter.readCommand(0, { x: 0, y: 0, turn: 0, fire: true }).fire).toBe(true);
   });
 
+  it('maps the X button to the alt command and preserves keyboard alt', () => {
+    const adapter = new GamepadAdapter();
+    const pad = makePad();
+    poll(adapter, [pad]);
+    adapter.readCommand(0, neutral());
+
+    const altButton = pad.buttons[2];
+    expect(altButton).toBeDefined();
+    if (altButton === undefined) {
+      return;
+    }
+
+    altButton.pressed = true;
+    expect(adapter.readCommand(0, neutral()).alt).toBe(true);
+
+    altButton.pressed = false;
+    expect(adapter.readCommand(0, { ...neutral(), alt: true }).alt).toBe(true);
+  });
+
   it('treats Start as an edge and ignores a held button', () => {
     const adapter = new GamepadAdapter();
     const pad = makePad();

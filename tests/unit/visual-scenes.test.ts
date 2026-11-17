@@ -7,6 +7,7 @@ import { createWorld } from '../../src/sim/world';
 import { snapshotWorld } from '../../src/test-bridge';
 import { MOTION_SCENES } from '../../src/visual-motion-scenes';
 import { createVisualWorld, VISUAL_SCENES } from '../../src/visual-scenes';
+import { captureScenes, imageKinds } from '../visual/catalogue-support';
 
 describe('curated visual fixtures', () => {
   it('recreates independent deterministic state without changing campaign data', () => {
@@ -66,5 +67,58 @@ describe('curated visual fixtures', () => {
     expect(snapshot.corks[0]?.hitsRemaining).toBe(3);
     expect(snapshot.corks).not.toBe(world.corks);
     expect(snapshot.time / CONFIG.fixedStep).toBe(0);
+  });
+
+  it('covers every enemy kind with labels and multi-hit pips', () => {
+    const world = createVisualWorld('enemy-kinds');
+
+    expect(world.enemies.map((enemy) => enemy.kind)).toEqual([
+      'sentry',
+      'roamer',
+      'bruiser',
+      'lobber',
+      'prankster',
+    ]);
+    expect(world.enemies.map((enemy) => enemy.id)).toEqual(['s0', 'r1', 'b2', 'l3', 'm4']);
+    expect(world.enemies.find((enemy) => enemy.kind === 'bruiser')?.hp).toBe(3);
+    expect(world.enemies.find((enemy) => enemy.kind === 'bruiser')?.ai.plan).not.toBeNull();
+  });
+
+  it('shows unarmed, armed, and fused mines without changing their timers', () => {
+    const world = createVisualWorld('mines-armed');
+
+    expect(world.mines).toHaveLength(4);
+    expect(world.mines.filter((mine) => mine.armed === 0)).toHaveLength(1);
+    expect(world.mines.filter((mine) => mine.owner.faction === 'enemy')).toHaveLength(1);
+    expect(world.mines.find((mine) => mine.fuse !== undefined)?.faction).toBe('enemy');
+    expect(world.nextMine).toBe(world.mines.length);
+  });
+
+  it('shows a real lobber pom in flight with its landing point', () => {
+    const world = createVisualWorld('lobber-pom');
+    const pom = world.poms[0];
+
+    expect(world.enemies.some((enemy) => enemy.kind === 'lobber')).toBe(true);
+    expect(world.poms).toHaveLength(1);
+    expect(pom?.tx).toBe(420);
+    expect(pom?.ty).toBe(320);
+    expect(pom?.flight).toBeGreaterThan(0);
+    expect(pom?.x).not.toBe(pom?.tx);
+  });
+
+  it('registers every static and motion scene for the full/arena/detail views', () => {
+    const scenes = captureScenes();
+
+    for (const fixture of VISUAL_SCENES) {
+      const scene = scenes.find((entry) => entry.id === fixture.id);
+      if (scene === undefined) {
+        throw new Error(`Unregistered fixture: ${fixture.id}`);
+      }
+      expect(scene.fixture).toBe(fixture.id);
+      expect(imageKinds(scene)).toEqual(['full', 'arena', 'detail']);
+    }
+    expect(
+      MOTION_SCENES.every((motion) => VISUAL_SCENES.some((scene) => scene.id === motion.id)),
+    ).toBe(true);
   });
 });

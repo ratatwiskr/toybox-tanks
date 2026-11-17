@@ -95,7 +95,9 @@ describe('test bridge', () => {
     expect(room.room).toBe(roomIndex);
     expect(room.mode).toBe('solo');
     expect(room.players).toHaveLength(1);
-    expect(room.enemies).toHaveLength(roomAt(roomIndex).expectedEnemies);
+    const cells = roomAt(roomIndex).grid.replaceAll('\n', '');
+    const uppercaseEnemies = Array.from(cells).filter((cell) => 'SRBLM'.includes(cell)).length;
+    expect(room.enemies).toHaveLength(uppercaseEnemies);
   });
 
   it('loads the level-select scenario and asks the host to show the overlay', () => {
@@ -199,6 +201,26 @@ describe('test bridge', () => {
     const second = bridge.advanceTicks(commands.length, { commands });
     expect(second).toEqual(first);
     expect(bridge.snapshot()).toEqual(firstSnapshot);
+  });
+
+  it('exposes mine and pom counts and forwards alt commands', () => {
+    const state = harness();
+    const bridge = createTestBridge(state.host);
+    bridge.loadScenario('coop');
+
+    const before = bridge.snapshot();
+    expect(before.mines).toEqual([]);
+    expect(before.poms).toEqual([]);
+    expect(before.nextMine).toBe(0);
+
+    const after = bridge.advanceTicks(1, {
+      commands: [{ ...neutral(), alt: true }, neutral()],
+    });
+
+    expect(after.mines).toHaveLength(1);
+    expect(after.mines[0]?.owner).toBe('p1');
+    expect(after.nextMine).toBe(1);
+    expect(after.poms).toEqual([]);
   });
 
   it('rejects mixed command and sampled-input modes', () => {

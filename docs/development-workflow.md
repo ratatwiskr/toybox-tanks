@@ -106,6 +106,8 @@ ports without reusing an arbitrary existing server. No installations occur.
 The workflow was exercised locally on 2026-11-12: the checkpoint was recaptured,
 the full comparison passed, and formatting, lint, typecheck, unit, coverage,
 e2e, candidate-capture, release and Chromium/WebKit hosted smoke checks ran.
-Actual commands, exits and limitations are recorded in `docs/progress.md`.
+Actual commands, exits and limitations are recorded in
+`docs/history/visual-and-presentation-2026-11.md`; current state is in
+`docs/progress.md`.
 Raw catalogue Playwright invocation still stages captures only; use
 capture:visual:baseline for replacement.

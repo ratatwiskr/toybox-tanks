@@ -74,6 +74,13 @@ export function createMobileControls(host: MobileHost): MobileControls {
   let fullscreenFailed = false;
   let immersive = false;
   const surfaces: Surface[] = [];
+  const altButton = document.createElement('button');
+  altButton.type = 'button';
+  altButton.id = 'altBtn';
+  altButton.className = 'touch-alt';
+  altButton.setAttribute('aria-label', 'Lay or detonate mine');
+  altButton.textContent = 'Mine';
+  let altPointer: number | null = null;
 
   retainBackgroundTouchFocus({
     app: host.app,
@@ -107,8 +114,21 @@ export function createMobileControls(host: MobileHost): MobileControls {
     }
   }
 
+  function finishAlt(event: PointerEvent): void {
+    if (altPointer !== event.pointerId) {
+      return;
+    }
+    altPointer = null;
+    adapter.releaseAlt();
+    altButton.classList.remove('engaged');
+    if (altButton.hasPointerCapture(event.pointerId)) {
+      altButton.releasePointerCapture(event.pointerId);
+    }
+  }
+
   function clear(): void {
     const held = surfaces.map((surface) => ({ surface, id: surface.pointer }));
+    const heldAlt = altPointer;
     adapter.clear();
     for (const surface of surfaces) {
       surface.pointer = null;
@@ -118,6 +138,11 @@ export function createMobileControls(host: MobileHost): MobileControls {
       if (id !== null) {
         releaseCapture(surface, id);
       }
+    }
+    altPointer = null;
+    altButton.classList.remove('engaged');
+    if (heldAlt !== null && altButton.hasPointerCapture(heldAlt)) {
+      altButton.releasePointerCapture(heldAlt);
     }
   }
 
@@ -222,6 +247,31 @@ export function createMobileControls(host: MobileHost): MobileControls {
 
   addSurface('move', 'Move');
   addSurface('aim', 'Drag aim / tap fire');
+  layer.append(altButton);
+
+  altButton.addEventListener('pointerdown', (event) => {
+    if (!active || !toggle.checked || !canPlay() || event.button !== 0 || altPointer !== null) {
+      return;
+    }
+    altPointer = event.pointerId;
+    adapter.pressAlt();
+    try {
+      altButton.setPointerCapture(event.pointerId);
+    } catch {
+      adapter.releaseAlt();
+      altPointer = null;
+      return;
+    }
+    event.preventDefault();
+    host.focusGame();
+    altButton.classList.add('engaged');
+  });
+  altButton.addEventListener('pointerup', finishAlt);
+  altButton.addEventListener('pointercancel', finishAlt);
+  altButton.addEventListener('lostpointercapture', finishAlt);
+  altButton.addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+  });
 
   toggle.addEventListener('change', () => {
     clear();

@@ -1,9 +1,19 @@
 import { describe, expect, it } from 'vitest';
 
 import { CONFIG } from '../../src/config';
-import { activeShells, advanceShell, damage, shoot } from '../../src/sim/combat';
+import {
+  activeShells,
+  advanceShell,
+  altWeapon,
+  boom,
+  damage,
+  layMine,
+  shoot,
+  updateMines,
+} from '../../src/sim/combat';
+import { KINDS, MINE } from '../../src/sim/kinds';
 import type { Shell } from '../../src/sim/types';
-import { createEmptyWorld, createTank, createWorld } from '../../src/sim/world';
+import { createEmptyWorld, createTank, createWorld, stepWorld } from '../../src/sim/world';
 
 function makeShell(x = 60, y = 100, vx = 100, vy = 0, faction: Shell['faction'] = 'player'): Shell {
   return {
@@ -171,5 +181,143 @@ describe('firing limits and muzzle sweep', () => {
     expect(shoot(world, player)).toBe(true);
     expect(world.shots).toBe(1);
     expect(world.nextShell).toBe(1);
+  });
+});
+
+describe('jack-in-the-box mines', () => {
+  function mineWorld() {
+    const world = createEmptyWorld('coop');
+    const enemy = createTank('m0', 'enemy', 700, 300, 'prankster');
+    const player = createTank('p1', 'player', 300, 300);
+    world.enemies = [enemy];
+    world.players = [player];
+    return { world, enemy, player };
+  }
+
+  it('arms after armPlayer, then a player contact detonates it', () => {
+    const { world, enemy, player } = mineWorld();
+    const mine = layMine(world, enemy, player.x, player.y);
+
+    updateMines(world, MINE.arm - 0.01);
+    expect(mine.dead).toBe(false);
+    expect(player.hp).toBe(CONFIG.playerHealth);
+
+    updateMines(world, 0.02);
+    expect(mine.dead).toBe(true);
+    expect(player.hp).toBe(CONFIG.playerHealth - 1);
+  });
+
+  it('arms a player mine after armPlayer and detonates on enemy contact', () => {
+    const { world, enemy, player } = mineWorld();
+    const mine = layMine(world, player, enemy.x, enemy.y);
+
+    updateMines(world, MINE.armPlayer - 0.01);
+    expect(mine.dead).toBe(false);
+    expect(enemy.hp).toBe(KINDS.prankster.hp);
+
+    updateMines(world, 0.02);
+    expect(mine.dead).toBe(true);
+    expect(enemy.hp).toBe(KINDS.prankster.hp - 1);
+  });
+
+  it('detonates from an opposing shell but not from a same-faction shell', () => {
+    const opposing = mineWorld();
+    const hostileMine = layMine(opposing.world, opposing.enemy, 300, 300);
+    const playerShell = makeShell(200, 300, 100, 0, 'player');
+    advanceShell(opposing.world, playerShell, 150);
+    expect(hostileMine.dead).toBe(true);
+    expect(playerShell.dead).toBe(true);
+
+    const friendly = mineWorld();
+    const friendlyMine = layMine(friendly.world, friendly.enemy, 300, 300);
+    const enemyShell = makeShell(200, 300, 100, 0, 'enemy');
+    advanceShell(friendly.world, enemyShell, 150);
+    expect(friendlyMine.dead).toBe(false);
+  });
+
+  it('chains nearby mines on a 0.12 s fuse', () => {
+    const { world, enemy } = mineWorld();
+    const first = layMine(world, enemy, 300, 300);
+    const second = layMine(world, enemy, 330, 300);
+
+    boom(world, first);
+    expect(first.dead).toBe(true);
+    expect(second.dead).toBe(false);
+    expect(second.fuse).toBeCloseTo(0.12, 8);
+
+    updateMines(world, 0.13);
+    expect(second.dead).toBe(true);
+  });
+
+  it('blocks ground blast damage with a wall but still chips a cork', () => {
+    const open = mineWorld();
+    const openMine = layMine(open.world, open.enemy, 300, 300);
+    open.player.x = 340;
+    boom(open.world, openMine);
+    expect(open.player.hp).toBe(CONFIG.playerHealth - 1);
+
+    const blocked = mineWorld();
+    blocked.player.x = 340;
+    blocked.world.walls = [{ x: 318, y: 260, w: 20, h: 80 }];
+    const blockedMine = layMine(blocked.world, blocked.enemy, 300, 300);
+    boom(blocked.world, blockedMine);
+    expect(blocked.player.hp).toBe(CONFIG.playerHealth);
+
+    const corkWorld = mineWorld();
+    corkWorld.world.corks = [
+      { id: 'c1', x: 320, y: 280, w: 40, h: 40, hitsRemaining: 3, destroyed: false },
+    ];
+    const corkMine = layMine(corkWorld.world, corkWorld.enemy, 300, 300);
+    boom(corkWorld.world, corkMine);
+    expect(corkWorld.world.corks[0]?.hitsRemaining).toBe(2);
+  });
+
+  it('lays on alt, remote-detonates on the next press, and gates the 1.2 s recharge', () => {
+    const world = createEmptyWorld('coop');
+    const player = createTank('p1', 'player', 300, 300);
+    player.angle = 0;
+    const enemy = createTank('s0', 'enemy', 850, 300);
+    enemy.cooldown = 999;
+    world.players = [player];
+    world.enemies = [enemy];
+    const neutral = { x: 0, y: 0, turn: 0, fire: false };
+
+    stepWorld(world, CONFIG.fixedStep, [{ ...neutral, alt: true }]);
+    expect(world.mines).toHaveLength(1);
+    const laid = world.mines[0];
+    expect(laid?.owner).toBe(player);
+
+    stepWorld(world, CONFIG.fixedStep, [{ ...neutral, alt: true }]);
+    expect(world.mines).toHaveLength(1);
+
+    stepWorld(world, CONFIG.fixedStep, [neutral]);
+    stepWorld(world, CONFIG.fixedStep, [{ ...neutral, alt: true }]);
+    expect(laid?.dead).toBe(true);
+    expect(world.mines).toHaveLength(0);
+    expect(player.mineCooldown).toBeCloseTo(1.2, 8);
+
+    stepWorld(world, CONFIG.fixedStep, [neutral]);
+    stepWorld(world, CONFIG.fixedStep, [{ ...neutral, alt: true }]);
+    expect(world.mines).toHaveLength(0);
+
+    stepWorld(world, CONFIG.fixedStep, [neutral]);
+    for (let tick = 0; tick <= Math.ceil(1.2 / CONFIG.fixedStep); tick += 1) {
+      stepWorld(world, CONFIG.fixedStep);
+    }
+    stepWorld(world, CONFIG.fixedStep, [{ ...neutral, alt: true }]);
+    expect(world.mines).toHaveLength(1);
+  });
+
+  it('exposes altWeapon directly for callers that already performed edge detection', () => {
+    const { world, player } = mineWorld();
+    player.angle = 0;
+
+    altWeapon(world, player);
+    expect(world.mines).toHaveLength(1);
+    const mine = world.mines[0];
+    expect(mine?.x).toBeCloseTo(player.x - 20, 8);
+
+    altWeapon(world, player);
+    expect(mine?.dead).toBe(true);
   });
 });

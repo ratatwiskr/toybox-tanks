@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import { CONFIG } from '../../src/config';
+import { layMine } from '../../src/sim/combat';
+import { KINDS, MINE } from '../../src/sim/kinds';
 import { MAPS } from '../../src/sim/maps';
 import {
   activeShells,
@@ -404,6 +406,81 @@ describe('simulation', () => {
 
     stepWorld(world, 0.3);
     expect(world.effects).toHaveLength(0);
+  });
+
+  it('lands poms during a step and clears them when the room ends', () => {
+    const world = createEmptyWorld('coop');
+    const player = createTank('p1', 'player', 300, 300);
+    const enemy = createTank('s0', 'enemy', 800, 300);
+    enemy.cooldown = 999;
+    world.players = [player];
+    world.enemies = [enemy];
+    const flight = KINDS.lobber.flight;
+    world.poms = [
+      {
+        id: 1,
+        faction: 'enemy',
+        sx: 300,
+        sy: 300,
+        x: 300,
+        y: 300,
+        tx: 300,
+        ty: 300,
+        flight,
+        life: flight,
+        blast: KINDS.lobber.blast,
+        dead: false,
+      },
+    ];
+
+    stepWorld(world, flight * 2);
+
+    expect(player.hp).toBe(CONFIG.playerHealth - 1);
+    expect(world.poms).toHaveLength(0);
+
+    world.poms.push({
+      id: 2,
+      faction: 'enemy',
+      sx: 800,
+      sy: 300,
+      x: 800,
+      y: 300,
+      tx: 800,
+      ty: 300,
+      flight,
+      life: flight,
+      blast: KINDS.lobber.blast,
+      dead: false,
+    });
+    enemy.alive = false;
+    evaluateOutcome(world);
+
+    expect(world.state).toBe('cleared');
+    expect(world.poms).toHaveLength(0);
+  });
+
+  it('updates and clears mines during a step and when the room ends', () => {
+    const world = createEmptyWorld('coop');
+    const player = createTank('p1', 'player', 300, 300);
+    const enemy = createTank('s0', 'enemy', 800, 300);
+    enemy.cooldown = 999;
+    world.players = [player];
+    world.enemies = [enemy];
+
+    const mine = layMine(world, enemy, player.x, player.y);
+    mine.armed = MINE.arm;
+
+    stepWorld(world, CONFIG.fixedStep);
+
+    expect(player.hp).toBe(CONFIG.playerHealth - 1);
+    expect(world.mines).toHaveLength(0);
+
+    layMine(world, enemy, 500, 300);
+    enemy.alive = false;
+    evaluateOutcome(world);
+
+    expect(world.state).toBe('cleared');
+    expect(world.mines).toHaveLength(0);
   });
 
   it('bounds the event log to the seven most recent entries', () => {

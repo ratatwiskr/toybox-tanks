@@ -38,7 +38,8 @@ capture after review.
 
 The focused unit and browser specs, full comparison, formatting, lint,
 typecheck, coverage, e2e, release and Chromium/WebKit hosted smoke checks passed
-locally on 2026-11-12; actual commands and exits are in `docs/progress.md`.
+locally on 2026-11-12; actual commands and exits are in
+`docs/history/visual-and-presentation-2026-11.md`.
 Behavioral/renderer/room-start and production/file:// exclusion checks were
 preserved. Menu variation was diagnosed and resolved with the deterministic
 Chromium raster flag. No screenshots/references were approved, and no merge,

@@ -10,21 +10,28 @@ The testing site shows the last selected branch deployment, not necessarily the
 latest commit. Its `playtest-source.json` records the deployed source revision.
 
 - Free movement, independently aimed turrets, and one-bounce shells.
-- Fifteen rooms on a difficulty curve, from First Bounce to Ring of Fire.
+- Nineteen rooms on a difficulty curve, from First Bounce to Prank Alley.
 - A tactile corkboard level select: after choosing solo or co-op, pick any room
   blueprint and roll out.
 - Destructible three-hit cork in later rooms; permanent wooden walls retain
   ordinary bank-shot behavior.
-- Keyboard controls and optional two-gamepad input.
+- Sentries, chasing roamers, bank-shot bruisers, lobbing poms, and mine-laying
+  pranksters.
+- Keyboard controls, a player mine on `G` (P1) / `/` (P2), and optional
+  two-gamepad input. Touch P1 lays or detonates that mine with a secondary
+  button above the aim pad.
 - Static hosted and self-contained single-HTML releases.
 
 ## Status and scope
 
 The TypeScript migration, PR #14's automatic map borders, the cork feature, and
-the 15-room campaign are implemented. Replacement PR #19 was squash-merged into
+the issue #38 campaign are implemented. Replacement PR #19 was squash-merged into
 main as `5bec29e3ba4a2779286da406dba0ce113e94dba7` on 2026-11-08. Original PR #15
 was closed without merging; its conflicted stack was replaced, not left as
-pending implementation. See `docs/progress.md` for provenance and evidence.
+pending implementation. The current enemy-variety branch adds roamers, bruisers,
+lobbers, pranksters, mines, a player secondary weapon, and rooms 16–19, and
+varies enemy placement in the existing rooms; it is not merged yet. See
+`docs/progress.md` for current state and `docs/history/` for merged-work evidence.
 
 Procedural cork is intentional; ADR 0002 records the decision. SVG integration
 is not pending work. Historical migration/reconstruction handoffs are not active
@@ -34,15 +41,17 @@ The owner reported successful cork playtesting in the VS Code internal browser.
 Visual regression and comprehensive visual coverage of cork states are separate
 work; no screenshot baselines are approved here.
 
-## Experimental mobile and tablet controls (PR #17)
+## Mobile and tablet controls (PR #17)
 
-This feature branch includes landscape touch controls and optional whole-game
-fullscreen. Do not assume the production URL includes PR #17 before it merges
-and its main deployment passes. The separate playtest publisher is
+Landscape touch controls and optional whole-game fullscreen are part of main
+through PR #17 (`dd2ac51`), with the iPhone fullscreen fallback from #46
+(`9c4197f`). The separate playtest publisher is
 https://github.com/ratatwiskr/toybox-tanks-playtest.
 
 - Solo: Touch P1 uses the left pad to move and the right pad to drag-aim. Lift to
   retain heading without firing; a short tap fires once in the current direction.
+  The separate round button above the right pad lays a mine, then detonates it on
+  the next press.
 - Mixed co-op: enable Touch P1; the first assigned gamepad controls P2.
 - Two-controller co-op: disable Touch P1; the gamepads use the ordinary P1/P2 slots.
 - Gamepads: left stick moves, right stick aims, A/right trigger fires, Start pauses.
@@ -53,8 +62,9 @@ https://github.com/ratatwiskr/toybox-tanks-playtest.
 
 On 2026-11-08 the owner reported that the latest mobile state playtested well,
 including acceptance of the revised layout. Exact tested SHA/browser/device were
-not supplied. This is not proof of every tablet/controller combination. Current
-verification and remaining acceptance work are recorded in `docs/progress.md`.
+not supplied. This is not proof of every tablet/controller combination. Historical
+mobile evidence is in `docs/history/merged-baselines-and-mobile-2026-11.md`; current
+work is in `docs/progress.md`.
 
 ## Development and verification
 
@@ -84,13 +94,16 @@ See `docs/verification.md` for exact procedures.
 
 Defaults live in `src/config.ts`; rooms live in `src/sim/maps.ts`. Author exactly
 `22 × 11` interior cells: `#` permanent wall, `C` cork, `.` floor, `1`/`2` player
-spawns, and `S` sentry. The loader adds the solid perimeter outside the authored
-interior, retaining the `24 × 13` arena. Outermost authored cells are interior.
+spawns, and `S` sentry, `R` roamer, `B` bruiser, `L` lobber, or `M` prankster.
+Lowercase `r`/`b`/`l`/`m` are co-op-only variants; solo spawns uppercase symbols
+only. The loader adds the solid perimeter outside the authored interior,
+retaining the `24 × 13` arena. Outermost authored cells are interior.
 
-Validation rejects wrong dimensions, unknown symbols, invalid spawns, missing or
-mismatched sentries, and permanent disconnection. Intact cork may initially
-block a route; cleared-terrain reachability is required. This is topology
-validation, not a guarantee of balance. Keep map errors stable and actionable.
+Validation rejects wrong dimensions, unknown symbols, invalid spawns, a missing
+or mismatched total enemy count, and permanent disconnection. Intact cork may
+initially block a route; cleared-terrain reachability is required. This is
+topology validation, not a guarantee of balance. Keep map errors stable and
+actionable.
 
 ## Releases and test bridge
 
@@ -117,9 +130,10 @@ synthetic gamepads do not prove physical controller compatibility.
 approved regression baselines. Do not auto-accept screenshots or infer visual
 approval from passing tests. See `docs/adr/0001-visual-gate-pending.md`.
 
-Cork is drawn procedurally. Supplied asset packs remain unintegrated reference
-material; broader adoption is separate under `docs/asset-integration-plan.md`.
-Never change collision geometry to fit artwork.
+Cork is drawn procedurally. The `wood-warm` floor from the supplied asset pack is
+integrated; walls, tanks, turrets, and shells still use procedural art, and broader
+adoption is separate under `docs/asset-integration-plan.md`. Never change collision
+geometry to fit artwork.
 
 ## Project layout
 

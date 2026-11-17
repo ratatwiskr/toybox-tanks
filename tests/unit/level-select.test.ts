@@ -46,7 +46,7 @@ describe('level select markup', () => {
     expect(clamped).toContain(`Mission ${String(MAPS.length).padStart(2, '0')}: ${lastMap().name}`);
   });
 
-  it('draws walls, cork, player spawns, and sentries in the blueprint preview', () => {
+  it('draws walls, cork, player spawns, and enemies in the blueprint preview', () => {
     const html = markup({ selectedRoom: 4 });
 
     expect(html).toContain('viewBox="0 0 22 11"');
@@ -54,6 +54,24 @@ describe('level select markup', () => {
     expect(html).toContain('fill="#c59563"');
     expect(html).toContain('fill="#4ade80"');
     expect(html).toContain('fill="#f87171"');
+  });
+
+  it('uses kind-specific preview colors and smaller co-op-only markers', () => {
+    const previewAt = (name: string): string => {
+      const index = MAPS.findIndex((map) => map.name === name);
+      if (index < 0) {
+        throw new Error(`Missing map: ${name}`);
+      }
+      return markup({ selectedRoom: index });
+    };
+
+    expect(previewAt('Roaming Patrol')).toContain('fill="#f0b45b"');
+    expect(previewAt('Corner Shark')).toContain('fill="#c86b9e"');
+    expect(previewAt('Confetti Cannons')).toContain('fill="#59cfc0"');
+    expect(previewAt('Prank Alley')).toContain('fill="#a985e8"');
+    // Lowercase co-op-only enemies use the same kind color at a smaller radius.
+    expect(previewAt('Corner Shark')).toContain('r="0.24"');
+    expect(previewAt('Prank Alley')).toContain('4 enemies');
   });
 
   it('escapes authored names and hints before inserting them into the markup', () => {
