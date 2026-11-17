@@ -5,9 +5,9 @@
   "complete": true,
   "runError": null,
   "source": {
-    "revision": "d002933e130b2b1023030bc8dc4471994a6aebb7",
-    "sourceStatus": "",
-    "sourceTreeSha256": "f79a9420eb81ae6440f9fcb62c2f323110ae3f50f1a1ed3bb5d28b4b2c566a61"
+    "revision": "bc1e5a85e9d647fea8a908d7cca4b35c729eb1a6",
+    "sourceStatus": " M README.md\n M docs/architecture.md\n M docs/enemy-kinds-opencode-handoff.md\n M docs/progress.md\n M tests/e2e/smoke.spec.ts\n M tests/unit/test-bridge.test.ts\n?? reference/toybox_tanks_full_architectural_gameplay_redesign_spec.md",
+    "sourceTreeSha256": "390b7240538060ac9c19c998191bbdb4f65d335324254e7a463531644ab6ae2b"
   },
   "environment": {
     "os": "linux",
@@ -21,7 +21,7 @@
     "reducedMotion": "reduce",
     "locale": "en-US",
     "timezoneId": "UTC",
-    "baseURL": "http://127.0.0.1:34613",
+    "baseURL": "http://127.0.0.1:35627",
     "headless": "true"
   },
   "comparisonsPerformed": false,
@@ -46,6 +46,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -616,6 +617,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: First Bounce"]
       },
@@ -643,11 +646,11 @@
       "images": [
         {
           "file": "ui-menu.full.png",
-          "sha256": "7e67359a01b3ac1fdeef929c4135494e960ef1af03eb4e1a5be1ca8caf1b851c"
+          "sha256": "8c8e6037df2d95552748dafe7ea3c870f4e13da0dc9c9b81a9bb22672c122560"
         },
         {
           "file": "ui-menu.arena.png",
-          "sha256": "8173b4e9b5452d2e0c7413cd85da06f42bb6aa64da4f13ebb65c19e749207506"
+          "sha256": "90bdeefef5a4abe7d1180618f3a48e45dd4e09928eb3dd2df13688ad49e08638"
         }
       ],
       "expectedFiles": ["ui-menu.full.png", "ui-menu.arena.png"]
@@ -672,6 +675,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -1242,6 +1246,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: First Bounce"]
       },
@@ -1269,11 +1275,11 @@
       "images": [
         {
           "file": "ui-coop.full.png",
-          "sha256": "615a86a6497d64f836b7587815047007394378037d26dc097a6abe8df3be7978"
+          "sha256": "e5a071d6a96740908432cc7f9ca8cea0bff7b5026a0f75cd9659d0c46fc28304"
         },
         {
           "file": "ui-coop.arena.png",
-          "sha256": "9f108e149a60f44eaba00d3ac5baf7cb455230c963f00f9ac291966a287dd870"
+          "sha256": "80b73f88dabe04e8cf4596466e45e1ee3337a53ee1b065ccff75232b4912e74b"
         }
       ],
       "expectedFiles": ["ui-coop.full.png", "ui-coop.arena.png"]
@@ -1298,6 +1304,7 @@
         "time": 0.008333333333333333,
         "ticks": 1,
         "nextShell": 1,
+        "nextMine": 0,
         "shots": 1,
         "bounces": 0,
         "walls": [
@@ -1880,6 +1887,8 @@
             "dead": false
           }
         ],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: First Bounce"]
       },
@@ -1907,11 +1916,11 @@
       "images": [
         {
           "file": "ui-active-shot.full.png",
-          "sha256": "44cd092c4fef5f39e397f1b73debe2f85d46b9ea0f93906ec5f901935ca9abfc"
+          "sha256": "a40d4a7101ddcdeae16202e699a4e42553c41f3ca1ac2b70c65a72ace0ed0660"
         },
         {
           "file": "ui-active-shot.arena.png",
-          "sha256": "c6d99882ece092008612cda51377eccdd183c21e884f7e2b9fa83e041a1d650f"
+          "sha256": "8ab50a731fb5d5b16584ca9b3f76c6d66a47e976cddc9152750c98f98b744fb0"
         }
       ],
       "expectedFiles": ["ui-active-shot.full.png", "ui-active-shot.arena.png"]
@@ -1936,6 +1945,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -2506,6 +2516,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: First Bounce"]
       },
@@ -2533,11 +2545,11 @@
       "images": [
         {
           "file": "ui-disabled-player.full.png",
-          "sha256": "8524f03f13f8cf0b417bd4314e8d1eadeceb2119b307369c8bc15ec873485357"
+          "sha256": "5c32642f8f794a1e1d5d0a6e01c9881f8313ef978b82ad96706a75b401f60ae9"
         },
         {
           "file": "ui-disabled-player.arena.png",
-          "sha256": "fb04892d3d957f55512b20a301a111f03d04de1096c898544a4824c821a41b1c"
+          "sha256": "2d4e5e209c04f0ecd996fff28fff2506443abb8311eaf5c388357a6ad31cddaf"
         }
       ],
       "expectedFiles": ["ui-disabled-player.full.png", "ui-disabled-player.arena.png"]
@@ -2562,6 +2574,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -3132,6 +3145,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: First Bounce"]
       },
@@ -3159,11 +3174,11 @@
       "images": [
         {
           "file": "ui-paused.full.png",
-          "sha256": "250a325b12f79bc177b972df4d08f5e8d9be71e8f32ca0ec42cd4dd92c1287e8"
+          "sha256": "4f70322c3b637d415df37b4be084087b211f4cdbcc46dfedf3b9ac332f132b45"
         },
         {
           "file": "ui-paused.arena.png",
-          "sha256": "3a6a576815965fead282b46b3107051baeadf6e2fb8a82eebcc31a6003ea8909"
+          "sha256": "f9742150bd721e7daea66a738cfbb689aa36e3ced4051233ecd1145b9454fbdd"
         }
       ],
       "expectedFiles": ["ui-paused.full.png", "ui-paused.arena.png"]
@@ -3188,6 +3203,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -3758,6 +3774,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  VICTORY · room clear", "0.00  Room loaded: First Bounce"]
       },
@@ -3785,11 +3803,11 @@
       "images": [
         {
           "file": "ui-cleared.full.png",
-          "sha256": "0967e04cda482513af6477fdbd572db290038a97ea21186449e831f623369bd8"
+          "sha256": "1ba546b3665d1edfc3cf3d2c36edc5a1ea43aa2b59d6921c54089272dae7d140"
         },
         {
           "file": "ui-cleared.arena.png",
-          "sha256": "488e31767849f885062ae140b982578552ff387a9902ebc01c92072d058726d9"
+          "sha256": "176619f0c92699c67215b39ba58014e3a72b86b371a2fb704135ac2b109faee3"
         }
       ],
       "expectedFiles": ["ui-cleared.full.png", "ui-cleared.arena.png"]
@@ -3814,6 +3832,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -4384,6 +4403,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  DEFEAT", "0.00  Room loaded: First Bounce"]
       },
@@ -4411,11 +4432,11 @@
       "images": [
         {
           "file": "ui-defeat.full.png",
-          "sha256": "6fc59c39e5d973fb0577d5f1ce636d9c95bbaf15a42a19728477885b5f29942e"
+          "sha256": "c60b78f509b4c48c0b84b5e8db664f95ec819dc9a26603351a56cd43747f245e"
         },
         {
           "file": "ui-defeat.arena.png",
-          "sha256": "738e4b21034b7c78a75b415dcae6a17a29a9b59e3e22184f18fd0b1e914f649e"
+          "sha256": "d658c98669f1d9e6a9baf7c8b75f615f61032be05107d78f2d87498e9567adb9"
         }
       ],
       "expectedFiles": ["ui-defeat.full.png", "ui-defeat.arena.png"]
@@ -4434,12 +4455,13 @@
       "status": "captured",
       "error": null,
       "state": {
-        "room": 14,
+        "room": 18,
         "mode": "coop",
         "state": "completed",
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -4606,13 +4628,25 @@
             "h": 40
           },
           {
-            "x": 280,
+            "x": 320,
             "y": 90,
             "w": 40,
             "h": 40
           },
           {
-            "x": 720,
+            "x": 360,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
             "y": 90,
             "w": 40,
             "h": 40
@@ -4630,6 +4664,30 @@
             "h": 40
           },
           {
+            "x": 320,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
             "x": 920,
             "y": 130,
             "w": 40,
@@ -4642,30 +4700,6 @@
             "h": 40
           },
           {
-            "x": 160,
-            "y": 170,
-            "w": 40,
-            "h": 40
-          },
-          {
-            "x": 200,
-            "y": 170,
-            "w": 40,
-            "h": 40
-          },
-          {
-            "x": 800,
-            "y": 170,
-            "w": 40,
-            "h": 40
-          },
-          {
-            "x": 840,
-            "y": 170,
-            "w": 40,
-            "h": 40
-          },
-          {
             "x": 920,
             "y": 170,
             "w": 40,
@@ -4673,30 +4707,6 @@
           },
           {
             "x": 0,
-            "y": 210,
-            "w": 40,
-            "h": 40
-          },
-          {
-            "x": 160,
-            "y": 210,
-            "w": 40,
-            "h": 40
-          },
-          {
-            "x": 200,
-            "y": 210,
-            "w": 40,
-            "h": 40
-          },
-          {
-            "x": 800,
-            "y": 210,
-            "w": 40,
-            "h": 40
-          },
-          {
-            "x": 840,
             "y": 210,
             "w": 40,
             "h": 40
@@ -4726,97 +4736,85 @@
             "h": 40
           },
           {
-            "x": 160,
+            "x": 240,
             "y": 290,
-            "w": 40,
-            "h": 40
-          },
-          {
-            "x": 200,
-            "y": 290,
-            "w": 40,
-            "h": 40
-          },
-          {
-            "x": 800,
-            "y": 290,
-            "w": 40,
-            "h": 40
-          },
-          {
-            "x": 840,
-            "y": 290,
-            "w": 40,
-            "h": 40
-          },
-          {
-            "x": 920,
-            "y": 290,
-            "w": 40,
-            "h": 40
-          },
-          {
-            "x": 0,
-            "y": 330,
-            "w": 40,
-            "h": 40
-          },
-          {
-            "x": 160,
-            "y": 330,
-            "w": 40,
-            "h": 40
-          },
-          {
-            "x": 200,
-            "y": 330,
-            "w": 40,
-            "h": 40
-          },
-          {
-            "x": 800,
-            "y": 330,
-            "w": 40,
-            "h": 40
-          },
-          {
-            "x": 840,
-            "y": 330,
-            "w": 40,
-            "h": 40
-          },
-          {
-            "x": 920,
-            "y": 330,
-            "w": 40,
-            "h": 40
-          },
-          {
-            "x": 0,
-            "y": 370,
-            "w": 40,
-            "h": 40
-          },
-          {
-            "x": 920,
-            "y": 370,
-            "w": 40,
-            "h": 40
-          },
-          {
-            "x": 0,
-            "y": 410,
             "w": 40,
             "h": 40
           },
           {
             "x": 280,
-            "y": 410,
+            "y": 290,
             "w": 40,
             "h": 40
           },
           {
             "x": 720,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
             "y": 410,
             "w": 40,
             "h": 40
@@ -4986,90 +4984,36 @@
         ],
         "corks": [
           {
-            "id": "c3,2",
-            "x": 120,
-            "y": 90,
+            "id": "c4,5",
+            "x": 160,
+            "y": 210,
             "w": 40,
             "h": 40,
             "hitsRemaining": 3,
             "destroyed": false
           },
           {
-            "id": "c11,2",
-            "x": 440,
-            "y": 90,
-            "w": 40,
-            "h": 40,
-            "hitsRemaining": 3,
-            "destroyed": false
-          },
-          {
-            "id": "c14,2",
-            "x": 560,
-            "y": 90,
-            "w": 40,
-            "h": 40,
-            "hitsRemaining": 3,
-            "destroyed": false
-          },
-          {
-            "id": "c22,2",
-            "x": 880,
-            "y": 90,
-            "w": 40,
-            "h": 40,
-            "hitsRemaining": 3,
-            "destroyed": false
-          },
-          {
-            "id": "c9,6",
+            "id": "c9,5",
             "x": 360,
-            "y": 250,
+            "y": 210,
             "w": 40,
             "h": 40,
             "hitsRemaining": 3,
             "destroyed": false
           },
           {
-            "id": "c16,6",
-            "x": 640,
-            "y": 250,
-            "w": 40,
-            "h": 40,
-            "hitsRemaining": 3,
-            "destroyed": false
-          },
-          {
-            "id": "c3,10",
-            "x": 120,
-            "y": 410,
-            "w": 40,
-            "h": 40,
-            "hitsRemaining": 3,
-            "destroyed": false
-          },
-          {
-            "id": "c11,10",
-            "x": 440,
-            "y": 410,
-            "w": 40,
-            "h": 40,
-            "hitsRemaining": 3,
-            "destroyed": false
-          },
-          {
-            "id": "c14,10",
+            "id": "c14,5",
             "x": 560,
-            "y": 410,
+            "y": 210,
             "w": 40,
             "h": 40,
             "hitsRemaining": 3,
             "destroyed": false
           },
           {
-            "id": "c22,10",
-            "x": 880,
-            "y": 410,
+            "id": "c19,5",
+            "x": 760,
+            "y": 210,
             "w": 40,
             "h": 40,
             "hitsRemaining": 3,
@@ -5081,9 +5025,9 @@
             "id": "p1",
             "faction": "player",
             "x": 180,
-            "y": 470,
+            "y": 430,
             "spawnX": 180,
-            "spawnY": 470,
+            "spawnY": 430,
             "r": 15,
             "angle": -1.5707963267948966,
             "hp": 2,
@@ -5098,9 +5042,9 @@
             "id": "p2",
             "faction": "player",
             "x": 780,
-            "y": 470,
+            "y": 430,
             "spawnX": 780,
-            "spawnY": 470,
+            "spawnY": 430,
             "r": 15,
             "angle": -1.5707963267948966,
             "hp": 2,
@@ -5114,15 +5058,15 @@
         ],
         "enemies": [
           {
-            "id": "s0",
+            "id": "m0",
             "faction": "enemy",
             "x": 140,
-            "y": 70,
+            "y": 110,
             "spawnX": 140,
-            "spawnY": 70,
+            "spawnY": 110,
             "r": 15,
             "angle": 1.5707963267948966,
-            "hp": 1,
+            "hp": 2,
             "alive": false,
             "invuln": 0,
             "cooldown": 1.2,
@@ -5131,15 +5075,15 @@
             "track": 0
           },
           {
-            "id": "s1",
+            "id": "m1",
             "faction": "enemy",
-            "x": 300,
-            "y": 70,
-            "spawnX": 300,
-            "spawnY": 70,
+            "x": 820,
+            "y": 110,
+            "spawnX": 820,
+            "spawnY": 110,
             "r": 15,
             "angle": 1.5707963267948966,
-            "hp": 1,
+            "hp": 2,
             "alive": false,
             "invuln": 0,
             "cooldown": 1.58,
@@ -5148,12 +5092,12 @@
             "track": 0
           },
           {
-            "id": "s2",
+            "id": "r2",
             "faction": "enemy",
             "x": 500,
-            "y": 70,
+            "y": 350,
             "spawnX": 500,
-            "spawnY": 70,
+            "spawnY": 350,
             "r": 15,
             "angle": 1.5707963267948966,
             "hp": 1,
@@ -5165,111 +5109,28 @@
             "track": 0
           },
           {
-            "id": "s3",
+            "id": "m3",
             "faction": "enemy",
-            "x": 660,
-            "y": 70,
-            "spawnX": 660,
-            "spawnY": 70,
+            "x": 460,
+            "y": 470,
+            "spawnX": 460,
+            "spawnY": 470,
             "r": 15,
             "angle": 1.5707963267948966,
-            "hp": 1,
+            "hp": 2,
             "alive": false,
             "invuln": 0,
             "cooldown": 2.34,
             "charge": 0,
             "targetId": null,
             "track": 0
-          },
-          {
-            "id": "s4",
-            "faction": "enemy",
-            "x": 820,
-            "y": 70,
-            "spawnX": 820,
-            "spawnY": 70,
-            "r": 15,
-            "angle": 1.5707963267948966,
-            "hp": 1,
-            "alive": false,
-            "invuln": 0,
-            "cooldown": 2.7199999999999998,
-            "charge": 0,
-            "targetId": null,
-            "track": 0
-          },
-          {
-            "id": "s5",
-            "faction": "enemy",
-            "x": 380,
-            "y": 230,
-            "spawnX": 380,
-            "spawnY": 230,
-            "r": 15,
-            "angle": 1.5707963267948966,
-            "hp": 1,
-            "alive": false,
-            "invuln": 0,
-            "cooldown": 3.0999999999999996,
-            "charge": 0,
-            "targetId": null,
-            "track": 0
-          },
-          {
-            "id": "s6",
-            "faction": "enemy",
-            "x": 660,
-            "y": 230,
-            "spawnX": 660,
-            "spawnY": 230,
-            "r": 15,
-            "angle": 1.5707963267948966,
-            "hp": 1,
-            "alive": false,
-            "invuln": 0,
-            "cooldown": 3.4800000000000004,
-            "charge": 0,
-            "targetId": null,
-            "track": 0
-          },
-          {
-            "id": "s7",
-            "faction": "enemy",
-            "x": 380,
-            "y": 310,
-            "spawnX": 380,
-            "spawnY": 310,
-            "r": 15,
-            "angle": 1.5707963267948966,
-            "hp": 1,
-            "alive": false,
-            "invuln": 0,
-            "cooldown": 3.8600000000000003,
-            "charge": 0,
-            "targetId": null,
-            "track": 0
-          },
-          {
-            "id": "s8",
-            "faction": "enemy",
-            "x": 660,
-            "y": 310,
-            "spawnX": 660,
-            "spawnY": 310,
-            "r": 15,
-            "angle": 1.5707963267948966,
-            "hp": 1,
-            "alive": false,
-            "invuln": 0,
-            "cooldown": 4.24,
-            "charge": 0,
-            "targetId": null,
-            "track": 0
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
-        "events": ["0.00  VICTORY · all rooms", "0.00  Room loaded: Ring of Fire"]
+        "events": ["0.00  VICTORY · all rooms", "0.00  Room loaded: Prank Alley"]
       },
       "renderContext": {
         "canvasBounds": {
@@ -5295,11 +5156,11 @@
       "images": [
         {
           "file": "ui-completed.full.png",
-          "sha256": "d9b0935eca0474a0ed88000c8fb2a8e3f904740ea3dfc936599b95e86c310143"
+          "sha256": "a7ff6874bbd7178b28e947520f6efef44c69e82f9f38462057203fac9aeb2d0f"
         },
         {
           "file": "ui-completed.arena.png",
-          "sha256": "bb1cdf46ba1002b90a8241e9176404e369bf72f641c841b1b28aee1b7e062f72"
+          "sha256": "42cc6abddd1e7a0e2b5e05d877150a93a1c9707af880edaa71f53f0dc3ad69df"
         }
       ],
       "expectedFiles": ["ui-completed.full.png", "ui-completed.arena.png"]
@@ -5327,6 +5188,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -5897,6 +5759,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: First Bounce"]
       },
@@ -5924,7 +5788,7 @@
       "images": [
         {
           "file": "ui-level-select.full.png",
-          "sha256": "66a90dd8b9380407553f707b8103bb14f84162fd6991c723aa959e43e2b2bddd"
+          "sha256": "9177f3b6a598de7c742a90531e2a9411682c9782993dd75fed82a7b950ce1a11"
         }
       ],
       "expectedFiles": ["ui-level-select.full.png"]
@@ -5949,6 +5813,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -6519,6 +6384,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: First Bounce"]
       },
@@ -6546,11 +6413,11 @@
       "images": [
         {
           "file": "ui-resized-gameplay.full.png",
-          "sha256": "54925ac895439b5e8b99994fa8c2f258f2969b8253efa923cf9af10e52e28d1e"
+          "sha256": "0a1142563445f774420e4d825553789fb6022b67282f749e6ad84720834e24da"
         },
         {
           "file": "ui-resized-gameplay.arena.png",
-          "sha256": "4562ab9f43b77b69bdd61ce000e5980cdd075fefd912b3763d934c2331aca1bc"
+          "sha256": "cd876183a0d25c71e4cd5e04734afa0c4bfe445a61093252dc5f8dec9925c226"
         }
       ],
       "expectedFiles": ["ui-resized-gameplay.full.png", "ui-resized-gameplay.arena.png"]
@@ -6578,6 +6445,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -7148,6 +7016,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: First Bounce"]
       },
@@ -7175,11 +7045,11 @@
       "images": [
         {
           "file": "campaign-first-bounce-start.full.png",
-          "sha256": "615a86a6497d64f836b7587815047007394378037d26dc097a6abe8df3be7978"
+          "sha256": "e5a071d6a96740908432cc7f9ca8cea0bff7b5026a0f75cd9659d0c46fc28304"
         },
         {
           "file": "campaign-first-bounce-start.arena.png",
-          "sha256": "9f108e149a60f44eaba00d3ac5baf7cb455230c963f00f9ac291966a287dd870"
+          "sha256": "80b73f88dabe04e8cf4596466e45e1ee3337a53ee1b065ccff75232b4912e74b"
         }
       ],
       "expectedFiles": [
@@ -7210,6 +7080,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -7883,7 +7754,7 @@
             "track": 0
           },
           {
-            "id": "s1",
+            "id": "r1",
             "faction": "enemy",
             "x": 740,
             "y": 110,
@@ -7901,6 +7772,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: The Courtyard"]
       },
@@ -7928,11 +7801,11 @@
       "images": [
         {
           "file": "campaign-the-courtyard-start.full.png",
-          "sha256": "9f684768a484575dde0a134230e9803b2429b53327dbff6f26719ef8014c08cc"
+          "sha256": "4e9fe7d56001d34a6ce2c6ef617ed7544447927aa2dece42412fb600138411d2"
         },
         {
           "file": "campaign-the-courtyard-start.arena.png",
-          "sha256": "2eedc47376c45b9201377e2a1ceead45f95536357f9c9e3d272db071612f446b"
+          "sha256": "2365392ca120750fb2b6a5761ad1ca487baf396ed10274ad30576be90206dcb0"
         }
       ],
       "expectedFiles": [
@@ -7963,6 +7836,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -8552,7 +8426,7 @@
         ],
         "enemies": [
           {
-            "id": "s0",
+            "id": "r0",
             "faction": "enemy",
             "x": 140,
             "y": 110,
@@ -8586,7 +8460,7 @@
             "track": 0
           },
           {
-            "id": "s2",
+            "id": "r2",
             "faction": "enemy",
             "x": 860,
             "y": 350,
@@ -8604,6 +8478,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: Block Party"]
       },
@@ -8631,11 +8507,11 @@
       "images": [
         {
           "file": "campaign-block-party-start.full.png",
-          "sha256": "14e9c17d0a563866f8fcd465221409e8fee6378bc90544e60c1570f729ed48f9"
+          "sha256": "f8a2b295c985c5ae89af14796162129222b36c12d9e765a18cfb445e13b51424"
         },
         {
           "file": "campaign-block-party-start.arena.png",
-          "sha256": "859fca6645155ace31c6c541ef0ff7a09463ac87e9f538fa58e51702dda1894a"
+          "sha256": "2b7808e5e8d8ef4bfaf16a49754d85810dfd18a13bb78b4d0b2796860a0eec91"
         }
       ],
       "expectedFiles": [
@@ -8666,6 +8542,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -9260,7 +9137,7 @@
             "track": 0
           },
           {
-            "id": "s1",
+            "id": "r1",
             "faction": "enemy",
             "x": 580,
             "y": 110,
@@ -9277,7 +9154,7 @@
             "track": 0
           },
           {
-            "id": "s2",
+            "id": "r2",
             "faction": "enemy",
             "x": 860,
             "y": 150,
@@ -9312,6 +9189,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: Together Through"]
       },
@@ -9339,11 +9218,11 @@
       "images": [
         {
           "file": "campaign-together-through-start.full.png",
-          "sha256": "2e7b7bcd3db0227390d35f17158afb47964cfefd4f0bd6b0509a3c1c71350910"
+          "sha256": "04cfb033c2535ae777819bed91f8c579df9b792c0b1ce3bcfcfe5ae06bf4a981"
         },
         {
           "file": "campaign-together-through-start.arena.png",
-          "sha256": "18012d3add12b3947fdd5e38a1f6dd9d1c201d2f229760e3ab164ef1d835b18c"
+          "sha256": "c918733024632302763ce54f1d253b329e31e1a7d192e7236f79bafcb9c36438"
         }
       ],
       "expectedFiles": [
@@ -9374,6 +9253,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -10006,7 +9886,7 @@
         ],
         "enemies": [
           {
-            "id": "s0",
+            "id": "r0",
             "faction": "enemy",
             "x": 140,
             "y": 110,
@@ -10040,18 +9920,18 @@
             "track": 0
           },
           {
-            "id": "s2",
+            "id": "b2",
             "faction": "enemy",
             "x": 420,
             "y": 270,
             "spawnX": 420,
             "spawnY": 270,
-            "r": 15,
+            "r": 18,
             "angle": 1.5707963267948966,
-            "hp": 1,
+            "hp": 5,
             "alive": true,
             "invuln": 0,
-            "cooldown": 1.96,
+            "cooldown": 2.76,
             "charge": 0,
             "targetId": null,
             "track": 0
@@ -10074,7 +9954,7 @@
             "track": 0
           },
           {
-            "id": "s4",
+            "id": "r4",
             "faction": "enemy",
             "x": 820,
             "y": 390,
@@ -10092,6 +9972,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: Cork Keep"]
       },
@@ -10119,11 +10001,11 @@
       "images": [
         {
           "file": "campaign-cork-keep-start.full.png",
-          "sha256": "b15265092109ed93d9205d65071be55eec4817c100348cb0f19345126464e39c"
+          "sha256": "f25e1905a063db3bc5667ea52c91910e7485bd410d578f50e74f0fae3c07695a"
         },
         {
           "file": "campaign-cork-keep-start.arena.png",
-          "sha256": "1d3113a0e142e89c91cbad275f196585d9bee84254530fd41368e849124e6fdf"
+          "sha256": "e527e52e58884e86aa69ba9b85dd2c21d3fbc8b6c82eabb0c7dea568b5b98b48"
         }
       ],
       "expectedFiles": ["campaign-cork-keep-start.full.png", "campaign-cork-keep-start.arena.png"]
@@ -10151,6 +10033,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -10920,7 +10803,7 @@
             "track": 0
           },
           {
-            "id": "s1",
+            "id": "r1",
             "faction": "enemy",
             "x": 820,
             "y": 70,
@@ -10937,7 +10820,7 @@
             "track": 0
           },
           {
-            "id": "s2",
+            "id": "r2",
             "faction": "enemy",
             "x": 300,
             "y": 270,
@@ -10972,6 +10855,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: Crossfire Alley"]
       },
@@ -10999,11 +10884,11 @@
       "images": [
         {
           "file": "campaign-crossfire-alley-start.full.png",
-          "sha256": "1ba49f784d7565c1f64a9dd163cde7d1645cb86031305ff8ac3cf05ab336201d"
+          "sha256": "6e3a0722aca6a6b5b1b0a1bb97b355fb728cef6541c2ca568c0eafc0fb97da43"
         },
         {
           "file": "campaign-crossfire-alley-start.arena.png",
-          "sha256": "957e842664eb286e411245edb2cf232f5df7708188e69b6f91fe92d0be0cdf03"
+          "sha256": "d4a34ebf06ead3005bffb623af69fb24c8075800ce2bd31143ee18d34be5035a"
         }
       ],
       "expectedFiles": [
@@ -11034,6 +10919,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -11636,18 +11522,18 @@
         ],
         "enemies": [
           {
-            "id": "s0",
+            "id": "b0",
             "faction": "enemy",
             "x": 220,
             "y": 110,
             "spawnX": 220,
             "spawnY": 110,
-            "r": 15,
+            "r": 18,
             "angle": 1.5707963267948966,
-            "hp": 1,
+            "hp": 5,
             "alive": true,
             "invuln": 0,
-            "cooldown": 1.2,
+            "cooldown": 2,
             "charge": 0,
             "targetId": null,
             "track": 0
@@ -11670,7 +11556,7 @@
             "track": 0
           },
           {
-            "id": "s2",
+            "id": "r2",
             "faction": "enemy",
             "x": 460,
             "y": 270,
@@ -11687,7 +11573,7 @@
             "track": 0
           },
           {
-            "id": "s3",
+            "id": "r3",
             "faction": "enemy",
             "x": 540,
             "y": 270,
@@ -11721,24 +11607,26 @@
             "track": 0
           },
           {
-            "id": "s5",
+            "id": "b5",
             "faction": "enemy",
             "x": 740,
             "y": 430,
             "spawnX": 740,
             "spawnY": 430,
-            "r": 15,
+            "r": 18,
             "angle": 1.5707963267948966,
-            "hp": 1,
+            "hp": 5,
             "alive": true,
             "invuln": 0,
-            "cooldown": 3.0999999999999996,
+            "cooldown": 3.9,
             "charge": 0,
             "targetId": null,
             "track": 0
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: Pillars of Salt"]
       },
@@ -11766,11 +11654,11 @@
       "images": [
         {
           "file": "campaign-pillars-of-salt-start.full.png",
-          "sha256": "405171dc1bffc6f9dd39bbe676efe08b236beb948e1e149b4af53466facc9857"
+          "sha256": "6c04d0e9563f9f0f412aefc6ebc1d1d0fd2b0c97a35288337271bdd05941a162"
         },
         {
           "file": "campaign-pillars-of-salt-start.arena.png",
-          "sha256": "a31d908b2c1fffd7e9d643c874ad0b7d9d4e55e1d125eacdcf6e267630495d6c"
+          "sha256": "3560523352838325c16e20395041355a7ca8feea2b247d0cdff78eeae80e3cbe"
         }
       ],
       "expectedFiles": [
@@ -11801,6 +11689,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -12475,7 +12364,7 @@
         ],
         "enemies": [
           {
-            "id": "s0",
+            "id": "r0",
             "faction": "enemy",
             "x": 140,
             "y": 70,
@@ -12509,24 +12398,24 @@
             "track": 0
           },
           {
-            "id": "s2",
+            "id": "b2",
             "faction": "enemy",
             "x": 460,
             "y": 230,
             "spawnX": 460,
             "spawnY": 230,
-            "r": 15,
+            "r": 18,
             "angle": 1.5707963267948966,
-            "hp": 1,
+            "hp": 5,
             "alive": true,
             "invuln": 0,
-            "cooldown": 1.96,
+            "cooldown": 2.76,
             "charge": 0,
             "targetId": null,
             "track": 0
           },
           {
-            "id": "s3",
+            "id": "r3",
             "faction": "enemy",
             "x": 540,
             "y": 230,
@@ -12544,6 +12433,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: Choke Point"]
       },
@@ -12571,11 +12462,11 @@
       "images": [
         {
           "file": "campaign-choke-point-start.full.png",
-          "sha256": "5830efe629e2052eb7b58fa43acce931a5c0bf7378b3b25ccfb1bb26528ddd57"
+          "sha256": "1cbf5657b3d5e0d7a2e8d660a4ae58573433c1df62f41b030cbb30e51bd7a549"
         },
         {
           "file": "campaign-choke-point-start.arena.png",
-          "sha256": "76083770934edfab6708894436dc4038d129f0d321a73da2dc3a17d5d2aaaad6"
+          "sha256": "0f69c55a7a0522e366fcb398deb31afe28c9db4479cda2166c02c9bf76f502a1"
         }
       ],
       "expectedFiles": [
@@ -12606,6 +12497,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -13495,7 +13387,7 @@
             "track": 0
           },
           {
-            "id": "s1",
+            "id": "r1",
             "faction": "enemy",
             "x": 300,
             "y": 70,
@@ -13512,7 +13404,7 @@
             "track": 0
           },
           {
-            "id": "s2",
+            "id": "l2",
             "faction": "enemy",
             "x": 660,
             "y": 70,
@@ -13520,16 +13412,16 @@
             "spawnY": 70,
             "r": 15,
             "angle": 1.5707963267948966,
-            "hp": 1,
+            "hp": 2,
             "alive": true,
             "invuln": 0,
-            "cooldown": 1.96,
+            "cooldown": 3.26,
             "charge": 0,
             "targetId": null,
             "track": 0
           },
           {
-            "id": "s3",
+            "id": "r3",
             "faction": "enemy",
             "x": 820,
             "y": 70,
@@ -13547,6 +13439,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: Cork Sieve"]
       },
@@ -13574,11 +13468,11 @@
       "images": [
         {
           "file": "campaign-cork-sieve-start.full.png",
-          "sha256": "bf12eb0b9b8417edeb0396dd1c3b7d04bc43952a1dad20de9d956464a2cc8193"
+          "sha256": "3a5d8265e747401c940b8567c867eb6f239de61e9fd3c9784bb80aa9b36068b9"
         },
         {
           "file": "campaign-cork-sieve-start.arena.png",
-          "sha256": "a9db92a52a7c442d78de7cfef85b27918c01b210885c4de4e3bc37b9f3b1e172"
+          "sha256": "58b23941cf136c983f4ec8757ac6efb008c2778973f868a16548ed115b982b08"
         }
       ],
       "expectedFiles": ["campaign-cork-sieve-start.full.png", "campaign-cork-sieve-start.arena.png"]
@@ -13606,6 +13500,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -14489,7 +14384,7 @@
             "track": 0
           },
           {
-            "id": "s1",
+            "id": "r1",
             "faction": "enemy",
             "x": 300,
             "y": 70,
@@ -14506,7 +14401,7 @@
             "track": 0
           },
           {
-            "id": "s2",
+            "id": "r2",
             "faction": "enemy",
             "x": 500,
             "y": 70,
@@ -14523,7 +14418,7 @@
             "track": 0
           },
           {
-            "id": "s3",
+            "id": "l3",
             "faction": "enemy",
             "x": 660,
             "y": 70,
@@ -14531,27 +14426,27 @@
             "spawnY": 70,
             "r": 15,
             "angle": 1.5707963267948966,
-            "hp": 1,
+            "hp": 2,
             "alive": true,
             "invuln": 0,
-            "cooldown": 2.34,
+            "cooldown": 3.64,
             "charge": 0,
             "targetId": null,
             "track": 0
           },
           {
-            "id": "s4",
+            "id": "b4",
             "faction": "enemy",
             "x": 420,
             "y": 270,
             "spawnX": 420,
             "spawnY": 270,
-            "r": 15,
+            "r": 18,
             "angle": 1.5707963267948966,
-            "hp": 1,
+            "hp": 5,
             "alive": true,
             "invuln": 0,
-            "cooldown": 2.7199999999999998,
+            "cooldown": 3.52,
             "charge": 0,
             "targetId": null,
             "track": 0
@@ -14575,6 +14470,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: The Fortress"]
       },
@@ -14602,11 +14499,11 @@
       "images": [
         {
           "file": "campaign-the-fortress-start.full.png",
-          "sha256": "42d43d17c08cfa7bcb7577c80cd69ebf946704669c9479ec74fc73d6116c8efe"
+          "sha256": "8124adff124b7c673f9a030333eb9d5929e2d211f8f07de9cf718b9f71578edf"
         },
         {
           "file": "campaign-the-fortress-start.arena.png",
-          "sha256": "8dfb371e477c0a1ebf98388372ede3b1c8679ecb247c13270ee0479c1a013e1e"
+          "sha256": "e2bfd5fa9294dbe17ef3a8df35c15eca3e0d6c13eb92966eafa1c01cc3d3fce1"
         }
       ],
       "expectedFiles": [
@@ -14637,6 +14534,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -15401,7 +15299,7 @@
         ],
         "enemies": [
           {
-            "id": "s0",
+            "id": "r0",
             "faction": "enemy",
             "x": 140,
             "y": 110,
@@ -15435,7 +15333,7 @@
             "track": 0
           },
           {
-            "id": "s2",
+            "id": "l2",
             "faction": "enemy",
             "x": 500,
             "y": 230,
@@ -15443,33 +15341,35 @@
             "spawnY": 230,
             "r": 15,
             "angle": 1.5707963267948966,
-            "hp": 1,
+            "hp": 2,
             "alive": true,
             "invuln": 0,
-            "cooldown": 1.96,
+            "cooldown": 3.26,
             "charge": 0,
             "targetId": null,
             "track": 0
           },
           {
-            "id": "s3",
+            "id": "b3",
             "faction": "enemy",
             "x": 380,
             "y": 430,
             "spawnX": 380,
             "spawnY": 430,
-            "r": 15,
+            "r": 18,
             "angle": 1.5707963267948966,
-            "hp": 1,
+            "hp": 5,
             "alive": true,
             "invuln": 0,
-            "cooldown": 2.34,
+            "cooldown": 3.14,
             "charge": 0,
             "targetId": null,
             "track": 0
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: Spiral"]
       },
@@ -15497,11 +15397,11 @@
       "images": [
         {
           "file": "campaign-spiral-start.full.png",
-          "sha256": "557f4ec7f2c8dda78dbae3ef559685a364b11a041be1b371e99525e43f35bca4"
+          "sha256": "312b5aefa94a4eb5f4de579dbac013c27beaed7fdfcdc7ea572b4c1810f7805b"
         },
         {
           "file": "campaign-spiral-start.arena.png",
-          "sha256": "2f22a14b7090690bf817b0939721d2da893b5add41ffb7920a028a3ff9ca0dd7"
+          "sha256": "afb6a84d73e2e23fb52d0c127a456b43d9e57854f0b72fe01246a2e5b71b820a"
         }
       ],
       "expectedFiles": ["campaign-spiral-start.full.png", "campaign-spiral-start.arena.png"]
@@ -15529,6 +15429,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -16329,7 +16230,7 @@
         ],
         "enemies": [
           {
-            "id": "s0",
+            "id": "r0",
             "faction": "enemy",
             "x": 140,
             "y": 70,
@@ -16363,7 +16264,7 @@
             "track": 0
           },
           {
-            "id": "s2",
+            "id": "r2",
             "faction": "enemy",
             "x": 660,
             "y": 70,
@@ -16397,7 +16298,7 @@
             "track": 0
           },
           {
-            "id": "s4",
+            "id": "l4",
             "faction": "enemy",
             "x": 220,
             "y": 190,
@@ -16405,33 +16306,35 @@
             "spawnY": 190,
             "r": 15,
             "angle": 1.5707963267948966,
-            "hp": 1,
+            "hp": 2,
             "alive": true,
             "invuln": 0,
-            "cooldown": 2.7199999999999998,
+            "cooldown": 4.02,
             "charge": 0,
             "targetId": null,
             "track": 0
           },
           {
-            "id": "s5",
+            "id": "b5",
             "faction": "enemy",
             "x": 740,
             "y": 190,
             "spawnX": 740,
             "spawnY": 190,
-            "r": 15,
+            "r": 18,
             "angle": 1.5707963267948966,
-            "hp": 1,
+            "hp": 5,
             "alive": true,
             "invuln": 0,
-            "cooldown": 3.0999999999999996,
+            "cooldown": 3.9,
             "charge": 0,
             "targetId": null,
             "track": 0
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: Double Bunker"]
       },
@@ -16459,11 +16362,11 @@
       "images": [
         {
           "file": "campaign-double-bunker-start.full.png",
-          "sha256": "64476681a8cc3659a64342eb7622dba547ed24b43779a7f162b0bc2cb8d85812"
+          "sha256": "187aa9797380c2ae0150423afbfe28b7d11c3ad31ca5f5d9b0594d417d82729b"
         },
         {
           "file": "campaign-double-bunker-start.arena.png",
-          "sha256": "043bc1035a2829bff3b5adae34d271237b25d408c29bab3be425355087fce1a2"
+          "sha256": "07fab82d9b374826af84d857dba3bbd91b75c57d134c4af92ed73aa78a916b16"
         }
       ],
       "expectedFiles": [
@@ -16494,6 +16397,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -17342,7 +17246,7 @@
         ],
         "enemies": [
           {
-            "id": "s0",
+            "id": "r0",
             "faction": "enemy",
             "x": 140,
             "y": 70,
@@ -17376,7 +17280,7 @@
             "track": 0
           },
           {
-            "id": "s2",
+            "id": "l2",
             "faction": "enemy",
             "x": 420,
             "y": 270,
@@ -17384,33 +17288,35 @@
             "spawnY": 270,
             "r": 15,
             "angle": 1.5707963267948966,
-            "hp": 1,
+            "hp": 2,
             "alive": true,
             "invuln": 0,
-            "cooldown": 1.96,
+            "cooldown": 3.26,
             "charge": 0,
             "targetId": null,
             "track": 0
           },
           {
-            "id": "s3",
+            "id": "b3",
             "faction": "enemy",
             "x": 540,
             "y": 270,
             "spawnX": 540,
             "spawnY": 270,
-            "r": 15,
+            "r": 18,
             "angle": 1.5707963267948966,
-            "hp": 1,
+            "hp": 5,
             "alive": true,
             "invuln": 0,
-            "cooldown": 2.34,
+            "cooldown": 3.14,
             "charge": 0,
             "targetId": null,
             "track": 0
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: The Labyrinth"]
       },
@@ -17438,11 +17344,11 @@
       "images": [
         {
           "file": "campaign-the-labyrinth-start.full.png",
-          "sha256": "75382bc1f3ee685f91d6c48d3a2c34f49ca25e3c8a30157c4afd1befd04cc6da"
+          "sha256": "eb05ccbc80caa37cce5cbcba48776a7eba02d65152847770f3ad280f03f9ea21"
         },
         {
           "file": "campaign-the-labyrinth-start.arena.png",
-          "sha256": "53dd9c65690b1fc53f59868acfdda60b184b93c977c0b88d9f2fdec2360decb4"
+          "sha256": "bf21b555e3028df06460124a999de6f99482783635d20333d7cfd3f85d94aba2"
         }
       ],
       "expectedFiles": [
@@ -17473,6 +17379,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -18231,7 +18138,7 @@
         ],
         "enemies": [
           {
-            "id": "s0",
+            "id": "r0",
             "faction": "enemy",
             "x": 140,
             "y": 70,
@@ -18248,18 +18155,18 @@
             "track": 0
           },
           {
-            "id": "s1",
+            "id": "b1",
             "faction": "enemy",
             "x": 820,
             "y": 70,
             "spawnX": 820,
             "spawnY": 70,
-            "r": 15,
+            "r": 18,
             "angle": 1.5707963267948966,
-            "hp": 1,
+            "hp": 5,
             "alive": true,
             "invuln": 0,
-            "cooldown": 1.58,
+            "cooldown": 2.38,
             "charge": 0,
             "targetId": null,
             "track": 0
@@ -18282,7 +18189,7 @@
             "track": 0
           },
           {
-            "id": "s3",
+            "id": "l3",
             "faction": "enemy",
             "x": 460,
             "y": 110,
@@ -18290,16 +18197,16 @@
             "spawnY": 110,
             "r": 15,
             "angle": 1.5707963267948966,
-            "hp": 1,
+            "hp": 2,
             "alive": true,
             "invuln": 0,
-            "cooldown": 2.34,
+            "cooldown": 3.64,
             "charge": 0,
             "targetId": null,
             "track": 0
           },
           {
-            "id": "s4",
+            "id": "r4",
             "faction": "enemy",
             "x": 540,
             "y": 110,
@@ -18317,6 +18224,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: The Gauntlet"]
       },
@@ -18344,11 +18253,11 @@
       "images": [
         {
           "file": "campaign-the-gauntlet-start.full.png",
-          "sha256": "1dbf9d22f068c51c4150d6e4f4955c3e72c97a75869ea072dad5195be681ec13"
+          "sha256": "1c77d2e57d6629d148400b26505caa17a35a5bbb32580e74e9731f814af0ea4f"
         },
         {
           "file": "campaign-the-gauntlet-start.arena.png",
-          "sha256": "007def0d75fe01c8967198cdedfc816ac629d9e0aef6d7fc178ad0f4a3938e41"
+          "sha256": "0ab146f9147d87e540268b3b25a481160becae499113121fb57b9d2469b09cfe"
         }
       ],
       "expectedFiles": [
@@ -18379,6 +18288,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -19070,7 +18980,7 @@
             "track": 0
           },
           {
-            "id": "s1",
+            "id": "r1",
             "faction": "enemy",
             "x": 300,
             "y": 70,
@@ -19087,24 +18997,24 @@
             "track": 0
           },
           {
-            "id": "s2",
+            "id": "b2",
             "faction": "enemy",
             "x": 500,
             "y": 70,
             "spawnX": 500,
             "spawnY": 70,
-            "r": 15,
+            "r": 18,
             "angle": 1.5707963267948966,
-            "hp": 1,
+            "hp": 5,
             "alive": true,
             "invuln": 0,
-            "cooldown": 1.96,
+            "cooldown": 2.76,
             "charge": 0,
             "targetId": null,
             "track": 0
           },
           {
-            "id": "s3",
+            "id": "l3",
             "faction": "enemy",
             "x": 660,
             "y": 70,
@@ -19112,16 +19022,16 @@
             "spawnY": 70,
             "r": 15,
             "angle": 1.5707963267948966,
-            "hp": 1,
+            "hp": 2,
             "alive": true,
             "invuln": 0,
-            "cooldown": 2.34,
+            "cooldown": 3.64,
             "charge": 0,
             "targetId": null,
             "track": 0
           },
           {
-            "id": "s4",
+            "id": "r4",
             "faction": "enemy",
             "x": 820,
             "y": 70,
@@ -19138,7 +19048,7 @@
             "track": 0
           },
           {
-            "id": "s5",
+            "id": "r5",
             "faction": "enemy",
             "x": 380,
             "y": 230,
@@ -19155,18 +19065,18 @@
             "track": 0
           },
           {
-            "id": "s6",
+            "id": "b6",
             "faction": "enemy",
             "x": 660,
             "y": 230,
             "spawnX": 660,
             "spawnY": 230,
-            "r": 15,
+            "r": 18,
             "angle": 1.5707963267948966,
-            "hp": 1,
+            "hp": 5,
             "alive": true,
             "invuln": 0,
-            "cooldown": 3.4800000000000004,
+            "cooldown": 4.28,
             "charge": 0,
             "targetId": null,
             "track": 0
@@ -19189,7 +19099,7 @@
             "track": 0
           },
           {
-            "id": "s8",
+            "id": "r8",
             "faction": "enemy",
             "x": 660,
             "y": 310,
@@ -19207,6 +19117,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: Ring of Fire"]
       },
@@ -19234,16 +19146,2991 @@
       "images": [
         {
           "file": "campaign-ring-of-fire-start.full.png",
-          "sha256": "4e6a1a67d5a9e8bf4ea4040ec94f126e994a7db6863f9aad728c137b186d955d"
+          "sha256": "48957ef29611aef99175c34f83f907ed273fddc3e268bf1c43d0aecbc5c8bda1"
         },
         {
           "file": "campaign-ring-of-fire-start.arena.png",
-          "sha256": "436835600b5ac5a7a10ec9b1024c70db8ac12dcb7c0f2ea3ee338f8131aa2182"
+          "sha256": "9637976a4257f2848448145c37a40e031afa0965cda38a46d05b0a8744eec0db"
         }
       ],
       "expectedFiles": [
         "campaign-ring-of-fire-start.full.png",
         "campaign-ring-of-fire-start.arena.png"
+      ]
+    },
+    {
+      "scene": {
+        "id": "campaign-roaming-patrol-start",
+        "purpose": "Roaming Patrol: real co-op room initialization, zero ticks and intact terrain.",
+        "scenario": "room",
+        "options": {
+          "room": 15,
+          "mode": "coop"
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        }
+      },
+      "status": "captured",
+      "error": null,
+      "state": {
+        "room": 15,
+        "mode": "coop",
+        "state": "playing",
+        "time": 0,
+        "ticks": 0,
+        "nextShell": 0,
+        "nextMine": 0,
+        "shots": 0,
+        "bounces": 0,
+        "walls": [
+          {
+            "x": 0,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          }
+        ],
+        "corks": [
+          {
+            "id": "c11,3",
+            "x": 440,
+            "y": 130,
+            "w": 40,
+            "h": 40,
+            "hitsRemaining": 3,
+            "destroyed": false
+          },
+          {
+            "id": "c4,6",
+            "x": 160,
+            "y": 250,
+            "w": 40,
+            "h": 40,
+            "hitsRemaining": 3,
+            "destroyed": false
+          },
+          {
+            "id": "c19,6",
+            "x": 760,
+            "y": 250,
+            "w": 40,
+            "h": 40,
+            "hitsRemaining": 3,
+            "destroyed": false
+          },
+          {
+            "id": "c11,9",
+            "x": 440,
+            "y": 370,
+            "w": 40,
+            "h": 40,
+            "hitsRemaining": 3,
+            "destroyed": false
+          }
+        ],
+        "players": [
+          {
+            "id": "p1",
+            "faction": "player",
+            "x": 180,
+            "y": 430,
+            "spawnX": 180,
+            "spawnY": 430,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "p2",
+            "faction": "player",
+            "x": 780,
+            "y": 430,
+            "spawnX": 780,
+            "spawnY": 430,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "enemies": [
+          {
+            "id": "r0",
+            "faction": "enemy",
+            "x": 140,
+            "y": 110,
+            "spawnX": 140,
+            "spawnY": 110,
+            "r": 15,
+            "angle": 1.5707963267948966,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 1.2,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "s1",
+            "faction": "enemy",
+            "x": 460,
+            "y": 270,
+            "spawnX": 460,
+            "spawnY": 270,
+            "r": 15,
+            "angle": 1.5707963267948966,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 1.58,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "r2",
+            "faction": "enemy",
+            "x": 860,
+            "y": 350,
+            "spawnX": 860,
+            "spawnY": 350,
+            "r": 15,
+            "angle": 1.5707963267948966,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 1.96,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "shells": [],
+        "mines": [],
+        "poms": [],
+        "effects": [],
+        "events": ["0.00  Room loaded: Roaming Patrol"]
+      },
+      "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "mobileContext": null,
+        "fullscreenContext": null,
+        "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
+        "fonts": "loaded",
+        "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
+        "visible": "visible"
+      },
+      "images": [
+        {
+          "file": "campaign-roaming-patrol-start.full.png",
+          "sha256": "a2a2a4cd832c8dea723f6bc646bbb84f41e2a1126f67f0e83a22c5af114e6a9b"
+        },
+        {
+          "file": "campaign-roaming-patrol-start.arena.png",
+          "sha256": "d2bf4e2f335b06ab6e2d5eee2e5782e12d0a2e77f0806dc3d789a4ba7ba556d3"
+        }
+      ],
+      "expectedFiles": [
+        "campaign-roaming-patrol-start.full.png",
+        "campaign-roaming-patrol-start.arena.png"
+      ]
+    },
+    {
+      "scene": {
+        "id": "campaign-corner-shark-start",
+        "purpose": "Corner Shark: real co-op room initialization, zero ticks and intact terrain.",
+        "scenario": "room",
+        "options": {
+          "room": 16,
+          "mode": "coop"
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        }
+      },
+      "status": "captured",
+      "error": null,
+      "state": {
+        "room": 16,
+        "mode": "coop",
+        "state": "playing",
+        "time": 0,
+        "ticks": 0,
+        "nextShell": 0,
+        "nextMine": 0,
+        "shots": 0,
+        "bounces": 0,
+        "walls": [
+          {
+            "x": 0,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          }
+        ],
+        "corks": [
+          {
+            "id": "c10,7",
+            "x": 400,
+            "y": 290,
+            "w": 40,
+            "h": 40,
+            "hitsRemaining": 3,
+            "destroyed": false
+          },
+          {
+            "id": "c13,7",
+            "x": 520,
+            "y": 290,
+            "w": 40,
+            "h": 40,
+            "hitsRemaining": 3,
+            "destroyed": false
+          }
+        ],
+        "players": [
+          {
+            "id": "p1",
+            "faction": "player",
+            "x": 180,
+            "y": 430,
+            "spawnX": 180,
+            "spawnY": 430,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "p2",
+            "faction": "player",
+            "x": 780,
+            "y": 430,
+            "spawnX": 780,
+            "spawnY": 430,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "enemies": [
+          {
+            "id": "b0",
+            "faction": "enemy",
+            "x": 140,
+            "y": 150,
+            "spawnX": 140,
+            "spawnY": 150,
+            "r": 18,
+            "angle": 1.5707963267948966,
+            "hp": 5,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 2,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "r1",
+            "faction": "enemy",
+            "x": 820,
+            "y": 150,
+            "spawnX": 820,
+            "spawnY": 150,
+            "r": 15,
+            "angle": 1.5707963267948966,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 1.58,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "b2",
+            "faction": "enemy",
+            "x": 820,
+            "y": 310,
+            "spawnX": 820,
+            "spawnY": 310,
+            "r": 18,
+            "angle": 1.5707963267948966,
+            "hp": 5,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 2.76,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "shells": [],
+        "mines": [],
+        "poms": [],
+        "effects": [],
+        "events": ["0.00  Room loaded: Corner Shark"]
+      },
+      "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "mobileContext": null,
+        "fullscreenContext": null,
+        "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
+        "fonts": "loaded",
+        "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
+        "visible": "visible"
+      },
+      "images": [
+        {
+          "file": "campaign-corner-shark-start.full.png",
+          "sha256": "44faad5cc076b73ebc961dcca7c2b7531ee95d0283821d5bd4729697eb6690af"
+        },
+        {
+          "file": "campaign-corner-shark-start.arena.png",
+          "sha256": "2c7d8e31a04f28d796e328b1e7747d60224c50d4f51b77956c78aae26054f344"
+        }
+      ],
+      "expectedFiles": [
+        "campaign-corner-shark-start.full.png",
+        "campaign-corner-shark-start.arena.png"
+      ]
+    },
+    {
+      "scene": {
+        "id": "campaign-confetti-cannons-start",
+        "purpose": "Confetti Cannons: real co-op room initialization, zero ticks and intact terrain.",
+        "scenario": "room",
+        "options": {
+          "room": 17,
+          "mode": "coop"
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        }
+      },
+      "status": "captured",
+      "error": null,
+      "state": {
+        "room": 17,
+        "mode": "coop",
+        "state": "playing",
+        "time": 0,
+        "ticks": 0,
+        "nextShell": 0,
+        "nextMine": 0,
+        "shots": 0,
+        "bounces": 0,
+        "walls": [
+          {
+            "x": 0,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          }
+        ],
+        "corks": [
+          {
+            "id": "c4,4",
+            "x": 160,
+            "y": 170,
+            "w": 40,
+            "h": 40,
+            "hitsRemaining": 3,
+            "destroyed": false
+          },
+          {
+            "id": "c19,4",
+            "x": 760,
+            "y": 170,
+            "w": 40,
+            "h": 40,
+            "hitsRemaining": 3,
+            "destroyed": false
+          }
+        ],
+        "players": [
+          {
+            "id": "p1",
+            "faction": "player",
+            "x": 180,
+            "y": 430,
+            "spawnX": 180,
+            "spawnY": 430,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "p2",
+            "faction": "player",
+            "x": 780,
+            "y": 430,
+            "spawnX": 780,
+            "spawnY": 430,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "enemies": [
+          {
+            "id": "l0",
+            "faction": "enemy",
+            "x": 140,
+            "y": 110,
+            "spawnX": 140,
+            "spawnY": 110,
+            "r": 15,
+            "angle": 1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 2.5,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "l1",
+            "faction": "enemy",
+            "x": 820,
+            "y": 110,
+            "spawnX": 820,
+            "spawnY": 110,
+            "r": 15,
+            "angle": 1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 2.88,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "l2",
+            "faction": "enemy",
+            "x": 500,
+            "y": 230,
+            "spawnX": 500,
+            "spawnY": 230,
+            "r": 15,
+            "angle": 1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 3.26,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "r3",
+            "faction": "enemy",
+            "x": 140,
+            "y": 390,
+            "spawnX": 140,
+            "spawnY": 390,
+            "r": 15,
+            "angle": 1.5707963267948966,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 2.34,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "r4",
+            "faction": "enemy",
+            "x": 740,
+            "y": 390,
+            "spawnX": 740,
+            "spawnY": 390,
+            "r": 15,
+            "angle": 1.5707963267948966,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 2.7199999999999998,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "shells": [],
+        "mines": [],
+        "poms": [],
+        "effects": [],
+        "events": ["0.00  Room loaded: Confetti Cannons"]
+      },
+      "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "mobileContext": null,
+        "fullscreenContext": null,
+        "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
+        "fonts": "loaded",
+        "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
+        "visible": "visible"
+      },
+      "images": [
+        {
+          "file": "campaign-confetti-cannons-start.full.png",
+          "sha256": "b2995b25c2617db53591dbcc2a23ee590313a36c12e10b04a69e8e44cc949d8d"
+        },
+        {
+          "file": "campaign-confetti-cannons-start.arena.png",
+          "sha256": "5a55ed4169869911a81f866f99734080d0371731b14e1712f5979c9ab6433b93"
+        }
+      ],
+      "expectedFiles": [
+        "campaign-confetti-cannons-start.full.png",
+        "campaign-confetti-cannons-start.arena.png"
+      ]
+    },
+    {
+      "scene": {
+        "id": "campaign-prank-alley-start",
+        "purpose": "Prank Alley: real co-op room initialization, zero ticks and intact terrain.",
+        "scenario": "room",
+        "options": {
+          "room": 18,
+          "mode": "coop"
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        }
+      },
+      "status": "captured",
+      "error": null,
+      "state": {
+        "room": 18,
+        "mode": "coop",
+        "state": "playing",
+        "time": 0,
+        "ticks": 0,
+        "nextShell": 0,
+        "nextMine": 0,
+        "shots": 0,
+        "bounces": 0,
+        "walls": [
+          {
+            "x": 0,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          }
+        ],
+        "corks": [
+          {
+            "id": "c4,5",
+            "x": 160,
+            "y": 210,
+            "w": 40,
+            "h": 40,
+            "hitsRemaining": 3,
+            "destroyed": false
+          },
+          {
+            "id": "c9,5",
+            "x": 360,
+            "y": 210,
+            "w": 40,
+            "h": 40,
+            "hitsRemaining": 3,
+            "destroyed": false
+          },
+          {
+            "id": "c14,5",
+            "x": 560,
+            "y": 210,
+            "w": 40,
+            "h": 40,
+            "hitsRemaining": 3,
+            "destroyed": false
+          },
+          {
+            "id": "c19,5",
+            "x": 760,
+            "y": 210,
+            "w": 40,
+            "h": 40,
+            "hitsRemaining": 3,
+            "destroyed": false
+          }
+        ],
+        "players": [
+          {
+            "id": "p1",
+            "faction": "player",
+            "x": 180,
+            "y": 430,
+            "spawnX": 180,
+            "spawnY": 430,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "p2",
+            "faction": "player",
+            "x": 780,
+            "y": 430,
+            "spawnX": 780,
+            "spawnY": 430,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "enemies": [
+          {
+            "id": "m0",
+            "faction": "enemy",
+            "x": 140,
+            "y": 110,
+            "spawnX": 140,
+            "spawnY": 110,
+            "r": 15,
+            "angle": 1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 1.2,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "m1",
+            "faction": "enemy",
+            "x": 820,
+            "y": 110,
+            "spawnX": 820,
+            "spawnY": 110,
+            "r": 15,
+            "angle": 1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 1.58,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "r2",
+            "faction": "enemy",
+            "x": 500,
+            "y": 350,
+            "spawnX": 500,
+            "spawnY": 350,
+            "r": 15,
+            "angle": 1.5707963267948966,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 1.96,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "m3",
+            "faction": "enemy",
+            "x": 460,
+            "y": 470,
+            "spawnX": 460,
+            "spawnY": 470,
+            "r": 15,
+            "angle": 1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 2.34,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "shells": [],
+        "mines": [],
+        "poms": [],
+        "effects": [],
+        "events": ["0.00  Room loaded: Prank Alley"]
+      },
+      "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "mobileContext": null,
+        "fullscreenContext": null,
+        "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
+        "fonts": "loaded",
+        "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
+        "visible": "visible"
+      },
+      "images": [
+        {
+          "file": "campaign-prank-alley-start.full.png",
+          "sha256": "2d8b1a2777cb83459c91da4fc8bcfa812604299815aa2940d1028eae06ff321f"
+        },
+        {
+          "file": "campaign-prank-alley-start.arena.png",
+          "sha256": "e6946725681a2bbf33e726419cb047fbcfaaab68dd046343d79798e342369caf"
+        }
+      ],
+      "expectedFiles": [
+        "campaign-prank-alley-start.full.png",
+        "campaign-prank-alley-start.arena.png"
       ]
     },
     {
@@ -19267,6 +22154,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -19785,6 +22673,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["Synthetic visual fixture: cork-atlas"]
       },
@@ -19812,11 +22702,11 @@
       "images": [
         {
           "file": "cork-atlas.full.png",
-          "sha256": "4042c9aeae7dab7d71ab14e5ff41796b79290ee462d375e19e835c07fd31a2de"
+          "sha256": "fc6591ca25a8f85c949f9c61999f83859008ce15d2a39778bec97991cf38f6c6"
         },
         {
           "file": "cork-atlas.arena.png",
-          "sha256": "2486d88461a3734ebda6d5790378d3c2b16007905b06e1f8d19d79226eaa5ebf"
+          "sha256": "67113712005065a41a5a22446dbc0b3a00397d4ddaadd5fe39172845b243bbc7"
         },
         {
           "file": "cork-atlas.detail.png",
@@ -19846,6 +22736,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -20346,6 +23237,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["Synthetic visual fixture: cork-isolated"]
       },
@@ -20373,11 +23266,11 @@
       "images": [
         {
           "file": "cork-isolated.full.png",
-          "sha256": "57a87a8a8e9149ac2ba5ade6bee389d5a70aaa8d19185be4def59c0cfe80d1be"
+          "sha256": "0181c764fd6766dfd736a3525bbae28ff4fc42eb6b2cadfc1af30dda4f2367ab"
         },
         {
           "file": "cork-isolated.arena.png",
-          "sha256": "1e2bc21da715913c7d741c2c48570d4b836c40f31907a47e87bfd11cd0ef2571"
+          "sha256": "888f1707a82a30c65d4432351abb739e89becd1f490177e78ba98d89feb32e74"
         },
         {
           "file": "cork-isolated.detail.png",
@@ -20411,6 +23304,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -20929,6 +23823,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["Synthetic visual fixture: cork-adjacent"]
       },
@@ -20956,11 +23852,11 @@
       "images": [
         {
           "file": "cork-adjacent.full.png",
-          "sha256": "63ee6817ea03bf6648533e4d8e4a1cc9dd349ff1c2e80dc7b01a58eb48fba5fc"
+          "sha256": "bcefc5b3a7f7d4c57008e129443c03bdb3c1b49c0c90648ad9fc5ed6b3ff3549"
         },
         {
           "file": "cork-adjacent.arena.png",
-          "sha256": "daa5f24b718a56f6803c5652c05f75c22eae8d073dcb4301ecec25a02ccc2f9c"
+          "sha256": "172d972073a18ee786a2dd86321abb1e90e922f2feaa59323485d4cbbd81909d"
         },
         {
           "file": "cork-adjacent.detail.png",
@@ -20994,6 +23890,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -21512,6 +24409,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["Synthetic visual fixture: cork-reversed"]
       },
@@ -21539,11 +24438,11 @@
       "images": [
         {
           "file": "cork-reversed.full.png",
-          "sha256": "63ee6817ea03bf6648533e4d8e4a1cc9dd349ff1c2e80dc7b01a58eb48fba5fc"
+          "sha256": "bcefc5b3a7f7d4c57008e129443c03bdb3c1b49c0c90648ad9fc5ed6b3ff3549"
         },
         {
           "file": "cork-reversed.arena.png",
-          "sha256": "daa5f24b718a56f6803c5652c05f75c22eae8d073dcb4301ecec25a02ccc2f9c"
+          "sha256": "172d972073a18ee786a2dd86321abb1e90e922f2feaa59323485d4cbbd81909d"
         },
         {
           "file": "cork-reversed.detail.png",
@@ -21577,6 +24476,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -22068,6 +24968,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["Synthetic visual fixture: cork-aim-blocked"]
       },
@@ -22095,11 +24997,11 @@
       "images": [
         {
           "file": "cork-aim-blocked.full.png",
-          "sha256": "706c9c38d6dd16d1dceaf4b806a6b122ee3eb39937cb214361b8a59e46b8f7d2"
+          "sha256": "f680161720081ec724d9c6cbf05815b0a2b582984d328a252ff839999a334727"
         },
         {
           "file": "cork-aim-blocked.arena.png",
-          "sha256": "6a72aef171e094e52732c658dbad23b76be5146581c6d72fde36febea48caf64"
+          "sha256": "dc533dbe8e7eaa057d4e4c87a7b2431eee4511f657e631ebb671bc04b64a0ea5"
         },
         {
           "file": "cork-aim-blocked.detail.png",
@@ -22133,6 +25035,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -22624,6 +25527,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["Synthetic visual fixture: cork-aim-cleared"]
       },
@@ -22651,11 +25556,11 @@
       "images": [
         {
           "file": "cork-aim-cleared.full.png",
-          "sha256": "43d71dc84223f72549d22254f03470d19c66ec6a16dfae85c4177ecfbbe72af2"
+          "sha256": "4d4a34a2aab5fc8c42852f48d2766abbb85920d606fd61b64758378965a86244"
         },
         {
           "file": "cork-aim-cleared.arena.png",
-          "sha256": "ebc1cdbf8fb94f05f8672a89043c783b7edf4a054ad349e775917661be0484fa"
+          "sha256": "df457e00baa92f2a440fc8b36df9672add33d5ebabcfd751e531fd907a7f1009"
         },
         {
           "file": "cork-aim-cleared.detail.png",
@@ -22689,6 +25594,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -23186,6 +26092,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["Synthetic visual fixture: cork-aim-reflected"]
       },
@@ -23213,11 +26121,11 @@
       "images": [
         {
           "file": "cork-aim-reflected.full.png",
-          "sha256": "193a3f55bcf2f6a79aea76e3b435a96a5cb897bf358151ce56db3844d398ee14"
+          "sha256": "ca59e0c27e1d7a5a4b053ff2310c523f5a7821874aed5e323e7e94defc92ffee"
         },
         {
           "file": "cork-aim-reflected.arena.png",
-          "sha256": "07b9f8628509d97f9aaa026bc9760d2216e24141833b292e40cc8369c0a38954"
+          "sha256": "9acba501738365a44c02b25b7d6bc85c847f25154fb94ae2c44e259d303450a4"
         },
         {
           "file": "cork-aim-reflected.detail.png",
@@ -23251,6 +26159,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 3,
+        "nextMine": 0,
         "shots": 3,
         "bounces": 0,
         "walls": [
@@ -23766,6 +26675,8 @@
             "dead": false
           }
         ],
+        "mines": [],
+        "poms": [],
         "effects": [
           {
             "x": 400,
@@ -23810,11 +26721,11 @@
       "images": [
         {
           "file": "combat-feedback.full.png",
-          "sha256": "9f5bd779437113986dca6cb3b27be1085beeaf439df07a41552fee06a51798f8"
+          "sha256": "5a9dc5459a56ff62642c206cccbf85abee6002857ed8a755053347b1398d1be5"
         },
         {
           "file": "combat-feedback.arena.png",
-          "sha256": "ffc6e34894229cf19833cafdfb038df90304a9d86d3c920b2e2f9ff668cb1fb1"
+          "sha256": "d98318e8f6a9235575546f79c4b649f30ac79fdb45fe677290623821ceb038b0"
         },
         {
           "file": "combat-feedback.detail.png",
@@ -23826,6 +26737,1793 @@
         "combat-feedback.arena.png",
         "combat-feedback.detail.png"
       ]
+    },
+    {
+      "scene": {
+        "id": "enemy-kinds",
+        "purpose": "Synthetic fixture: Sentry, Roamer, Bruiser, Lobber, and Prankster art, colors, labels, HP pips, and bank telegraph.",
+        "scenario": "coop",
+        "options": {},
+        "fixture": "enemy-kinds",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        }
+      },
+      "status": "captured",
+      "error": null,
+      "state": {
+        "room": 0,
+        "mode": "coop",
+        "state": "playing",
+        "time": 0,
+        "ticks": 0,
+        "nextShell": 0,
+        "nextMine": 0,
+        "shots": 0,
+        "bounces": 0,
+        "walls": [
+          {
+            "x": 0,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          }
+        ],
+        "corks": [],
+        "players": [
+          {
+            "id": "p1",
+            "faction": "player",
+            "x": 200,
+            "y": 270,
+            "spawnX": 200,
+            "spawnY": 270,
+            "r": 15,
+            "angle": 0,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "p2",
+            "faction": "player",
+            "x": 800,
+            "y": 450,
+            "spawnX": 800,
+            "spawnY": 450,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "enemies": [
+          {
+            "id": "s0",
+            "faction": "enemy",
+            "x": 240,
+            "y": 150,
+            "spawnX": 240,
+            "spawnY": 150,
+            "r": 15,
+            "angle": -2.3707963267948964,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "r1",
+            "faction": "enemy",
+            "x": 395,
+            "y": 150,
+            "spawnX": 395,
+            "spawnY": 150,
+            "r": 15,
+            "angle": -1.9707963267948965,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "b2",
+            "faction": "enemy",
+            "x": 550,
+            "y": 150,
+            "spawnX": 550,
+            "spawnY": 150,
+            "r": 18,
+            "angle": -1.5707963267948966,
+            "hp": 3,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "l3",
+            "faction": "enemy",
+            "x": 705,
+            "y": 150,
+            "spawnX": 705,
+            "spawnY": 150,
+            "r": 15,
+            "angle": -1.1707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "m4",
+            "faction": "enemy",
+            "x": 860,
+            "y": 150,
+            "spawnX": 860,
+            "spawnY": 150,
+            "r": 15,
+            "angle": -0.7707963267948965,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "shells": [],
+        "mines": [],
+        "poms": [],
+        "effects": [],
+        "events": ["Synthetic visual fixture: enemy-kinds"]
+      },
+      "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "mobileContext": null,
+        "fullscreenContext": null,
+        "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
+        "fonts": "loaded",
+        "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
+        "visible": "visible"
+      },
+      "images": [
+        {
+          "file": "enemy-kinds.full.png",
+          "sha256": "a6df18ad9130d933d3f0b959febb156716304c51c18be6080367f102e6d58551"
+        },
+        {
+          "file": "enemy-kinds.arena.png",
+          "sha256": "958356f74980841fc55e69094a98d7035a610527d04cd2eb0e4f4c0f33d9d966"
+        },
+        {
+          "file": "enemy-kinds.detail.png",
+          "sha256": "b1bcb6183eb95c4b56b908df7ab62a1ffab1b1fb838b0898617934a3536c0bfe"
+        }
+      ],
+      "expectedFiles": ["enemy-kinds.full.png", "enemy-kinds.arena.png", "enemy-kinds.detail.png"]
+    },
+    {
+      "scene": {
+        "id": "mines-armed",
+        "purpose": "Synthetic fixture: Unarmed, armed, and chain-fused jack-in-the-box mines on the floor.",
+        "scenario": "coop",
+        "options": {},
+        "fixture": "mines-armed",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        }
+      },
+      "status": "captured",
+      "error": null,
+      "state": {
+        "room": 0,
+        "mode": "coop",
+        "state": "playing",
+        "time": 0,
+        "ticks": 0,
+        "nextShell": 0,
+        "nextMine": 4,
+        "shots": 0,
+        "bounces": 0,
+        "walls": [
+          {
+            "x": 0,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          }
+        ],
+        "corks": [],
+        "players": [
+          {
+            "id": "p1",
+            "faction": "player",
+            "x": 200,
+            "y": 270,
+            "spawnX": 200,
+            "spawnY": 270,
+            "r": 15,
+            "angle": 0,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "p2",
+            "faction": "player",
+            "x": 800,
+            "y": 450,
+            "spawnX": 800,
+            "spawnY": 450,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "enemies": [
+          {
+            "id": "s0",
+            "faction": "enemy",
+            "x": 800,
+            "y": 130,
+            "spawnX": 800,
+            "spawnY": 130,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "m0",
+            "faction": "enemy",
+            "x": 760,
+            "y": 210,
+            "spawnX": 760,
+            "spawnY": 210,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "shells": [],
+        "mines": [
+          {
+            "id": 0,
+            "owner": "p1",
+            "faction": "player",
+            "x": 320,
+            "y": 300,
+            "armed": 0,
+            "dead": false
+          },
+          {
+            "id": 1,
+            "owner": "p1",
+            "faction": "player",
+            "x": 520,
+            "y": 300,
+            "armed": 0.4,
+            "dead": false
+          },
+          {
+            "id": 2,
+            "owner": "m0",
+            "faction": "enemy",
+            "x": 700,
+            "y": 300,
+            "armed": 0.9,
+            "dead": false,
+            "fuse": 0.12
+          },
+          {
+            "id": 3,
+            "owner": "p2",
+            "faction": "player",
+            "x": 420,
+            "y": 410,
+            "armed": 0.4,
+            "dead": false
+          }
+        ],
+        "poms": [],
+        "effects": [],
+        "events": ["Synthetic visual fixture: mines-armed"]
+      },
+      "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "mobileContext": null,
+        "fullscreenContext": null,
+        "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
+        "fonts": "loaded",
+        "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
+        "visible": "visible"
+      },
+      "images": [
+        {
+          "file": "mines-armed.full.png",
+          "sha256": "220b95f2f213fadcdfd7821e67c1d0d831311f5a5bc392a9924719da96364188"
+        },
+        {
+          "file": "mines-armed.arena.png",
+          "sha256": "b1169e6b4f655770829168e3f79a92c3cffc6acf6537dd5f915cdfa922961f3d"
+        },
+        {
+          "file": "mines-armed.detail.png",
+          "sha256": "f72e87b87d3cbac1954c94f5c505686b78b0aab48126c66519c63d10ac22e4f8"
+        }
+      ],
+      "expectedFiles": ["mines-armed.full.png", "mines-armed.arena.png", "mines-armed.detail.png"]
+    },
+    {
+      "scene": {
+        "id": "lobber-pom",
+        "purpose": "Synthetic fixture: A lobbed pom in flight with its red landing ring above the floor.",
+        "scenario": "coop",
+        "options": {},
+        "fixture": "lobber-pom",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        }
+      },
+      "status": "captured",
+      "error": null,
+      "state": {
+        "room": 0,
+        "mode": "coop",
+        "state": "playing",
+        "time": 0,
+        "ticks": 0,
+        "nextShell": 0,
+        "nextMine": 0,
+        "shots": 0,
+        "bounces": 0,
+        "walls": [
+          {
+            "x": 0,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          }
+        ],
+        "corks": [],
+        "players": [
+          {
+            "id": "p1",
+            "faction": "player",
+            "x": 200,
+            "y": 270,
+            "spawnX": 200,
+            "spawnY": 270,
+            "r": 15,
+            "angle": 0,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "p2",
+            "faction": "player",
+            "x": 800,
+            "y": 450,
+            "spawnX": 800,
+            "spawnY": 450,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "enemies": [
+          {
+            "id": "s0",
+            "faction": "enemy",
+            "x": 800,
+            "y": 130,
+            "spawnX": 800,
+            "spawnY": 130,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "l0",
+            "faction": "enemy",
+            "x": 760,
+            "y": 150,
+            "spawnX": 760,
+            "spawnY": 150,
+            "r": 15,
+            "angle": 2.356194490192345,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "shells": [],
+        "mines": [],
+        "poms": [
+          {
+            "id": 1,
+            "faction": "enemy",
+            "x": 560,
+            "y": 240,
+            "tx": 420,
+            "ty": 320,
+            "flight": 0.55,
+            "blast": 46,
+            "dead": false
+          }
+        ],
+        "effects": [],
+        "events": ["Synthetic visual fixture: lobber-pom"]
+      },
+      "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "mobileContext": null,
+        "fullscreenContext": null,
+        "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
+        "fonts": "loaded",
+        "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
+        "visible": "visible"
+      },
+      "images": [
+        {
+          "file": "lobber-pom.full.png",
+          "sha256": "810c0fb8a6e5d7a469f22a3ff281caf6e6526d6f5c7eb8ac5aeca3a7fa06497b"
+        },
+        {
+          "file": "lobber-pom.arena.png",
+          "sha256": "6c681b9adee18bd7b5f0cb6561b1e2fd3c056e94aea5ffef0044d533ac080a2a"
+        },
+        {
+          "file": "lobber-pom.detail.png",
+          "sha256": "3b7aa547c8b27317586f117a94330c050985a405571af4264b9522ca4d13317a"
+        }
+      ],
+      "expectedFiles": ["lobber-pom.full.png", "lobber-pom.arena.png", "lobber-pom.detail.png"]
     },
     {
       "scene": {
@@ -23848,6 +28546,7 @@
         "time": 0.10833333333333332,
         "ticks": 13,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -24329,6 +29028,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["Synthetic visual fixture: body-aim-independent"]
       },
@@ -24356,11 +29057,11 @@
       "images": [
         {
           "file": "body-aim-independent.full.png",
-          "sha256": "d223f964b982e7f2bc0b7de5aaeb9b8bb427beff82076f67cd26069bd88627b6"
+          "sha256": "32dd0a753f8bf17584c40d34455173a1958490783296571e3f9e8e11808be3d2"
         },
         {
           "file": "body-aim-independent.arena.png",
-          "sha256": "f067ccb5b8e6b0282ceaf858cefb9cfdbca27211780a78668cad0f577d539de1"
+          "sha256": "0f06af44513371e30e54da65511c82a7cf5d532166ffde88f56376ede311d4e5"
         },
         {
           "file": "body-aim-independent.detail.png",
@@ -24394,6 +29095,7 @@
         "time": 0.10833333333333332,
         "ticks": 13,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -24875,6 +29577,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["Synthetic visual fixture: body-diagonal"]
       },
@@ -24902,11 +29606,11 @@
       "images": [
         {
           "file": "body-diagonal.full.png",
-          "sha256": "345e64c25123445145ff85f16054d56198b4fcff6e4e04cd4762ff181338a607"
+          "sha256": "0a45629bf52d9b7505295f99393a1463ea511ad1a2a2fb8f8666a2bc9b7e684f"
         },
         {
           "file": "body-diagonal.arena.png",
-          "sha256": "9de4b8a8ebf6a35b8ede25b289ab9cbfd3d213f55543943fa9b72d1c0bf98f32"
+          "sha256": "a801dd3e2d5d27d6c3399c69bbb50e0771e0fc7c37c6072ffc5797e21b1416fd"
         },
         {
           "file": "body-diagonal.detail.png",
@@ -24940,6 +29644,7 @@
         "time": 0.10833333333333332,
         "ticks": 13,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -25427,6 +30132,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["Synthetic visual fixture: body-wall-slide"]
       },
@@ -25454,11 +30161,11 @@
       "images": [
         {
           "file": "body-wall-slide.full.png",
-          "sha256": "45e5798679349c7b900b0387ee317ecc0efa421a4853bd663bfed8ae316c6bd4"
+          "sha256": "15d8d5239e929352b1fcc195327257894a125854344de067a3db7eb1b397cc10"
         },
         {
           "file": "body-wall-slide.arena.png",
-          "sha256": "f8905a88518d6b9aed16db7deabbe0d404d1e399e2ef2fac6d132fc7b89ead31"
+          "sha256": "91fc45a2e7d6ea4018a973848d3ca73afa569bbb75fde8953a155c16e3b5ecc7"
         },
         {
           "file": "body-wall-slide.detail.png",
@@ -25492,6 +30199,7 @@
         "time": 0.049999999999999996,
         "ticks": 6,
         "nextShell": 2,
+        "nextMine": 0,
         "shots": 2,
         "bounces": 0,
         "walls": [
@@ -25996,6 +30704,8 @@
             "dead": false
           }
         ],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["Synthetic visual fixture: shell-head-on-before"]
       },
@@ -26023,11 +30733,11 @@
       "images": [
         {
           "file": "shell-head-on-before.full.png",
-          "sha256": "fc22bfaef82505c594cda2ba3e4737dda0478e930b04d1f8c11dc39dfca6ea6d"
+          "sha256": "e89e62cfd709d29814d97a99ee12656bf428f7ce3024edbb2939b08691846004"
         },
         {
           "file": "shell-head-on-before.arena.png",
-          "sha256": "4049bb70939395c21ce6b4a72b286c49df7a908b018ed518b7d7e2db7b8a61f7"
+          "sha256": "289895e4c1a390816b45015cc104612afdf846813093d7e05b53e01c9a233133"
         },
         {
           "file": "shell-head-on-before.detail.png",
@@ -26061,6 +30771,7 @@
         "time": 0.05833333333333333,
         "ticks": 7,
         "nextShell": 2,
+        "nextMine": 0,
         "shots": 2,
         "bounces": 0,
         "walls": [
@@ -26542,6 +31253,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [
           {
             "x": 420,
@@ -26578,11 +31291,11 @@
       "images": [
         {
           "file": "shell-head-on-contact.full.png",
-          "sha256": "5d6b1e51c84a801cee26d900ff60e7c497b7dab0ae388953dcec6354611ee6b7"
+          "sha256": "9f50a9597cfad30e865cf553b8f81b19626f8cbcb03014a2b801744ccca9fe49"
         },
         {
           "file": "shell-head-on-contact.arena.png",
-          "sha256": "535e2d758967a9f39665ec558ba9c62101b46acb19fd03413c78ec9eb81a9c36"
+          "sha256": "77f76a2e3ffc626c9789a258d3cce93c5bb4ae492e527e5d5e6a86defb8c5cb1"
         },
         {
           "file": "shell-head-on-contact.detail.png",
@@ -26616,6 +31329,7 @@
         "time": 0.15833333333333333,
         "ticks": 19,
         "nextShell": 2,
+        "nextMine": 0,
         "shots": 2,
         "bounces": 0,
         "walls": [
@@ -27097,6 +31811,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [
           {
             "x": 420,
@@ -27133,11 +31849,11 @@
       "images": [
         {
           "file": "shell-head-on-aged.full.png",
-          "sha256": "04ff1bdc6eee0f21ba17293e2667493b02bc8e868da630f0ae21249767bed7ca"
+          "sha256": "9d6b6dc57658661418cfdfebdc27cd87c2a0ae99bf6afaa852cff89b3a1459b1"
         },
         {
           "file": "shell-head-on-aged.arena.png",
-          "sha256": "fb491727fa9586844b9ccf53bc8ef040cb4704245d3f9c2979b9f0ab9552986e"
+          "sha256": "63bb43ae0153dc1e0c0415241f1229a6d1e2071f3d3458117d576d7c6999c69f"
         },
         {
           "file": "shell-head-on-aged.detail.png",
@@ -27171,6 +31887,7 @@
         "time": 0.5833333333333337,
         "ticks": 70,
         "nextShell": 2,
+        "nextMine": 0,
         "shots": 2,
         "bounces": 0,
         "walls": [
@@ -27652,6 +32369,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.06  Shells collided", "Synthetic visual fixture: shell-head-on-cleared"]
       },
@@ -27679,11 +32398,11 @@
       "images": [
         {
           "file": "shell-head-on-cleared.full.png",
-          "sha256": "2ecf3a4b991e91ee768f9174eddc6c1140afd9ca4d4ce095c7627c16cecfc98f"
+          "sha256": "8ecde19b9f85dead5f9c3ad811f8324a5f3ef633e240095463fc0f0ae9b7f9ea"
         },
         {
           "file": "shell-head-on-cleared.arena.png",
-          "sha256": "9696c31d8c7f2f61abb6fbd75e495c50748d81c82a5e63e343f8f08f276a7231"
+          "sha256": "e52bd70bd8bb343e4e7ffe01dea67751bc6b3a59597762ffe974e769ddf3bbfa"
         },
         {
           "file": "shell-head-on-cleared.detail.png",
@@ -27718,6 +32437,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -28271,6 +32991,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: First Bounce"]
       },
@@ -28318,11 +33040,11 @@
       "images": [
         {
           "file": "touch-landscape-gameplay.full.png",
-          "sha256": "af51d4f8c58a59c9a09c804895af3b1d805dc7c78bd3368e766fe93773ec9b2a"
+          "sha256": "a42ec5154203e8cb70e14663f4d29742ac39d42d93b98fe490fb4f871d996061"
         },
         {
           "file": "touch-landscape-gameplay.arena.png",
-          "sha256": "2ffc332296681a5cbf07b207c00f994d4a7547f136947f851eff164f2ee0067a"
+          "sha256": "3bf4bc285a28d640e037f4c5170791ee8b5a68cdc32ea5cd5dab801431e6940a"
         }
       ],
       "expectedFiles": ["touch-landscape-gameplay.full.png", "touch-landscape-gameplay.arena.png"]
@@ -28349,6 +33071,7 @@
         "time": 0,
         "ticks": 0,
         "nextShell": 0,
+        "nextMine": 0,
         "shots": 0,
         "bounces": 0,
         "walls": [
@@ -28902,6 +33625,8 @@
           }
         ],
         "shells": [],
+        "mines": [],
+        "poms": [],
         "effects": [],
         "events": ["0.00  Room loaded: First Bounce"]
       },

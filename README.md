@@ -10,21 +10,27 @@ The testing site shows the last selected branch deployment, not necessarily the
 latest commit. Its `playtest-source.json` records the deployed source revision.
 
 - Free movement, independently aimed turrets, and one-bounce shells.
-- Fifteen rooms on a difficulty curve, from First Bounce to Ring of Fire.
+- Nineteen rooms on a difficulty curve, from First Bounce to Prank Alley.
 - A tactile corkboard level select: after choosing solo or co-op, pick any room
   blueprint and roll out.
 - Destructible three-hit cork in later rooms; permanent wooden walls retain
   ordinary bank-shot behavior.
-- Keyboard controls and optional two-gamepad input.
+- Sentries, chasing roamers, bank-shot bruisers, lobbing poms, and mine-laying
+  pranksters.
+- Keyboard controls, a player mine on `G` (P1) / `/` (P2), and optional
+  two-gamepad input. Touch input has no mine button yet.
 - Static hosted and self-contained single-HTML releases.
 
 ## Status and scope
 
 The TypeScript migration, PR #14's automatic map borders, the cork feature, and
-the 15-room campaign are implemented. Replacement PR #19 was squash-merged into
+the issue #38 campaign are implemented. Replacement PR #19 was squash-merged into
 main as `5bec29e3ba4a2779286da406dba0ce113e94dba7` on 2026-11-08. Original PR #15
 was closed without merging; its conflicted stack was replaced, not left as
-pending implementation. See `docs/progress.md` for provenance and evidence.
+pending implementation. The current enemy-variety branch adds roamers, bruisers,
+lobbers, pranksters, mines, a player secondary weapon, and rooms 16–19, and
+varies enemy placement in the existing rooms; it is not merged yet. See
+`docs/progress.md` for provenance and evidence.
 
 Procedural cork is intentional; ADR 0002 records the decision. SVG integration
 is not pending work. Historical migration/reconstruction handoffs are not active
@@ -84,13 +90,16 @@ See `docs/verification.md` for exact procedures.
 
 Defaults live in `src/config.ts`; rooms live in `src/sim/maps.ts`. Author exactly
 `22 × 11` interior cells: `#` permanent wall, `C` cork, `.` floor, `1`/`2` player
-spawns, and `S` sentry. The loader adds the solid perimeter outside the authored
-interior, retaining the `24 × 13` arena. Outermost authored cells are interior.
+spawns, and `S` sentry, `R` roamer, `B` bruiser, `L` lobber, or `M` prankster.
+Lowercase `r`/`b`/`l`/`m` are co-op-only variants; solo spawns uppercase symbols
+only. The loader adds the solid perimeter outside the authored interior,
+retaining the `24 × 13` arena. Outermost authored cells are interior.
 
-Validation rejects wrong dimensions, unknown symbols, invalid spawns, missing or
-mismatched sentries, and permanent disconnection. Intact cork may initially
-block a route; cleared-terrain reachability is required. This is topology
-validation, not a guarantee of balance. Keep map errors stable and actionable.
+Validation rejects wrong dimensions, unknown symbols, invalid spawns, a missing
+or mismatched total enemy count, and permanent disconnection. Intact cork may
+initially block a route; cleared-terrain reachability is required. This is
+topology validation, not a guarantee of balance. Keep map errors stable and
+actionable.
 
 ## Releases and test bridge
 

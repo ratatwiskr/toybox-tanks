@@ -95,7 +95,9 @@ describe('test bridge', () => {
     expect(room.room).toBe(roomIndex);
     expect(room.mode).toBe('solo');
     expect(room.players).toHaveLength(1);
-    expect(room.enemies).toHaveLength(roomAt(roomIndex).expectedEnemies);
+    const cells = roomAt(roomIndex).grid.replaceAll('\n', '');
+    const uppercaseEnemies = Array.from(cells).filter((cell) => 'SRBLM'.includes(cell)).length;
+    expect(room.enemies).toHaveLength(uppercaseEnemies);
   });
 
   it('loads the level-select scenario and asks the host to show the overlay', () => {

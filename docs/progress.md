@@ -1,47 +1,55 @@
 # Toybox Tanks — current progress
 
-Updated: 2026-11-15
+Updated: 2026-11-17
 
-## In progress: enemy kinds, mines & secondary weapon (scopes A–D)
+## Enemy variety, mines & secondary weapon (scopes A–E)
 
-Work is sliced into five independently resumable scopes (A–E) in
-`docs/enemy-kinds-opencode-handoff.md`. That document is self-contained: it
-records the settled decisions, the ported tuning table, the four new room
-grids, and — per scope — the exact files to read, the edits, the acceptance
-criteria, and the fresh-session prompt. Read it plus only the files it lists;
-there is no need to re-read the repository.
+Branch `feature/improve-enemy-variety` implements the five scopes described in
+`docs/enemy-kinds-opencode-handoff.md`. Scopes A–D add the deterministic world
+RNG and enemy-kind framework, the Roamer, Bruiser bank shots and telegraphs,
+Lobber poms, Prankster mines, and the player secondary weapon. Scope E adds
+campaign rooms 16–19, enemy-symbol validation and co-op-only lowercase spawns,
+HUD wording, per-kind renderer art and HP pips, level-select preview colors,
+and the `enemy-kinds`, `mines-armed`, and `lobber-pom` visual scenes. Existing
+rooms 1–15 keep their order; `bc1e5a8` varies sentry placements and updates
+hints in those rooms.
 
-Status on branch `feature/improve-enemy-variety` (uncommitted working tree):
-Scope A (sim framework, deterministic world RNG, Roamer), Scope B (Bruiser
-bank shots, telegraph plan and rage cadence), Scope C (Lobber and poms), and
-Scope D (jack-in-the-box mines, Prankster, player secondary weapon) are
-implemented. Scope B coverage includes a one-bounce solution with two trace
-segments, the no-fire case without a bank or line of sight, and the shortened
-rage interval. Scope C adds `src/sim/poms.ts`, the lobber brain, the
-post-shell-advance pom step, and pom clearing on room end. Scope D adds mine
-placement, contact/chain detonation, cork chipping, the 1.2 s player recharge,
-the Prankster brain, and `KeyG`/`Slash` + gamepad `buttons[2]` alt input.
+Touch input still has no mine button; that is a documented limitation, not
+parity. Automated captures cannot be read as images by the implementing model,
+so this entry records deterministic capture/comparison only, not aesthetic
+approval.
 
-Scope E (rooms 16–19, enemy-symbol validation/counts, HUD wording, renderer
-art, visual scenes) remains. Touch input still has no mine button; that is a
-documented limitation, not parity.
-
-### Verification
+### Verification (2026-11-17, `bc1e5a8` plus working-tree doc/test fixes)
 
 | Command                                            | Result                                                                     |
 | -------------------------------------------------- | -------------------------------------------------------------------------- |
-| `npm run verify:fast` (2026-11-16, working tree)   | passed: format, lint, typecheck, 38 files / 324 unit tests                 |
-| `npm run test:coverage` (2026-11-16, working tree) | passed: 89.08% statements, 81.79% branches, 95.37% functions, 90.16% lines |
+| `npm run verify:fast`                              | passed: format, lint, typecheck, 38 files / 341 unit tests                 |
+| `npm run test:coverage`                            | passed: 89.81% statements, 82.79% branches, 95.37% functions, 90.71% lines |
+| `npm run capture:visual:baseline`                  | passed; development checkpoint replaced with 49 captured scenes            |
+| `npm run test:visual:compare`                      | 50 passed, exit 0; baseline was not updated                                |
+| `PLAYWRIGHT_BROWSERS_PATH=… npm run test:e2e`      | 27 passed (Chromium)                                                       |
+| `PLAYWRIGHT_BROWSERS_PATH=… npm run test:release`  | 5 passed (hosted and single-file releases)                                 |
+| `PLAYWRIGHT_BROWSERS_PATH=… npm run test:browsers` | 9 passed (Chromium, Firefox, WebKit hosted release smoke)                  |
 
-New coverage: `tests/unit/poms.test.ts` (predicted landing, blast damage,
-wall-blocked blast, cork chip), lobber tests in `tests/unit/enemies.test.ts`,
-pom step/room-clear checks in `tests/unit/world.test.ts`, mine tests in
-`tests/unit/combat.test.ts`, Prankster boundary/max-mine tests in
-`tests/unit/enemies.test.ts`, alt input tests in
-`tests/unit/keyboard.test.ts` and `tests/unit/gamepad.test.ts`, and mine/alt
-bridge checks in `tests/unit/test-bridge.test.ts`. Scope D is still
-sim/input-only: the renderer omits mine, pom, telegraph and per-kind art,
-which belongs to Scope E.
+The first e2e run without `PLAYWRIGHT_BROWSERS_PATH` failed to launch, and the
+first run with it exposed two smoke assertions hard-coded to `15` rooms. Those
+assertions now derive the room count from `MAPS`. `tests/unit/test-bridge.test.ts`
+also now counts uppercase enemies for the solo last-room scenario, matching the
+co-op-only lowercase contract.
+
+New coverage includes `tests/unit/poms.test.ts` (predicted landing, blast damage,
+wall-blocked blast, cork chip), lobber and Prankster tests in
+`tests/unit/enemies.test.ts`, pom step/room-clear checks in
+`tests/unit/world.test.ts`, mine tests in `tests/unit/combat.test.ts`, alt input
+tests in `tests/unit/keyboard.test.ts` and `tests/unit/gamepad.test.ts`, mine/alt
+bridge checks in `tests/unit/test-bridge.test.ts`, and per-kind art, telegraph,
+mine, pom, and pip checks in `tests/unit/renderer.test.ts`.
+
+The refreshed `docs/visual-catalogue/current/` checkpoint is development
+evidence, not an approved regression baseline. A pixel comparison against the
+checkpoint at `bc1e5a8` found all 97 pre-existing images unchanged; the refresh
+adds 17 images: full/arena captures for the four new campaign rooms and
+full/arena/detail captures for the three enemy/mine/pom scenes.
 
 ## Issue 38 new maps: merged as PR #42
 

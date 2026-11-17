@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 
+import { MAPS } from '../../src/sim/maps';
+
 interface Point {
   readonly x: number;
   readonly y: number;
@@ -108,14 +110,14 @@ test.describe('Toybox Tanks smoke', () => {
 
     await page.getByRole('button', { name: 'Stage 05: Cork Keep' }).click();
     await expect(page.locator('#roomName')).toHaveText('Cork Keep');
-    await expect(page.locator('#roomInfo')).toContainText('Stage 5 / 15');
+    await expect(page.locator('#roomInfo')).toContainText(`Stage 5 / ${String(MAPS.length)}`);
 
     await page.getByRole('button', { name: /Roll out!/ }).click();
     await expect(page.locator('#overlay')).toBeHidden();
     await expect(page.locator('#hp2')).toHaveText('— SOLO');
     await expect(page.locator('#modeInfo')).toContainText('Solo practice');
     await expect(page.locator('#roomName')).toHaveText('Cork Keep');
-    await expect(page.locator('#roomInfo')).toContainText('Room 5 / 15');
+    await expect(page.locator('#roomInfo')).toContainText(`Room 5 / ${String(MAPS.length)}`);
 
     expect(errors, errors.join('\n')).toEqual([]);
   });
@@ -137,7 +139,7 @@ test.describe('Toybox Tanks smoke', () => {
     await page.getByRole('button', { name: /Roll out!/ }).click();
     await expect(page.locator('#overlay')).toBeHidden();
     await expect(page.locator('#roomName')).toHaveText('The Courtyard');
-    await expect(page.locator('#roomInfo')).toContainText('Room 2 / 15');
+    await expect(page.locator('#roomInfo')).toContainText(`Room 2 / ${String(MAPS.length)}`);
 
     expect(errors, errors.join('\n')).toEqual([]);
   });
