@@ -92,6 +92,43 @@ test('landscape native Chromium touch delivery moves and aims together, then tap
   expect(errors).toEqual([]);
 });
 
+test('secondary touch button lays a mine and detonates it on the next press', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Solo practice', exact: true }).click();
+  await page.getByRole('button', { name: /Roll out!/ }).click();
+  expect((await ticks(page)).mines).toEqual([]);
+  const alt = await page.locator('#altBtn').boundingBox();
+  if (alt === null) {
+    throw new Error('Missing secondary touch button');
+  }
+  const session = await page.context().newCDPSession(page);
+  await session.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 2 });
+  const point = { x: alt.x + alt.width / 2, y: alt.y + alt.height / 2, id: 1 };
+  await session.send('Input.dispatchTouchEvent', {
+    type: 'touchStart',
+    touchPoints: [point],
+  });
+  await expect(page.locator('#altBtn')).toHaveClass(/engaged/);
+  await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await expect(page.locator('#altBtn')).not.toHaveClass(/engaged/);
+  const laid = await ticks(page);
+  expect(laid.mines.filter((mine) => !mine.dead)).toHaveLength(1);
+  expect(laid.mines[0]?.owner).toBe('p1');
+  await ticks(page);
+
+  await session.send('Input.dispatchTouchEvent', {
+    type: 'touchStart',
+    touchPoints: [point],
+  });
+  await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  const detonated = await ticks(page);
+  expect(detonated.mines.filter((mine) => !mine.dead)).toEqual([]);
+  await session.detach();
+  expect(errors).toEqual([]);
+});
+
 test('portrait pauses and returning to landscape requires explicit resume', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Solo practice', exact: true }).click();

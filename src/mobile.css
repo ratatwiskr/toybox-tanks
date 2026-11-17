@@ -40,6 +40,30 @@
 .touch-aim {
   right: max(12px, env(safe-area-inset-right, 0px));
 }
+.touch-alt {
+  position: absolute;
+  right: max(12px, env(safe-area-inset-right, 0px));
+  bottom: calc(max(10px, env(safe-area-inset-bottom, 0px)) + var(--touch-pad-size, 126px) + 16px);
+  width: var(--touch-alt-size, 64px);
+  aspect-ratio: 1;
+  padding: 0;
+  border: 2px solid #fff8e9b3;
+  border-radius: 50%;
+  background: #17465a8c;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 2px #17242c;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: auto;
+}
+.touch-alt.engaged {
+  border-color: #fff;
+  background: #17465ac9;
+}
 .touch-pad.engaged {
   border-color: #fff;
   background: #17465a66;
@@ -76,6 +100,7 @@
 }
 .app.compact {
   --touch-pad-size: clamp(96px, 30dvh, 150px);
+  --touch-alt-size: clamp(52px, 18dvh, 76px);
   position: relative;
   max-width: none;
   width: 100%;

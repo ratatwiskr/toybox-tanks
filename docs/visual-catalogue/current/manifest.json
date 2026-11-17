@@ -5,9 +5,9 @@
   "complete": true,
   "runError": null,
   "source": {
-    "revision": "bc1e5a85e9d647fea8a908d7cca4b35c729eb1a6",
-    "sourceStatus": " M README.md\n M docs/architecture.md\n M docs/enemy-kinds-opencode-handoff.md\n M docs/progress.md\n M tests/e2e/smoke.spec.ts\n M tests/unit/test-bridge.test.ts\n?? reference/toybox_tanks_full_architectural_gameplay_redesign_spec.md",
-    "sourceTreeSha256": "390b7240538060ac9c19c998191bbdb4f65d335324254e7a463531644ab6ae2b"
+    "revision": "f0f0dfb752d0e841582b03c5d0294666e5d7b40a",
+    "sourceStatus": " M README.md\n M docs/architecture.md\n M docs/enemy-kinds-opencode-handoff.md\n M docs/progress.md\n M src/input/mobile.ts\n M src/input/touch.ts\n M src/main.ts\n M src/mobile.css\n M tests/e2e/mobile-layout.spec.ts\n M tests/e2e/mobile.spec.ts\n M tests/unit/touch.test.ts\n M tests/visual/catalogue-fullscreen.ts\n M tests/visual/catalogue-mobile.ts\n M tests/visual/catalogue-support.ts",
+    "sourceTreeSha256": "a7c8e7bf8b2a799d09b27383b1143a42ef0b88aef65aa99aaa35c5d1045c71df"
   },
   "environment": {
     "os": "linux",
@@ -21,7 +21,7 @@
     "reducedMotion": "reduce",
     "locale": "en-US",
     "timezoneId": "UTC",
-    "baseURL": "http://127.0.0.1:35627",
+    "baseURL": "http://127.0.0.1:34789",
     "headless": "true"
   },
   "comparisonsPerformed": false,
@@ -646,11 +646,11 @@
       "images": [
         {
           "file": "ui-menu.full.png",
-          "sha256": "8c8e6037df2d95552748dafe7ea3c870f4e13da0dc9c9b81a9bb22672c122560"
+          "sha256": "1367afd4c0153aeb01c6b13685da595f58a8b72c410277b8e1287fdc07dde599"
         },
         {
           "file": "ui-menu.arena.png",
-          "sha256": "90bdeefef5a4abe7d1180618f3a48e45dd4e09928eb3dd2df13688ad49e08638"
+          "sha256": "449b1e28ee9b7bb39918060b471f9149f3b6ac37d2409c19cc06229daeb18d48"
         }
       ],
       "expectedFiles": ["ui-menu.full.png", "ui-menu.arena.png"]
@@ -32418,7 +32418,7 @@
     {
       "scene": {
         "id": "touch-landscape-gameplay",
-        "purpose": "Real touch UI in compact landscape, whole arena between the pads.",
+        "purpose": "Real touch UI in compact landscape, whole arena between the pads plus the separate secondary button.",
         "scenario": "solo",
         "options": {},
         "viewport": {
@@ -33021,6 +33021,12 @@
             "width": 96,
             "height": 96
           },
+          "alt": {
+            "x": 574,
+            "y": 124,
+            "width": 54,
+            "height": 54
+          },
           "arena": {
             "x": 138.671875,
             "y": 92,
@@ -33040,7 +33046,7 @@
       "images": [
         {
           "file": "touch-landscape-gameplay.full.png",
-          "sha256": "a42ec5154203e8cb70e14663f4d29742ac39d42d93b98fe490fb4f871d996061"
+          "sha256": "829c785154ef907f5d7fecaab923e6ba2230d6c41769a17c9dc77b6148ec6c7c"
         },
         {
           "file": "touch-landscape-gameplay.arena.png",

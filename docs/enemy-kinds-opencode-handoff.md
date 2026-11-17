@@ -3,10 +3,10 @@
 Prepared: 2026-11-15
 Branch: `feature/improve-enemy-variety` (originally proposed as `feature/add-enemy-types`)
 Source checkpoint: `25b3c1c` (clean tree except untracked `reference/toybox-tanks-enemy-prototype{,_v2,_v3}.html`)
-Status: implemented through Scope E on 2026-11-17; see `docs/progress.md` for
-verification and known limitations. Existing campaign rooms 1–15 also had
-sentry placements varied and hints updated in `bc1e5a8`; their order is
-unchanged.
+Status: implemented through Scope E on 2026-11-17; a later follow-up on the same
+branch added the touch secondary button described in `docs/progress.md`. Existing
+campaign rooms 1–15 also had sentry placements varied and hints updated in
+`bc1e5a8`; their order is unchanged.
 
 Purpose: port the additions from `reference/toybox-tanks-enemy-prototype_v3.html`
 into the shipped TypeScript game without re-investigating the repo.
@@ -177,8 +177,8 @@ plan:null, srch:null, stuck:0 }`
 
 - Alt input: keyboard `KeyG` + `Slash`, gamepad `buttons[2]`.
 - `Command.alt?: boolean`; the sim edge-detects via `Tank.altPrev`.
-- Touch: **no** mine control. Document this as a known limitation (do not
-  silently claim parity).
+- Touch: **no** mine control in the original scopes A–E. Superseded by the
+  follow-up secondary button above the aim pad; see `docs/progress.md`.
 
 ---
 
@@ -459,7 +459,8 @@ npm run capture:visual:baseline
 - Do not store RNG as a function on `World`.
 - Do not weaken/disable assertions, lint rules, or tests to get green.
 - Do not describe development visual captures as approved baselines.
-- Do not add touch mine controls and claim parity — document the gap.
+- The original scopes deferred touch mine controls. The follow-up adds them, so
+  do not reintroduce a "no touch parity" claim.
 
 ---
 

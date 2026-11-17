@@ -23,6 +23,8 @@ export class TouchAdapter {
   private movement: Gesture | null = null;
   private aiming: Gesture | null = null;
   private pendingShot = false;
+  private altHeld = false;
+  private altPending = false;
 
   // Coordinates are CSS pixels relative to a fixed pad centre. Time comes from
   // the event adapter, never from a clock read in this command-producing core.
@@ -103,10 +105,24 @@ export class TouchAdapter {
     }
   }
 
+  // The secondary button is edge-triggered by the simulation. Keep a held flag
+  // for a normal press and a one-tick pending flag for a tap that starts and
+  // ends between simulation steps.
+  pressAlt(): void {
+    this.altHeld = true;
+    this.altPending = true;
+  }
+
+  releaseAlt(): void {
+    this.altHeld = false;
+  }
+
   clear(): void {
     this.movement = null;
     this.aiming = null;
     this.pendingShot = false;
+    this.altHeld = false;
+    this.altPending = false;
   }
 
   readCommand(fallback: Command): Command {
@@ -115,8 +131,9 @@ export class TouchAdapter {
     let turn = fallback.turn;
     let aim = fallback.aim;
     const fire = fallback.fire || this.pendingShot;
-    const alt = fallback.alt;
+    const alt = fallback.alt === true || this.altHeld || this.altPending;
     this.pendingShot = false;
+    this.altPending = false;
 
     if (this.movement !== null) {
       const vector = this.vector(this.movement);
@@ -132,7 +149,7 @@ export class TouchAdapter {
     }
 
     const command: Command = aim === undefined ? { x, y, turn, fire } : { x, y, turn, fire, aim };
-    return alt === undefined ? command : { ...command, alt };
+    return alt || fallback.alt !== undefined ? { ...command, alt } : command;
   }
 
   private find(id: number): Gesture | null {

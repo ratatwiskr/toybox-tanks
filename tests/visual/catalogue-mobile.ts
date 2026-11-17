@@ -54,20 +54,24 @@ export async function verifyMobileCapture(page: Page, scene: CaptureScene): Prom
 
   await expect(page.locator('#movePad')).toBeVisible();
   await expect(page.locator('#aimPad')).toBeVisible();
+  await expect(page.locator('#altBtn')).toBeVisible();
   await expect(page.locator('#overlay')).toBeHidden();
   const move = await page.locator('#movePad').boundingBox();
   const aim = await page.locator('#aimPad').boundingBox();
+  const alt = await page.locator('#altBtn').boundingBox();
   const arena = await page.locator('#game').boundingBox();
-  if (move === null || aim === null || arena === null)
+  if (move === null || aim === null || alt === null || arena === null)
     throw new Error('Mobile layout bounds missing');
   expect(move.x + move.width).toBeLessThanOrEqual(arena.x + 1);
   expect(aim.x).toBeGreaterThanOrEqual(arena.x + arena.width - 1);
+  expect(alt.x).toBeGreaterThanOrEqual(arena.x + arena.width - 1);
+  expect(aim.y - (alt.y + alt.height)).toBeGreaterThanOrEqual(12);
   expect(arena.width / arena.height).toBeCloseTo(16 / 9, 2);
-  for (const box of [move, aim, arena]) {
+  for (const box of [move, aim, alt, arena]) {
     expect(box.x).toBeGreaterThanOrEqual(-1);
     expect(box.y).toBeGreaterThanOrEqual(-1);
     expect(box.x + box.width).toBeLessThanOrEqual(scene.viewport.width + 1);
     expect(box.y + box.height).toBeLessThanOrEqual(scene.viewport.height + 1);
   }
-  return { mobile: scene.mobile, move, aim, arena };
+  return { mobile: scene.mobile, move, aim, alt, arena };
 }

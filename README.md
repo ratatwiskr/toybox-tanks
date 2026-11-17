@@ -18,7 +18,8 @@ latest commit. Its `playtest-source.json` records the deployed source revision.
 - Sentries, chasing roamers, bank-shot bruisers, lobbing poms, and mine-laying
   pranksters.
 - Keyboard controls, a player mine on `G` (P1) / `/` (P2), and optional
-  two-gamepad input. Touch input has no mine button yet.
+  two-gamepad input. Touch P1 lays or detonates that mine with a secondary
+  button above the aim pad.
 - Static hosted and self-contained single-HTML releases.
 
 ## Status and scope
@@ -40,15 +41,17 @@ The owner reported successful cork playtesting in the VS Code internal browser.
 Visual regression and comprehensive visual coverage of cork states are separate
 work; no screenshot baselines are approved here.
 
-## Experimental mobile and tablet controls (PR #17)
+## Mobile and tablet controls (PR #17)
 
-This feature branch includes landscape touch controls and optional whole-game
-fullscreen. Do not assume the production URL includes PR #17 before it merges
-and its main deployment passes. The separate playtest publisher is
+Landscape touch controls and optional whole-game fullscreen are part of main
+through PR #17 (`dd2ac51`), with the iPhone fullscreen fallback from #46
+(`9c4197f`). The separate playtest publisher is
 https://github.com/ratatwiskr/toybox-tanks-playtest.
 
 - Solo: Touch P1 uses the left pad to move and the right pad to drag-aim. Lift to
   retain heading without firing; a short tap fires once in the current direction.
+  The separate round button above the right pad lays a mine, then detonates it on
+  the next press.
 - Mixed co-op: enable Touch P1; the first assigned gamepad controls P2.
 - Two-controller co-op: disable Touch P1; the gamepads use the ordinary P1/P2 slots.
 - Gamepads: left stick moves, right stick aims, A/right trigger fires, Start pauses.

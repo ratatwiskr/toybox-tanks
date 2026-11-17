@@ -172,7 +172,7 @@ function controlsHTML(): string {
     return controlHTML;
   }
   return mobile.enabled
-    ? '<p>Touch P1: left pad move; right pad drag to aim, lift to retain, tap to fire.<br>Co-op: first gamepad controls P2. Turn Touch P1 off for two gamepads.</p>'
+    ? '<p>Touch P1: left pad move; right pad drag to aim, lift to retain, tap to fire; the round button above it lays or detonates a mine.<br>Co-op: first gamepad controls P2. Turn Touch P1 off for two gamepads.</p>'
     : '<p>Gamepads: left stick move, right stick aim, A / RT fire, Start pause.<br>Press a controller button if it has not appeared yet.</p>';
 }
 
@@ -209,7 +209,7 @@ function overlayContent(state: GameState): OverlayContent {
           : button('Start two-player co-op', 'coop', true) + button('Solo practice', 'solo'),
         extra:
           controlsHTML() +
-          '<p class="tiny">Two hits per player · three active shells each · no friendly fire.<br>Dashed paths show your aim and first bounce. Muzzle glow means an enemy is about to fire.<br>Roamers chase, Bruisers bank shots, Lobbers arc poms, Pranksters plant mines.<br>Mines: P1 <kbd>G</kbd> / P2 <kbd>/</kbd> lay one, press again to detonate. Touch players have no mine button yet.</p>',
+          '<p class="tiny">Two hits per player · three active shells each · no friendly fire.<br>Dashed paths show your aim and first bounce. Muzzle glow means an enemy is about to fire.<br>Roamers chase, Bruisers bank shots, Lobbers arc poms, Pranksters plant mines.<br>Mines: P1 <kbd>G</kbd> / P2 <kbd>/</kbd> lay one, press again to detonate; touch uses the button above the aim pad.</p>',
       };
     case 'paused':
       return {

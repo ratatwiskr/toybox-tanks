@@ -14,22 +14,31 @@ and the `enemy-kinds`, `mines-armed`, and `lobber-pom` visual scenes. Existing
 rooms 1–15 keep their order; `bc1e5a8` varies sentry placements and updates
 hints in those rooms.
 
-Touch input still has no mine button; that is a documented limitation, not
-parity. Automated captures cannot be read as images by the implementing model,
-so this entry records deterministic capture/comparison only, not aesthetic
-approval.
+Touch P1 now has a secondary button above the aim pad: one press lays a mine and
+the next press detonates it, matching the keyboard `G` / `/` contract. Automated
+captures cannot be read as images by the implementing model, so this entry
+records deterministic capture/comparison only, not aesthetic approval.
 
-### Verification (2026-11-17, `bc1e5a8` plus working-tree doc/test fixes)
+### Verification (2026-11-17, `f0f0dfb` plus working-tree touch-button changes)
 
 | Command                                            | Result                                                                     |
 | -------------------------------------------------- | -------------------------------------------------------------------------- |
-| `npm run verify:fast`                              | passed: format, lint, typecheck, 38 files / 341 unit tests                 |
+| `npm run verify:fast`                              | passed: format, lint, typecheck, 38 files / 345 unit tests                 |
 | `npm run test:coverage`                            | passed: 89.81% statements, 82.79% branches, 95.37% functions, 90.71% lines |
 | `npm run capture:visual:baseline`                  | passed; development checkpoint replaced with 49 captured scenes            |
 | `npm run test:visual:compare`                      | 50 passed, exit 0; baseline was not updated                                |
-| `PLAYWRIGHT_BROWSERS_PATH=… npm run test:e2e`      | 27 passed (Chromium)                                                       |
+| `PLAYWRIGHT_BROWSERS_PATH=… npm run test:e2e`      | 28 passed (Chromium)                                                       |
 | `PLAYWRIGHT_BROWSERS_PATH=… npm run test:release`  | 5 passed (hosted and single-file releases)                                 |
 | `PLAYWRIGHT_BROWSERS_PATH=… npm run test:browsers` | 9 passed (Chromium, Firefox, WebKit hosted release smoke)                  |
+
+The touch secondary button is a separate circular control above the aim pad with
+a 16 px gap, so it is not part of the aim/tap target. `TouchAdapter` keeps a held
+flag plus a one-tick pending flag for taps shorter than a simulation step; the
+simulation's existing rising-edge `alt` handling still guarantees one lay or
+detonate per press. `tests/e2e/mobile.spec.ts` covers laying and then detonating
+a mine through native Chromium touch delivery, and `tests/e2e/mobile-layout.spec.ts`
+checks the button's size, bounds, and separation from the aim pad at three
+landscape sizes.
 
 The first e2e run without `PLAYWRIGHT_BROWSERS_PATH` failed to launch, and the
 first run with it exposed two smoke assertions hard-coded to `15` rooms. Those
@@ -42,14 +51,16 @@ wall-blocked blast, cork chip), lobber and Prankster tests in
 `tests/unit/enemies.test.ts`, pom step/room-clear checks in
 `tests/unit/world.test.ts`, mine tests in `tests/unit/combat.test.ts`, alt input
 tests in `tests/unit/keyboard.test.ts` and `tests/unit/gamepad.test.ts`, mine/alt
-bridge checks in `tests/unit/test-bridge.test.ts`, and per-kind art, telegraph,
-mine, pom, and pip checks in `tests/unit/renderer.test.ts`.
+bridge checks in `tests/unit/test-bridge.test.ts`, per-kind art, telegraph, mine,
+pom, and pip checks in `tests/unit/renderer.test.ts`, and touch secondary
+tap/hold/world tests in `tests/unit/touch.test.ts`.
 
 The refreshed `docs/visual-catalogue/current/` checkpoint is development
-evidence, not an approved regression baseline. A pixel comparison against the
-checkpoint at `bc1e5a8` found all 97 pre-existing images unchanged; the refresh
-adds 17 images: full/arena captures for the four new campaign rooms and
-full/arena/detail captures for the three enemy/mine/pom scenes.
+evidence, not an approved regression baseline. Only three captured images changed:
+`touch-landscape-gameplay.full.png` shows the idle secondary button, and the
+`ui-menu` full/arena captures show the updated instructions. No new mobile scene
+was added; the engaged button and placed mine are covered mechanically by the e2e
+and mine fixture rather than a separate touch screenshot.
 
 ## Issue 38 new maps: merged as PR #42
 

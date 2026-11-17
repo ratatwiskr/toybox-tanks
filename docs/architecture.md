@@ -72,6 +72,8 @@ at lint time with restricted globals, restricted imports, and restricted propert
 | `src/render/renderer.ts`           | DPR-aware Canvas rendering, aim/first-bounce guide, effects; read-only canvas surface.  |
 | `src/input/keyboard.ts`            | Key sets, held-key state, focus/overlay guards, command sampling.                       |
 | `src/input/gamepad.ts`             | Optional pad assignment, deadzones, stick/keyboard precedence, fire, Start edges.       |
+| `src/input/touch.ts`               | Touch move/aim gestures, tap-to-fire, and edge-triggered secondary-button state.        |
+| `src/input/mobile.ts`              | Compact touch layout, secondary button, fullscreen, and orientation gating.             |
 | `src/presentation/level-select.ts` | Pure level-select markup, stage cards, and blueprint-preview SVG generation.            |
 | `src/test-bridge.ts`               | Test-build-only scenarios, bounded manual ticks, copied snapshots, events, rendering.   |
 | `src/main.ts`                      | Menus, overlays, HUD, pause/retry, RAF loop, fixed-step accumulator, input composition. |
