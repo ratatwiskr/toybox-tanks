@@ -4,7 +4,8 @@ Prepared: 2026-11-15
 Branch: `feature/improve-enemy-variety` (originally proposed as `feature/add-enemy-types`)
 Source checkpoint: `25b3c1c` (clean tree except untracked `reference/toybox-tanks-enemy-prototype{,_v2,_v3}.html`)
 Status: implemented through Scope E on 2026-11-17; a later follow-up on the same
-branch added the touch secondary button described in `docs/progress.md`. Existing
+branch added the touch secondary button described in
+`docs/history/enemy-variety-2026-11.md`. Existing
 campaign rooms 1–15 also had sentry placements varied and hints updated in
 `bc1e5a8`; their order is unchanged.
 
@@ -178,7 +179,8 @@ plan:null, srch:null, stuck:0 }`
 - Alt input: keyboard `KeyG` + `Slash`, gamepad `buttons[2]`.
 - `Command.alt?: boolean`; the sim edge-detects via `Tank.altPrev`.
 - Touch: **no** mine control in the original scopes A–E. Superseded by the
-  follow-up secondary button above the aim pad; see `docs/progress.md`.
+  follow-up secondary button above the aim pad; see
+  `docs/history/enemy-variety-2026-11.md`.
 
 ---
 

@@ -31,7 +31,7 @@ was closed without merging; its conflicted stack was replaced, not left as
 pending implementation. The current enemy-variety branch adds roamers, bruisers,
 lobbers, pranksters, mines, a player secondary weapon, and rooms 16–19, and
 varies enemy placement in the existing rooms; it is not merged yet. See
-`docs/progress.md` for provenance and evidence.
+`docs/progress.md` for current state and `docs/history/` for merged-work evidence.
 
 Procedural cork is intentional; ADR 0002 records the decision. SVG integration
 is not pending work. Historical migration/reconstruction handoffs are not active
@@ -62,8 +62,9 @@ https://github.com/ratatwiskr/toybox-tanks-playtest.
 
 On 2026-11-08 the owner reported that the latest mobile state playtested well,
 including acceptance of the revised layout. Exact tested SHA/browser/device were
-not supplied. This is not proof of every tablet/controller combination. Current
-verification and remaining acceptance work are recorded in `docs/progress.md`.
+not supplied. This is not proof of every tablet/controller combination. Historical
+mobile evidence is in `docs/history/merged-baselines-and-mobile-2026-11.md`; current
+work is in `docs/progress.md`.
 
 ## Development and verification
 
@@ -129,9 +130,10 @@ synthetic gamepads do not prove physical controller compatibility.
 approved regression baselines. Do not auto-accept screenshots or infer visual
 approval from passing tests. See `docs/adr/0001-visual-gate-pending.md`.
 
-Cork is drawn procedurally. Supplied asset packs remain unintegrated reference
-material; broader adoption is separate under `docs/asset-integration-plan.md`.
-Never change collision geometry to fit artwork.
+Cork is drawn procedurally. The `wood-warm` floor from the supplied asset pack is
+integrated; walls, tanks, turrets, and shells still use procedural art, and broader
+adoption is separate under `docs/asset-integration-plan.md`. Never change collision
+geometry to fit artwork.
 
 ## Project layout
 
