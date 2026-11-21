@@ -3,12 +3,25 @@
 Build a readable, silent, self-contained review artifact:
 
 ```sh
-npm exec vite -- build --mode context
+npm run build:context
 ```
 
 Output: `dist-context/index.html`. This mode uses the existing single-file plugin, disables JavaScript and CSS minification, and replaces the browser playback module before bundling. The replacement imports no sound or music assets and initializes neither HTML audio nor Web Audio. Existing audio controls remain present but cannot enable playback.
 
 Normal hosted, single-file, and test build modes retain their existing configuration. No gameplay or simulation code is changed.
+
+## Main-build integration
+
+`npm run build` now produces both release artifacts:
+
+- `dist/` — the normal hosted release.
+- `dist-context/` — the latest readable, silent, self-contained model-context artifact.
+
+`npm run test:release` also builds the context artifact alongside the hosted and single-file releases.
+
+`npm run build:single` remains a standalone single-file build. `npm run build:context` remains available independently when only the model-context artifact is needed.
+
+`dist-context` is a model-facing convenience artifact. It is not a replacement for the hosted release or the standalone playable single-file release.
 
 ## Agent review workspace
 
@@ -32,6 +45,8 @@ The review panel is included only in the context build. It observes gameplay sta
 
 This change has not been executed or browser-tested by the authoring assistant.
 
+- Run `npm run build`; confirm both `dist/` and `dist-context/` are refreshed.
+- Run `npm run test:release`; confirm hosted, single-file, and context artifacts are built.
 - Run formatting, lint, typecheck, and unit tests.
 - Run the context build and inspect its bundle/module graph for excluded `audio/browser.ts`, `audio/assets.ts`, and sound/music files.
 - Confirm the output contains one self-contained HTML file and no sound/music payloads.
