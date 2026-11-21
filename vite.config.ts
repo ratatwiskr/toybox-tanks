@@ -10,7 +10,12 @@ export default defineConfig(({ mode }) => {
     base: './',
     resolve: {
       alias: context
-        ? [{ find: /^\.\/audio\/browser$/, replacement: fileURLToPath(new URL('./src/audio/silent.ts', import.meta.url)) }]
+        ? [
+            {
+              find: /^\.\/audio\/browser$/,
+              replacement: fileURLToPath(new URL('./src/audio/silent.ts', import.meta.url)),
+            },
+          ]
         : [],
     },
     define: {
@@ -18,7 +23,13 @@ export default defineConfig(({ mode }) => {
       __REVIEW_BUILD__: JSON.stringify(context),
     },
     build: {
-      outDir: context ? 'dist-context' : single ? 'dist-single' : mode === 'test' ? 'dist-test' : 'dist',
+      outDir: context
+        ? 'dist-context'
+        : single
+          ? 'dist-single'
+          : mode === 'test'
+            ? 'dist-test'
+            : 'dist',
       emptyOutDir: true,
       target: 'es2022',
       sourcemap: false,

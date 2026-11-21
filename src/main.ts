@@ -83,7 +83,8 @@ try {
   pauseReason = error instanceof Error ? error.message : String(error);
 }
 
-let reviewPanel: { recordFrame(timestamp: number, world: World, simulationSteps: number): void } | undefined;
+let reviewPanel:
+  { recordFrame(timestamp: number, world: World, simulationSteps: number): void } | undefined;
 if (__REVIEW_BUILD__) {
   const { installReviewPanel } = await import('./review/review-panel');
   reviewPanel = installReviewPanel({ canvas });
@@ -247,9 +248,7 @@ function overlayContent(state: GameState): OverlayContent {
         title: 'A tiny setback',
         tag: world.mode === 'solo' ? 'Tank disabled' : 'Both tanks disabled',
         text: 'A fresh start in this room.<br>No lives to lose. Try a different angle.',
-        actions:
-          button('Retry room · R', 'retry', true) +
-          button('Choose a room', 'levels'),
+        actions: button('Retry room · R', 'retry', true) + button('Choose a room', 'levels'),
         extra: '',
       };
     case 'completed':
@@ -257,9 +256,7 @@ function overlayContent(state: GameState): OverlayContent {
         title: 'A clean toybox sweep!',
         tag: `All ${String(MAPS.length)} rooms complete`,
         text: `You cleared ${MAPS.map((map) => map.name).join(', ')}.<br>The tabletop belongs to the team.`,
-        actions:
-          button('Replay all rooms', 'replay', true) +
-          button('Choose a room', 'levels'),
+        actions: button('Replay all rooms', 'replay', true) + button('Choose a room', 'levels'),
         extra: '',
       };
     case 'error':
