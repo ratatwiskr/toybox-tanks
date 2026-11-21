@@ -258,7 +258,7 @@ build-time snapshot, not live repository state.</p>
       `Last frame: ${lastFrameMs.toFixed(1)} ms`,
       `Worst recent frame: ${worstFrameMs.toFixed(1)} ms`,
       `Simulation steps: ${String(lastSteps)}`,
-      `Canvas: ${String(Math.round(rect.width))} x ${String(Math.round(rect.height))} CSS px`,
+      `Canvas: ${Math.round(rect.width)} x ${Math.round(rect.height)} CSS px`,
       `DPR: ${dpr.toFixed(2)}`,
       world === undefined
         ? 'World: unavailable'
