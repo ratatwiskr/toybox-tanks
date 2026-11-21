@@ -15,6 +15,7 @@ export default defineConfig(({ mode }) => {
     },
     define: {
       __TEST_BUILD__: JSON.stringify(mode === 'test'),
+      __REVIEW_BUILD__: JSON.stringify(context),
     },
     build: {
       outDir: context ? 'dist-context' : single ? 'dist-single' : mode === 'test' ? 'dist-test' : 'dist',
