@@ -1,19 +1,27 @@
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import { viteSingleFile } from 'vite-plugin-singlefile';
 
 export default defineConfig(({ mode }) => {
-  const single = mode === 'single';
+  const context = mode === 'context';
+  const single = mode === 'single' || context;
 
   return {
     base: './',
+    resolve: {
+      alias: context
+        ? [{ find: /^\.\/audio\/browser$/, replacement: fileURLToPath(new URL('./src/audio/silent.ts', import.meta.url)) }]
+        : [],
+    },
     define: {
       __TEST_BUILD__: JSON.stringify(mode === 'test'),
     },
     build: {
-      outDir: single ? 'dist-single' : mode === 'test' ? 'dist-test' : 'dist',
+      outDir: context ? 'dist-context' : single ? 'dist-single' : mode === 'test' ? 'dist-test' : 'dist',
       emptyOutDir: true,
       target: 'es2022',
       sourcemap: false,
+      ...(context ? { minify: false, cssMinify: false } : {}),
       assetsInlineLimit: single ? 100_000_000 : 4096,
     },
     plugins: single ? [viteSingleFile()] : [],
