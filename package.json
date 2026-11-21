@@ -38,6 +38,7 @@
     "test:release": "npm run build && npm run build:single && playwright test --config playwright.release.config.ts --project=chromium",
     "build": "vite build",
     "build:single": "vite build --mode single",
+    "build:context": "vite build --mode context",
     "build:test": "vite build --mode test",
     "capture:visual": "npm run capture:visual:baseline --",
     "compare:visual": "npm run test:visual:compare --",
