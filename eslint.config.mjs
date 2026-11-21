@@ -71,6 +71,12 @@ export default defineConfig(
         'error',
         { fixStyle: 'inline-type-imports', prefer: 'type-imports' },
       ],
+      '@typescript-eslint/restrict-template-expressions': [
+        'error',
+        {
+          allowNumber: true,
+        },
+      ],
       '@typescript-eslint/no-import-type-side-effects': 'error',
       '@typescript-eslint/no-unused-vars': [
         'error',

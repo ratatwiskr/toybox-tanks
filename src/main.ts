@@ -83,6 +83,13 @@ try {
   pauseReason = error instanceof Error ? error.message : String(error);
 }
 
+let reviewPanel:
+  { recordFrame(timestamp: number, world: World, simulationSteps: number): void } | undefined;
+if (__REVIEW_BUILD__) {
+  const { installReviewPanel } = await import('./review/review-panel');
+  reviewPanel = installReviewPanel({ canvas });
+}
+
 const mobile = createMobileControls({
   app,
   stage,
@@ -241,10 +248,7 @@ function overlayContent(state: GameState): OverlayContent {
         title: 'A tiny setback',
         tag: world.mode === 'solo' ? 'Tank disabled' : 'Both tanks disabled',
         text: 'A fresh start in this room.<br>No lives to lose. Try a different angle.',
-        actions:
-          button('Retry room · R', 'retry', true) +
-          button('Choose a room', 'levels') +
-          button('Main menu', 'menu'),
+        actions: button('Retry room · R', 'retry', true) + button('Choose a room', 'levels'),
         extra: '',
       };
     case 'completed':
@@ -252,10 +256,7 @@ function overlayContent(state: GameState): OverlayContent {
         title: 'A clean toybox sweep!',
         tag: `All ${String(MAPS.length)} rooms complete`,
         text: `You cleared ${MAPS.map((map) => map.name).join(', ')}.<br>The tabletop belongs to the team.`,
-        actions:
-          button('Replay all rooms', 'replay', true) +
-          button('Choose a room', 'levels') +
-          button('Main menu', 'menu'),
+        actions: button('Replay all rooms', 'replay', true) + button('Choose a room', 'levels'),
         extra: '',
       };
     case 'error':
@@ -365,7 +366,6 @@ function showError(message: string): void {
   menuScreen = 'modes';
   lastShownState = '';
   clearInputs();
-  accumulator = 0;
   setOverlay();
   updateHUD();
 }
@@ -698,6 +698,7 @@ function frame(timestamp: number): void {
   pollGamepads();
   setOverlay();
 
+  let simulationSteps = 0;
   if (!manualClock && world.state === 'playing') {
     accumulator += Math.min(CONFIG.maxFrameTime, Math.max(0, raw));
     let count = 0;
@@ -717,12 +718,14 @@ function frame(timestamp: number): void {
     if (count === CONFIG.maxSteps) {
       accumulator = 0;
     }
+    simulationSteps = count;
   } else {
     accumulator = 0;
   }
 
   setOverlay();
   renderer.render(world, debugEnabled);
+  reviewPanel?.recordFrame(timestamp, world, simulationSteps);
   updateHUD();
   requestAnimationFrame(frame);
 }
