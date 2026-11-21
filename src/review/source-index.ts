@@ -1,4 +1,13 @@
-const rawSources = import.meta.glob(
+interface ViteImportMeta {
+  glob(
+    patterns: readonly string[],
+    options: { query: '?raw'; import: 'default'; eager: true },
+  ): Record<string, string>;
+}
+
+const viteImportMeta = import.meta as ImportMeta & ViteImportMeta;
+
+const rawSources = viteImportMeta.glob(
   [
     '/src/main.ts',
     '/src/config.ts',
@@ -11,7 +20,7 @@ const rawSources = import.meta.glob(
     '/tests/**/*.ts',
   ],
   { query: '?raw', import: 'default', eager: true },
-) as Record<string, string>;
+);
 
 export interface EmbeddedSource {
   readonly path: string;

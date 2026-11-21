@@ -1,5 +1,5 @@
 import type { World } from '../sim/types';
-import { REVIEW_BRIEF, REVIEW_PROMPTS, REVIEW_SCOPES, type ReviewScope } from './review-context';
+import { REVIEW_BRIEF, REVIEW_PROMPTS, REVIEW_SCOPES } from './review-context';
 import { findSource, getSourceFiles } from './source-index';
 
 export interface ReviewPanel {
@@ -141,7 +141,7 @@ build-time snapshot, not live repository state.</p>
   const sourceView = panel.querySelector<HTMLPreElement>('#review-source-view');
   const scopeSelect = panel.querySelector<HTMLSelectElement>('#review-scope');
 
-  for (const [key, prompt] of Object.entries(REVIEW_PROMPTS)) {
+  for (const key of Object.keys(REVIEW_PROMPTS)) {
     const option = document.createElement('option');
     option.value = key;
     option.textContent = key;
@@ -205,7 +205,7 @@ build-time snapshot, not live repository state.</p>
     return [
       '# Toybox Tanks review',
       '',
-      `## Scope`,
+      '## Scope',
       scope,
       '',
       '## Observation',
@@ -223,7 +223,7 @@ build-time snapshot, not live repository state.</p>
       '## Validation plan',
       readField('review-validation') || '_Not recorded._',
       '',
-      `## Confidence`,
+      '## Confidence',
       readField('review-confidence'),
       '',
       '## Runtime snapshot',
@@ -270,12 +270,9 @@ build-time snapshot, not live repository state.</p>
     try {
       await navigator.clipboard.writeText(value);
     } catch {
-      const helper = document.createElement('textarea');
-      helper.value = value;
-      document.body.append(helper);
-      helper.select();
-      document.execCommand('copy');
-      helper.remove();
+      if (sourceView !== null) {
+        sourceView.textContent = 'Copy failed — select and copy manually.';
+      }
     }
   }
 
