@@ -35,6 +35,7 @@ export default defineConfig(
       'test-results/',
       '.vite/',
       '.tmp/',
+      'prototypes/',
       'reference/',
       'Perplexity-assets-*/',
       'tests/fixtures/guardrails/sim/negative/',

@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <title>Toybox Tanks UI mock (S1, round 3: one item per row)</title>
+    <style>
+      :root {
+        --ink: #3b2410;
+        --w1: #f2c97d;
+        --w2: #d99a45;
+        --ed: #7a4a1d;
+        --fs-btn: clamp(17px, 4.4vh, 60px);
+        --fs-h: clamp(24px, 7.5vh, 110px);
+        --fs-sign: clamp(14px, 3vh, 44px);
+        --fs-logo: min(11vw, 17vh, 190px);
+        --gut: 0px;
+        --rowh: max(38px, 5.6vh);
+      }
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        color: var(--ink);
+        touch-action: none;
+        overscroll-behavior: none;
+        font-family: ui-rounded, 'Arial Rounded MT Bold', 'Trebuchet MS', system-ui, sans-serif;
+        background-color: #c59563;
+        background-image:
+          radial-gradient(#5230121f 1px, #0000 1.5px), radial-gradient(#ffebc82e 1px, #0000 1.5px);
+        background-size:
+          14px 14px,
+          19px 19px;
+        background-position:
+          0 0,
+          7px 9px;
+        box-shadow: inset 0 0 45px #2d170873;
+      }
+      button {
+        font: inherit;
+        color: inherit;
+        cursor: pointer;
+      }
+      .menu {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right))
+          max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+      }
+      .dialog {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: max(8px, 2vh);
+        max-height: 100%;
+        max-width: 100%;
+        overflow: hidden;
+        text-align: center;
+      }
+      .head {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: max(6px, 1.6vh);
+      }
+      .dialog h1,
+      .dialog h2 {
+        margin: 0;
+        font-size: var(--fs-h);
+        text-shadow: 0 2px #fff7;
+      }
+      .logo {
+        font-size: var(--fs-logo);
+        font-weight: 900;
+        line-height: 1;
+        margin: 0;
+      }
+      .logo b {
+        display: inline-block;
+        padding: 0 0.07em;
+        margin: 0 0.02em;
+        color: #fff;
+        border-radius: 0.16em;
+        text-shadow: 0 3px 0 #0005;
+        box-shadow: 0 0.07em 0 #0004;
+      }
+      .btn {
+        font-weight: 800;
+        font-size: var(--fs-btn);
+        padding: 0.45em 1.1em;
+        min-width: 0;
+        border: max(4px, 0.1em) solid var(--ed);
+        border-radius: 0.7em;
+        background: linear-gradient(var(--w1), var(--w2));
+        box-shadow:
+          0 0.22em 0 #6b3f17,
+          inset 0 2px #fff6;
+      }
+      .btn:active {
+        transform: translateY(0.18em);
+        box-shadow: 0 0.04em 0 #6b3f17;
+      }
+      .btn:focus-visible,
+      .lrow:focus-visible {
+        outline: max(5px, 0.5vh) solid #facc15;
+        outline-offset: 3px;
+      }
+      .btn.green {
+        background: linear-gradient(#8ee08e, #3fa34a);
+        color: #fff;
+        text-shadow: 0 2px #14532d;
+      }
+      .btn.sm {
+        font-size: calc(var(--fs-btn) * 0.7);
+        padding: 0.3em 0.8em;
+      }
+      .sign {
+        background: #fff3d6;
+        border: max(4px, 0.2em) solid var(--ed);
+        border-radius: 0.8em;
+        padding: 0.35em 0.8em;
+        box-shadow: 0 0.3em 0 #0003;
+        max-width: min(92vw, max(520px, 80vh));
+        font-weight: 700;
+        font-size: var(--fs-sign);
+      }
+      /* one item per row: every menu is a single vertical list (up/down + confirm only) */
+      .buttons {
+        display: flex;
+        flex-direction: column;
+        gap: max(8px, 1.8vh);
+        width: min(94vw, max(360px, 52vh));
+      }
+      .buttons .btn {
+        width: 100%;
+      }
+      .rows {
+        display: grid;
+        gap: max(6px, 1.2vh);
+        width: 100%;
+        text-align: left;
+        font-weight: 800;
+        font-size: var(--fs-sign);
+      }
+      .rows label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .rows input[type='range'] {
+        width: min(30vw, 22vh);
+      }
+      @media (min-aspect-ratio: 3/2) {
+        .dialog:not(.levels) {
+          flex-direction: row;
+          gap: 5vw;
+        }
+        .dialog:not(.levels) .head {
+          flex: 1 1 0;
+          min-width: 0;
+        }
+        .dialog:not(.levels) .buttons {
+          flex: 1 1 0;
+          max-width: max(360px, 52vh);
+        }
+      }
+      /* level select: list (one room per row) + preview of the selected room */
+      .dialog.levels {
+        width: min(100%, 1500px);
+        height: 100%;
+        justify-content: flex-start;
+        align-items: stretch;
+        text-align: left;
+      }
+      .ltool {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: none;
+      }
+      .chip {
+        background: #8a6232;
+        color: #fff8e9;
+        border-radius: 7px;
+        padding: 3px 10px;
+        font-size: calc(var(--fs-sign) * 0.7);
+        font-weight: 850;
+        letter-spacing: 0.1em;
+      }
+      .cnt {
+        margin-left: auto;
+        font-weight: 800;
+        font-size: var(--fs-sign);
+      }
+      .lbody {
+        flex: 1;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+        gap: 3vw;
+      }
+      .llist {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-height: 0;
+        overflow: hidden;
+      }
+      .lrow {
+        flex: none;
+        height: var(--rowh);
+        display: flex;
+        align-items: center;
+        gap: 0.8em;
+        padding: 0 0.9em;
+        border: 3px solid #f4efe6;
+        border-radius: 0.6em;
+        background: #1e4d7b;
+        color: #eaf4ff;
+        box-shadow: 0 3px 0 #754e23;
+        font-size: var(--fs-sign);
+        font-weight: 800;
+        text-align: left;
+        width: 100%;
+      }
+      .lrow .n {
+        opacity: 0.8;
+        min-width: 1.8em;
+      }
+      .lrow .nm {
+        flex: 1;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      .lrow .c {
+        font-size: 0.8em;
+        background: #7f1d1d;
+        border-radius: 8px;
+        padding: 0 6px;
+      }
+      .lrow.sel {
+        background: #2a6fb0;
+        outline: max(4px, 0.5vh) solid #facc15;
+        outline-offset: 1px;
+      }
+      .lprev {
+        display: flex;
+        flex-direction: column;
+        gap: max(6px, 1.4vh);
+        min-height: 0;
+        padding: max(6px, 1.2vh);
+        border: 3px solid #9d713c;
+        border-radius: 14px;
+        background: linear-gradient(#f7e7c8, #dcba80);
+        box-shadow: 0 4px 0 #7c5427;
+      }
+      .lprev .pvbig {
+        flex: 1;
+        min-height: 0;
+        background: #12314e;
+        border-radius: 8px;
+        display: block;
+      }
+      .lprev .pvbig svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .lprev b {
+        font-size: var(--fs-sign);
+      }
+      .lprev small {
+        display: block;
+        font-size: calc(var(--fs-sign) * 0.85);
+        font-weight: 650;
+        opacity: 0.85;
+      }
+      #play {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: max(6px, env(safe-area-inset-top)) max(6px, env(safe-area-inset-right))
+          max(6px, env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left));
+      }
+      .stage {
+        position: relative;
+        container-type: size;
+        width: min(calc(100vw - 2 * var(--gut) - 12px), calc((100dvh - 12px) * 16 / 9));
+        aspect-ratio: 16/9;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow:
+          0 0 0 3px #754e23,
+          0 12px 30px #0006;
+        background: #e6d3ac;
+      }
+      .stage svg.arena {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .hud {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+        --u: 1cqh;
+        padding: calc(var(--u) * 0.8) calc(var(--u) * 1.4);
+        pointer-events: none;
+        font-weight: 800;
+      }
+      .pill {
+        pointer-events: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: calc(var(--u) * 1);
+        padding: calc(var(--u) * 0.5) calc(var(--u) * 1.2);
+        font-size: max(11px, calc(var(--u) * 3));
+        background: linear-gradient(#fff5dc, #e7c98f);
+        border: 2px solid #754e23;
+        border-radius: calc(var(--u) * 2);
+        box-shadow: 0 2px 0 #573816;
+        white-space: nowrap;
+      }
+      .pill small {
+        opacity: 0.7;
+        font-size: 0.75em;
+      }
+      .hearts {
+        color: #dc2626;
+        letter-spacing: 1px;
+      }
+      .dot {
+        width: 0.8em;
+        height: 0.8em;
+        border-radius: 50%;
+        border: 2px solid #0005;
+      }
+      .pips {
+        display: inline-flex;
+        gap: 2px;
+      }
+      .pips s {
+        display: block;
+        width: 0.45em;
+        height: 0.8em;
+        border-radius: 2px;
+        background: #fbbf24;
+        border: 1px solid #78350f;
+      }
+      .pips s:last-child {
+        opacity: 0.3;
+      }
+      .room {
+        background: linear-gradient(#3f2814, #2b1a0b);
+        color: #fef3c7;
+        border-color: #9d713c;
+      }
+      .ib {
+        pointer-events: auto;
+        min-width: max(32px, calc(var(--u) * 5));
+        height: max(32px, calc(var(--u) * 5));
+        border: 2px solid #754e23;
+        border-radius: calc(var(--u) * 1.6);
+        background: linear-gradient(#fff5dc, #e4c184);
+        box-shadow: 0 2px 0 #573816;
+        font-size: max(13px, calc(var(--u) * 3));
+        padding: 0;
+      }
+      .sticks {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+      }
+      .sticks i {
+        position: absolute;
+        width: 112px;
+        height: 112px;
+        border-radius: 50%;
+        border: 3px solid #fff8e9aa;
+        background: #26170a40;
+        bottom: 14%;
+      }
+      .sticks i::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 44px;
+        height: 44px;
+        margin: -22px;
+        border-radius: 50%;
+        background: #fff8e9aa;
+      }
+      .sticks .l {
+        left: 9%;
+      }
+      .sticks .r {
+        right: 9%;
+      }
+      .sticks b {
+        position: absolute;
+        right: 3%;
+        bottom: 44%;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #fbbf24, #d97706);
+        border: 3px solid #fef3c7;
+        display: grid;
+        place-items: center;
+        font-size: 11px;
+        font-weight: 900;
+        color: #451a03;
+      }
+      .zone {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: var(--gut);
+        background: #26170a2e;
+        display: grid;
+        place-items: start center;
+        padding-top: 10px;
+        font-size: 11px;
+        font-weight: 800;
+        color: #fff8e9;
+        letter-spacing: 0.1em;
+        text-align: center;
+      }
+      .zl {
+        left: 0;
+      }
+      .zr {
+        right: 0;
+      }
+      .sticks.g i {
+        width: min(84px, calc(var(--gut) - 12px));
+        height: min(84px, calc(var(--gut) - 12px));
+        bottom: 16%;
+      }
+      .sticks.g i::after {
+        width: 36px;
+        height: 36px;
+        margin: -18px;
+      }
+      .sticks.g .l {
+        left: calc(var(--gut) / 2 - min(42px, calc(var(--gut) / 2 - 6px)));
+      }
+      .sticks.g .r {
+        right: calc(var(--gut) / 2 - min(42px, calc(var(--gut) / 2 - 6px)));
+      }
+      .sticks.g b {
+        right: calc(var(--gut) / 2 - 28px);
+        bottom: 48%;
+      }
+      #tools {
+        position: fixed;
+        z-index: 99;
+        left: 6px;
+        bottom: 6px;
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        background: #000a;
+        padding: 4px 6px;
+        border-radius: 8px;
+        font: 12px system-ui;
+        color: #fff;
+      }
+      #tools select,
+      #tools button {
+        font: 12px system-ui;
+        color: #000;
+        padding: 2px 6px;
+      }
+      #dbg {
+        position: fixed;
+        z-index: 99;
+        right: 6px;
+        bottom: 6px;
+        background: #000c;
+        color: #9f9;
+        font:
+          11px ui-monospace,
+          monospace;
+        padding: 4px 6px;
+        border-radius: 6px;
+        white-space: pre;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+      const P = new URLSearchParams(location.search);
+      const SCREENS = [
+        'title',
+        'levels',
+        'options',
+        'pause',
+        'cleared',
+        'defeat',
+        'completed',
+        'error',
+        'play',
+      ];
+      let screen = (P.get('screen') || 'title').replace('modes', 'title');
+      let V = P.get('v') || 'b'; // touch layout: a = sticks overlay the arena, b = side gutters when free space allows
+      let touch = P.has('touch') || matchMedia('(pointer:coarse)').matches;
+      const bare = P.has('bare'),
+        debug = P.has('debug');
+      let selected = +(P.get('sel') || 4),
+        muted = false,
+        visRows = 1;
+      const ROOMS = [
+        ['First Bounce', 2],
+        ['The Courtyard', 2],
+        ['Block Party', 3],
+        ['Together Through', 4],
+        ['Cork Keep', 5],
+        ['Crossfire Alley', 4],
+        ['Pillars of Salt', 6],
+        ['Choke Point', 4],
+        ['Cork Sieve', 4],
+        ['The Fortress', 6],
+        ['Spiral', 4],
+        ['Double Bunker', 6],
+        ['The Labyrinth', 4],
+        ['The Gauntlet', 5],
+        ['Ring of Fire', 9],
+        ['Roaming Patrol', 3],
+        ['Corner Shark', 3],
+        ['Confetti Cannons', 5],
+        ['Prank Alley', 4],
+      ];
+      const COLORS = ['#ef4444', '#f59e0b', '#22c55e', '#3b82f6', '#a855f7'];
+      const $ = (s, r = document) => r.querySelector(s),
+        $$ = (s, r = document) => [...r.querySelectorAll(s)];
+      /* window of rows around the selection: no scrollbar, selection always visible */
+      function listWindow(selected, n, total) {
+        const rows = Math.max(1, Math.min(n, total));
+        const start = Math.max(0, Math.min(total - rows, selected - Math.floor(rows / 2)));
+        return { start, rows };
+      }
+      const logo = () => {
+        const row = (w, off, t) =>
+          [...w]
+            .map(
+              (c, i) =>
+                `<b style="background:${COLORS[(i + off) % 5]};transform:rotate(${i % 2 ? t : -t}deg)">${c}</b>`,
+            )
+            .join('');
+        return `<h1 class="logo">${row('TOYBOX', 0, 3)}<br>${row('TANKS', 2, -3)}</h1>`;
+      };
+      const tip = () =>
+        `<div class="sign">${touch ? 'Left thumb drive &middot; Right thumb aim + fire' : 'Gamepad or keyboard: P1 WASD + Q/E + F &middot; P2 Arrows + , . + Enter'}</div>`;
+      const snd = () =>
+        `<button class="btn" data-a="sound">${muted ? 'Sound off' : 'Sound on'}</button>`;
+      function miniMap(i) {
+        let s = (i + 1) * 9301 + 49297,
+          rnd = () => (s = (s * 9301 + 49297) % 233280) / 233280,
+          c = '';
+        for (let k = 0; k < 8 + (i % 5) * 3; k++)
+          c += `<rect x="${Math.floor(rnd() * 20) + 1}" y="${Math.floor(rnd() * 8) + 1}" width="1" height="1" fill="#c59563" stroke="#6b4423" stroke-width=".1"/>`;
+        for (let k = 0; k < ROOMS[i][1]; k++)
+          c += `<circle cx="${rnd() * 20 + 1.5}" cy="${rnd() * 7 + 1.5}" r=".5" fill="#f87171"/>`;
+        return `<svg viewBox="0 0 22 11" preserveAspectRatio="xMidYMid meet"><rect width="22" height="11" fill="#12314e"/>${c}<circle cx="3.5" cy="9.5" r=".5" fill="#4ade80"/><circle cx="18.5" cy="9.5" r=".5" fill="#4ade80"/></svg>`;
+      }
+      function arenaSvg() {
+        const W = 960,
+          H = 540,
+          T = 40,
+          GY = 10,
+          px = 180,
+          py = 430;
+        let g = `<rect width="${W}" height="${H}" fill="#e6d3ac"/>`;
+        for (let r = 0; r < 13; r++)
+          for (let c = 0; c < 24; c++) {
+            const wall = r === 0 || r === 12 || c === 0 || c === 23;
+            const cork =
+              !wall &&
+              ((r === 4 && c >= 8 && c <= 10) ||
+                (r === 5 && c === 8) ||
+                (r === 6 && c >= 8 && c <= 10) ||
+                (r === 5 && c === 10));
+            if (wall)
+              g += `<rect x="${c * T + 1}" y="${GY + r * T + 1}" width="${T - 2}" height="${T - 2}" rx="5" fill="#d4aa70" stroke="#9a6d3c" stroke-width="2"/>`;
+            if (cork)
+              g += `<rect x="${c * T + 2}" y="${GY + r * T + 2}" width="${T - 4}" height="${T - 4}" rx="5" fill="#bea374" stroke="#826c47" stroke-width="2"/>`;
+          }
+        const tank = (x, y, a, c, d) =>
+          `<g transform="translate(${x} ${y})"><circle r="15" fill="${c}" stroke="${d}" stroke-width="2"/><rect x="2" y="-4.5" width="22" height="9" rx="3" fill="${d}" transform="rotate(${a})"/></g>`;
+        g +=
+          tank(px, py, -40, '#378ebb', '#226080') +
+          tank(780, py, -140, '#ed9c40', '#9d5e27') +
+          tank(540, 130, 120, '#b86280', '#78384e') +
+          tank(300, 200, 20, '#e8a33d', '#7a4a0e');
+        return `<svg class="arena" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">${g}</svg>`;
+      }
+      const hudHtml =
+        () => `<div class="hud"><div class="pill"><i class="dot" style="background:#3b82f6"></i><b>P1</b><span class="hearts">&#9829;&#9829;&#9829;</span><span class="pips"><s></s><s></s><s></s><s></s></span></div>
+<div class="pill room"><small>Room 5/19</small><b>Cork Keep</b><span>5 foes</span></div>
+<div style="display:flex;gap:calc(var(--u)*1.2);align-items:flex-start"><div class="pill"><i class="dot" style="background:#f97316"></i><b>P2</b><span class="hearts">&#9829;&#9829;&#9829;</span><span class="pips"><s></s><s></s><s></s><s></s></span></div>
+<button class="ib" title="Menu = pause (Esc / Start / tap)">&#9776;</button></div></div>`;
+      const sticks = (g) =>
+        touch
+          ? `<div class="sticks${g ? ' g' : ''}"><i class="l"></i><i class="r"></i><b>MINE</b></div>`
+          : '';
+      const dlg = (head, buttons) =>
+        `<div class="dialog"><div class="head">${head}</div><div class="buttons">${buttons}</div></div>`;
+      function render() {
+        let h = '';
+        if (screen === 'play') {
+          const free = Math.floor((innerWidth - ((innerHeight - 12) * 16) / 9) / 2) - 6;
+          const gutPx = Math.min(120, free),
+            gut = touch && V === 'b' && gutPx >= 72;
+          document.documentElement.style.setProperty('--gut', gut ? gutPx + 'px' : '0px');
+          h = `<div id="play"><div class="stage">${arenaSvg()}${hudHtml()}</div>${gut ? '<div class="zone zl">DRIVE<br>(whole left side)</div><div class="zone zr">AIM + FIRE<br>(whole right side)</div>' : ''}${sticks(gut)}</div>`;
+        } else {
+          document.documentElement.style.setProperty('--gut', '0px');
+          let inner = '';
+          if (screen === 'title')
+            inner = dlg(
+              logo() + tip(),
+              `<button class="btn green" data-a="go:levels">Solo</button><button class="btn green" data-a="go:levels">Co-op 2 players</button><button class="btn" data-a="go:options">Options</button>${snd()}`,
+            );
+          if (screen === 'options')
+            inner = dlg(
+              '<h2>Options</h2>',
+              `<div class="sign rows"><label>Sound ${snd()}</label><label>Music <input type="range" value="20"></label><label>Effects <input type="range" value="70"></label>${touch ? '<label>Touch P1 <input type="checkbox" checked></label>' : ''}<label>Fullscreen <button class="btn sm">Toggle</button></label></div><button class="btn green" data-a="go:title">Back</button>`,
+            );
+          if (screen === 'pause')
+            inner = dlg(
+              '<h2>Pause</h2><div class="sign">No shells move while paused.</div>',
+              `<button class="btn green" data-a="go:play">Resume</button><button class="btn">Restart room</button><button class="btn" data-a="go:levels">Choose room</button>${snd()}<button class="btn" data-a="go:options">Options</button><button class="btn" data-a="go:title">Main menu</button>`,
+            );
+          if (screen === 'cleared')
+            inner = dlg(
+              '<h2>Room cleared!</h2><div class="sign">Both tanks are repaired. Next up: The Fortress</div>',
+              `<button class="btn green">Next room</button><button class="btn">Replay</button><button class="btn" data-a="go:levels">Choose room</button>`,
+            );
+          if (screen === 'defeat')
+            inner = dlg(
+              '<h2>A tiny setback</h2><div class="sign">Try a different angle. The bruiser banks shots off the pillars.</div>',
+              `<button class="btn green">Retry (R)</button><button class="btn" data-a="go:levels">Choose room</button><button class="btn" data-a="go:title">Menu</button>`,
+            );
+          if (screen === 'completed')
+            inner = dlg(
+              '<h2>A clean toybox sweep!</h2><div class="sign">All 19 rooms cleared. The tabletop belongs to the team.</div>',
+              `<button class="btn green">Replay all rooms</button><button class="btn" data-a="go:levels">Choose room</button>`,
+            );
+          if (screen === 'error')
+            inner = dlg(
+              '<h2>This map needs a fix</h2><div class="sign" style="white-space:pre-wrap;text-align:left">Corner Shark: Row 4 expected 22 interior cells, got 21.\nNeed exactly one player spawn 2, found 0.</div>',
+              `<button class="btn green" data-a="go:title">Main menu</button>`,
+            );
+          if (screen === 'levels')
+            inner = `<div class="dialog levels"><div class="ltool"><button class="btn sm" data-a="go:title">&larr; Back</button><span class="chip">2 PLAYER CO-OP</span><span class="cnt" id="cnt"></span></div>
+      <div class="lbody"><div class="llist" id="llist"></div><div class="lprev" id="lprev"></div></div></div>`;
+          h = `<div class="menu">${inner}</div>`;
+        }
+        $('#app').innerHTML = h;
+        if (screen === 'levels') updateLevels();
+        else if (screen !== 'play') {
+          const f = $('.btn.green');
+          if (f) f.focus({ preventScroll: true });
+        }
+        report();
+      }
+      function updateLevels() {
+        const list = $('#llist');
+        if (!list) return;
+        const rowH = parseFloat(getComputedStyle(list).getPropertyValue('--rowh')) || 40;
+        const probe = document.createElement('div');
+        probe.style.cssText = 'height:var(--rowh);position:absolute;visibility:hidden';
+        document.body.appendChild(probe);
+        const rh = probe.getBoundingClientRect().height;
+        probe.remove();
+        const n = Math.max(1, Math.floor((list.clientHeight + 6) / (rh + 6)));
+        const w = listWindow(selected, n, ROOMS.length);
+        visRows = w.rows;
+        list.innerHTML = ROOMS.slice(w.start, w.start + w.rows)
+          .map((r, k) => {
+            const i = w.start + k;
+            return `<button class="lrow${i === selected ? ' sel' : ''}" data-a="sel:${i}"><span class="n">${String(i + 1).padStart(2, '0')}</span><span class="nm">${r[0]}</span><span class="c">${r[1]}</span></button>`;
+          })
+          .join('');
+        $('#cnt').textContent =
+          `${w.start > 0 ? '\u25B2 ' : ''}${selected + 1} / ${ROOMS.length}${w.start + w.rows < ROOMS.length ? ' \u25BC' : ''}`;
+        const sr = ROOMS[selected];
+        $('#lprev').innerHTML =
+          `<span class="pvbig">${miniMap(selected)}</span><div><b>Room ${String(selected + 1).padStart(2, '0')} &middot; ${sr[0]}</b><small>Hint text for this room goes here, one short line. ${sr[1]} enemies.</small></div><button class="btn green" data-a="go:play">Roll out!</button>`;
+        const sel = $('.lrow.sel');
+        if (sel) sel.focus({ preventScroll: true });
+        report();
+      }
+      function report() {
+        requestAnimationFrame(() => {
+          const de = document.scrollingElement;
+          const dlgs = $$('.dialog').map(
+            (d) => d.scrollHeight <= d.clientHeight + 1 && d.scrollWidth <= d.clientWidth + 1,
+          );
+          const m = {
+            screen,
+            v: V,
+            touch,
+            sideControls: !!$('.zone'),
+            vw: innerWidth,
+            vh: innerHeight,
+            pageNoScroll: de.scrollHeight <= innerHeight && de.scrollWidth <= innerWidth,
+            dialogsFit: dlgs.every(Boolean),
+          };
+          if (screen === 'levels') {
+            const r = $('.lrow');
+            m.visibleRows = visRows;
+            m.rowPx = r ? Math.round(r.getBoundingClientRect().height) : 0;
+            const pv = $('.pvbig');
+            if (pv) {
+              const b = pv.getBoundingClientRect();
+              m.previewPx = [Math.round(b.width), Math.round(b.height)];
+            }
+          }
+          const s = $('.stage svg.arena');
+          if (s) {
+            const b = s.getBoundingClientRect();
+            m.tankPxHeight = +((b.width / 960) * 30).toFixed(1);
+            m.stagePx = [Math.round(b.width), Math.round(b.height)];
+            const hud = $('.hud');
+            if (hud)
+              m.hudPxHeight = Math.round(
+                Math.max(...[...hud.children].map((c) => c.getBoundingClientRect().bottom)) - b.top,
+              );
+            m.wallRowPx = +((b.height * 50) / 540).toFixed(1);
+          }
+          const bt = $('.buttons .btn');
+          if (bt) m.buttonPx = Math.round(bt.getBoundingClientRect().height);
+          const bs = $('.buttons');
+          if (bs) m.buttonCount = $$('.btn', bs).length;
+          window.__metrics = m;
+          const d = $('#dbg');
+          if (d) d.textContent = JSON.stringify(m, null, 1);
+        });
+      }
+      document.addEventListener('click', (e) => {
+        const b = e.target.closest('[data-a]');
+        if (!b) return;
+        const [a, arg] = b.dataset.a.split(':');
+        if (a === 'go') {
+          screen = arg;
+          render();
+          return;
+        }
+        if (a === 'sound') {
+          muted = !muted;
+          render();
+          return;
+        }
+        if (a === 'sel') {
+          selected = +arg;
+          updateLevels();
+        }
+      });
+      document.addEventListener('keydown', (e) => {
+        if (screen === 'levels') {
+          const step = { ArrowUp: -1, ArrowDown: 1, ArrowLeft: -visRows, ArrowRight: visRows }[
+            e.key
+          ];
+          if (step) {
+            selected = Math.max(0, Math.min(ROOMS.length - 1, selected + step));
+            updateLevels();
+            e.preventDefault();
+          }
+          if (e.key === 'Enter') {
+            screen = 'play';
+            render();
+          }
+        } else if (screen !== 'play' && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+          const items = $$('.buttons .btn');
+          if (!items.length) return;
+          const i = items.indexOf(document.activeElement);
+          const n = (i + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
+          items[n].focus();
+          e.preventDefault();
+        }
+      });
+      addEventListener('resize', () => {
+        if (screen === 'play') render();
+        else if (screen === 'levels') updateLevels();
+        else report();
+      });
+      if (!bare) {
+        const t = document.createElement('div');
+        t.id = 'tools';
+        t.innerHTML = `<select id="sc">${SCREENS.map((s) => `<option${s === screen ? ' selected' : ''}>${s}</option>`).join('')}</select><button id="vv">touch layout ${V}</button><button id="tt">touch ${touch ? 'on' : 'off'}</button>`;
+        document.body.appendChild(t);
+        $('#sc').onchange = (e) => {
+          screen = e.target.value;
+          render();
+        };
+        $('#vv').onclick = (e) => {
+          V = V === 'a' ? 'b' : 'a';
+          e.target.textContent = 'touch layout ' + V;
+          render();
+        };
+        $('#tt').onclick = (e) => {
+          touch = !touch;
+          e.target.textContent = 'touch ' + (touch ? 'on' : 'off');
+          render();
+        };
+      }
+      if (debug) {
+        const d = document.createElement('div');
+        d.id = 'dbg';
+        document.body.appendChild(d);
+      }
+      render();
+    </script>
+  </body>
+</html>
