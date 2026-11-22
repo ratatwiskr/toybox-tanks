@@ -83,7 +83,7 @@ test.describe('synthetic gamepad adapter', () => {
     await installSyntheticPad(page);
     await page.goto('/');
     await page.waitForFunction(() => window.__TOYBOX_TEST__ !== undefined);
-    await page.getByRole('button', { name: 'Start two-player co-op' }).click();
+    await page.getByRole('button', { name: 'Co-op 2 players', exact: true }).click();
     await page.getByRole('button', { name: /Roll out!/ }).click();
     await expect(page.locator('#overlay')).toBeHidden();
 
@@ -148,7 +148,7 @@ test.describe('synthetic gamepad adapter', () => {
     });
 
     await expect(page.locator('#overlay')).toBeVisible();
-    await expect(page.locator('#dialogTitle')).toContainText('Tabletop timeout');
+    await expect(page.locator('#dialogTitle')).toContainText('Pause');
 
     await page.evaluate(() => {
       const pad = window.__PAD_TEST__;

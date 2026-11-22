@@ -39,7 +39,7 @@ test('landscape native Chromium touch delivery moves and aims together, then tap
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
   await expect(page.locator('#touchToggle')).toBeChecked();
-  await page.getByRole('button', { name: 'Solo practice', exact: true }).click();
+  await page.getByRole('button', { name: 'Solo', exact: true }).click();
   await page.getByRole('button', { name: /Roll out!/ }).click();
   const before = await ticks(page);
   expect(before.players).toHaveLength(1);
@@ -96,7 +96,7 @@ test('secondary touch button lays a mine and detonates it on the next press', as
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
-  await page.getByRole('button', { name: 'Solo practice', exact: true }).click();
+  await page.getByRole('button', { name: 'Solo', exact: true }).click();
   await page.getByRole('button', { name: /Roll out!/ }).click();
   expect((await ticks(page)).mines).toEqual([]);
   const alt = await page.locator('#altBtn').boundingBox();
@@ -131,13 +131,13 @@ test('secondary touch button lays a mine and detonates it on the next press', as
 
 test('portrait pauses and returning to landscape requires explicit resume', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Solo practice', exact: true }).click();
+  await page.getByRole('button', { name: 'Solo', exact: true }).click();
   await page.getByRole('button', { name: /Roll out!/ }).click();
   await ticks(page);
   await page.setViewportSize({ width: 440, height: 900 });
   await expect(page.locator('#rotateHint')).toBeVisible();
   await expect(page.locator('#touchControls')).toBeHidden();
-  await expect(page.locator('#dialogTitle')).toContainText('Tabletop timeout');
+  await expect(page.locator('#dialogTitle')).toContainText('Pause');
   await page.setViewportSize({ width: 900, height: 440 });
   await expect(page.locator('#rotateHint')).toBeHidden();
   await expect(page.locator('#overlay')).toBeVisible();
@@ -188,7 +188,7 @@ for (const touch of [true, false]) {
     });
     await page.goto('/');
     await page.locator('#touchToggle').setChecked(touch);
-    await page.getByRole('button', { name: 'Start two-player co-op', exact: true }).click();
+    await page.getByRole('button', { name: 'Co-op 2 players', exact: true }).click();
     await page.getByRole('button', { name: /Roll out!/ }).click();
     await expect(page.locator('#device2')).toContainText(touch ? 'Pad 1' : 'Pad 2');
     const before = await ticks(page);
@@ -210,7 +210,7 @@ for (const touch of [true, false]) {
       expect(secondAfter.angle).toBeLessThan(secondBefore.angle);
     }
     await page.evaluate(() => window.dispatchEvent(new Event('test-pad-disconnect')));
-    await expect(page.locator('#dialogTitle')).toContainText('Tabletop timeout');
+    await expect(page.locator('#dialogTitle')).toContainText('Pause');
     await page.evaluate(() => window.dispatchEvent(new Event('test-pad-reconnect')));
     await expect(page.locator('#device2')).toContainText(touch ? 'Pad 1' : 'Pad 2');
     await expect(page.locator('#overlay')).toBeVisible();

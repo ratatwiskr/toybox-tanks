@@ -18,14 +18,14 @@ test.describe('single-file release smoke', () => {
     const url = pathToFileURL(resolve('dist-single/index.html')).href;
     await page.goto(url);
     await expect(page).toHaveTitle(/Toybox Tanks/);
-    await expect(page.locator('#dialogTitle')).toContainText('Small tanks.');
+    await expect(page.locator('#dialogTitle')).toContainText('TOYBOX');
     await expect(page.locator('#game')).toBeVisible();
 
-    await page.getByRole('button', { name: 'Start two-player co-op' }).click();
+    await page.getByRole('button', { name: 'Co-op 2 players', exact: true }).click();
     await page.getByRole('button', { name: /Roll out!/ }).click();
     await expect(page.locator('#overlay')).toBeHidden();
     await page.keyboard.press('Escape');
-    await expect(page.locator('#dialogTitle')).toContainText('Tabletop timeout');
+    await expect(page.locator('#dialogTitle')).toContainText('Pause');
 
     expect(errors, errors.join('\n')).toEqual([]);
   });
@@ -33,7 +33,7 @@ test.describe('single-file release smoke', () => {
   test('does not expose the test bridge from the single-file release', async ({ page }) => {
     const url = pathToFileURL(resolve('dist-single/index.html')).href;
     await page.goto(`${url}?test=1`);
-    await expect(page.locator('#dialogTitle')).toContainText('Small tanks.');
+    await expect(page.locator('#dialogTitle')).toContainText('TOYBOX');
 
     const exposed = await page.evaluate(() => '__TOYBOX_TEST__' in window);
     expect(exposed).toBe(false);

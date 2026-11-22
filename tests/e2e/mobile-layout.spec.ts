@@ -15,7 +15,7 @@ for (const viewport of viewports) {
       Object.defineProperty(navigator, 'maxTouchPoints', { value: 2, configurable: true });
     });
     await page.goto('/');
-    await page.getByRole('button', { name: 'Solo practice', exact: true }).click();
+    await page.getByRole('button', { name: 'Solo', exact: true }).click();
     await page.getByRole('button', { name: /Roll out!/ }).click();
     await expect(page.locator('#movePad')).toBeVisible();
     await expect(page.locator('#aimPad')).toBeVisible();

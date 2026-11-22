@@ -84,7 +84,8 @@ try {
 }
 
 let reviewPanel:
-  { recordFrame(timestamp: number, world: World, simulationSteps: number): void } | undefined;
+  | { recordFrame(timestamp: number, world: World, simulationSteps: number): void }
+  | undefined;
 if (__REVIEW_BUILD__) {
   const { installReviewPanel } = await import('./review/review-panel');
   reviewPanel = installReviewPanel({ canvas });
@@ -167,30 +168,45 @@ function readCommand(index: number): Command {
   return index === 0 && mobile.enabled ? mobile.readCommand(command) : command;
 }
 
-function button(label: string, action: string, primary = false): string {
-  return `<button type="button" data-action="${action}" class="${primary ? 'primary' : ''}">${label}</button>`;
+const LOGO_COLORS = ['#ef4444', '#f59e0b', '#22c55e', '#3b82f6', '#a855f7'] as const;
+
+function logoRow(word: string, offset: number, tilt: number): string {
+  return [...word]
+    .map((char, index) => {
+      const color = LOGO_COLORS[(index + offset) % LOGO_COLORS.length] ?? '#ef4444';
+      const angle = index % 2 === 1 ? tilt : -tilt;
+      return `<b style="background:${color};transform:rotate(${String(angle)}deg)">${char}</b>`;
+    })
+    .join('');
 }
 
-const controlHTML =
-  '<div class="keys"><div><b>● BLUE / P1</b><kbd>W A S D</kbd> move<br><kbd>Q</kbd> / <kbd>E</kbd> turn turret · <kbd>F</kbd> fire · <kbd>G</kbd> mine</div><div><b>■ ORANGE / P2</b><kbd>↑ ← ↓ →</kbd> move<br><kbd>,</kbd> / <kbd>.</kbd> turn turret · <kbd>Enter</kbd> fire · <kbd>/</kbd> mine</div></div>';
+function toyboxLogoHTML(): string {
+  return `<h1 id="dialogTitle" class="logo" aria-label="Toybox Tanks">${logoRow('TOYBOX', 0, 3)}<br>${logoRow('TANKS', 2, -3)}</h1>`;
+}
 
-function controlsHTML(): string {
-  if (!mobile.compact) {
-    return controlHTML;
-  }
-  return mobile.enabled
-    ? '<p>Touch P1: left pad move; right pad drag to aim, lift to retain, tap to fire; the round button above it lays or detonates a mine.<br>Co-op: first gamepad controls P2. Turn Touch P1 off for two gamepads.</p>'
-    : '<p>Gamepads: left stick move, right stick aim, A / RT fire, Start pause.<br>Press a controller button if it has not appeared yet.</p>';
+function tipSignHTML(): string {
+  const text = mobile.enabled
+    ? 'Left thumb drive · Right thumb aim + fire'
+    : 'Gamepad or keyboard: P1 WASD + Q/E + F · P2 Arrows + , . + Enter';
+  return `<div class="sign">${text}</div>`;
+}
+
+function button(label: string, action: string, primary = false): string {
+  const classes = primary ? 'wood-btn wood-btn-green' : 'wood-btn';
+  return `<button type="button" data-action="${action}" class="${classes}">${label}</button>`;
 }
 
 interface OverlayContent {
-  readonly title: string;
-  readonly tag: string;
-  readonly text: string;
+  readonly head: string;
+  readonly text?: string;
   readonly actions: string;
-  readonly extra: string;
   readonly className?: string;
-  readonly body?: string;
+  readonly legacyLevelSelect?: {
+    readonly tag: string;
+    readonly title: string;
+    readonly text: string;
+    readonly body: string;
+  };
 }
 
 function overlayContent(state: GameState): OverlayContent {
@@ -198,77 +214,65 @@ function overlayContent(state: GameState): OverlayContent {
     case 'menu':
       if (menuScreen === 'levels') {
         return {
-          title: 'Select a stage blueprint',
-          tag: `Corkboard · ${String(MAPS.length)} campaign rooms`,
-          text: `${selectedMode === 'solo' ? 'Solo practice' : 'Local co-op'} · pick any room, then roll out.`,
+          head: '',
           actions: '',
-          extra: '',
           className: 'level-select',
-          body: levelSelectMarkup({ maps: MAPS, mode: selectedMode, selectedRoom }),
+          legacyLevelSelect: {
+            tag: `Corkboard · ${String(MAPS.length)} campaign rooms`,
+            title: 'Select a stage blueprint',
+            text: `${selectedMode === 'solo' ? 'Solo practice' : 'Local co-op'} · pick any room, then roll out.`,
+            body: levelSelectMarkup({ maps: MAPS, mode: selectedMode, selectedRoom }),
+          },
         };
       }
       return {
-        title: 'Small tanks.<br>Big teamwork.',
-        tag: `Toybox Tanks · ${String(MAPS.length)} tabletop rooms`,
-        text: 'Move freely. Aim separately. Bounce once.<br>Clear the room together — only one of you needs to survive.',
-        actions: mobile.compact
-          ? button('Solo practice', 'solo', true) + button('Start two-player co-op', 'coop')
-          : button('Start two-player co-op', 'coop', true) + button('Solo practice', 'solo'),
-        extra:
-          controlsHTML() +
-          '<p class="tiny">Two hits per player · three active shells each · no friendly fire.<br>Dashed paths show your aim and first bounce. Muzzle glow means an enemy is about to fire.<br>Roamers chase, Bruisers bank shots, Lobbers arc poms, Pranksters plant mines.<br>Mines: P1 <kbd>G</kbd> / P2 <kbd>/</kbd> lay one, press again to detonate; touch uses the button above the aim pad.</p>',
+        head: toyboxLogoHTML() + tipSignHTML(),
+        actions: button('Solo', 'solo', true) + button('Co-op 2 players', 'coop', true),
       };
     case 'paused':
       return {
-        title: 'Tabletop timeout',
-        tag: 'Paused',
-        text: pauseReason || 'Take a breath. No shells move while paused.',
+        head: '<h1 id="dialogTitle">Pause</h1><div id="dialogText" class="sign"></div>',
+        text: pauseReason || 'No shells move while paused.',
         actions:
           button('Resume', 'resume', true) +
-          button('Restart this room', 'retry') +
-          button('Choose a room', 'levels') +
+          button('Restart room', 'retry') +
+          button('Choose room', 'levels') +
           button('Main menu', 'menu'),
-        extra: controlsHTML(),
       };
     case 'cleared': {
       const nextMap = MAPS[world.room + 1];
       return {
-        title: 'Room cleared!',
-        tag: `Room ${String(world.room + 1)} / ${String(MAPS.length)}`,
-        text: `${world.mode === 'solo' ? 'Your tank is repaired' : 'Both tanks are repaired'} for the next room.<br>Next up: ${nextMap?.name ?? 'the next room'}`,
+        head: '<h1 id="dialogTitle">Room cleared!</h1><div id="dialogText" class="sign"></div>',
+        text: `${world.mode === 'solo' ? 'Your tank is repaired.' : 'Both tanks are repaired.'} Next up: ${nextMap?.name ?? 'the next room'}`,
         actions:
-          button('Next room →', 'next', true) +
-          button('Replay this room', 'retry') +
-          button('Choose a room', 'levels'),
-        extra: '',
+          button('Next room', 'next', true) +
+          button('Replay', 'retry') +
+          button('Choose room', 'levels'),
       };
     }
     case 'defeat':
       return {
-        title: 'A tiny setback',
-        tag: world.mode === 'solo' ? 'Tank disabled' : 'Both tanks disabled',
-        text: 'A fresh start in this room.<br>No lives to lose. Try a different angle.',
-        actions: button('Retry room · R', 'retry', true) + button('Choose a room', 'levels'),
-        extra: '',
+        head: '<h1 id="dialogTitle">A tiny setback</h1><div id="dialogText" class="sign"></div>',
+        text: 'Try a different angle. No lives to lose.',
+        actions:
+          button('Retry (R)', 'retry', true) +
+          button('Choose room', 'levels') +
+          button('Menu', 'menu'),
       };
     case 'completed':
       return {
-        title: 'A clean toybox sweep!',
-        tag: `All ${String(MAPS.length)} rooms complete`,
-        text: `You cleared ${MAPS.map((map) => map.name).join(', ')}.<br>The tabletop belongs to the team.`,
-        actions: button('Replay all rooms', 'replay', true) + button('Choose a room', 'levels'),
-        extra: '',
+        head: '<h1 id="dialogTitle">A clean toybox sweep!</h1><div id="dialogText" class="sign"></div>',
+        text: `All ${String(MAPS.length)} rooms cleared. The tabletop belongs to the team.`,
+        actions: button('Replay all rooms', 'replay', true) + button('Choose room', 'levels'),
       };
     case 'error':
       return {
-        title: 'This map needs a fix',
-        tag: 'Map validation',
-        text: '',
-        actions: button('Recheck / main menu', 'menu'),
-        extra: '',
+        head: '<h1 id="dialogTitle">This map needs a fix</h1><div id="dialogText" class="sign"></div>',
+        text: pauseReason,
+        actions: button('Main menu', 'menu', true),
       };
     case 'playing':
-      return { title: '', tag: '', text: '', actions: '', extra: '' };
+      return { head: '', actions: '' };
   }
 }
 
@@ -297,19 +301,27 @@ function setOverlay(): void {
 
   const content = overlayContent(world.state);
   dialog.className = content.className === undefined ? 'dialog' : `dialog ${content.className}`;
-  const actions = content.actions === '' ? '' : `<div class="buttons">${content.actions}</div>`;
-  dialog.innerHTML = `<div class="tag">${content.tag}</div><h1 id="dialogTitle">${content.title}</h1><p id="dialogText">${content.text}</p>${actions}${content.extra}${content.body ?? ''}`;
 
-  if (world.state === 'error') {
-    const dialogText = requireElement('dialogText');
-    dialogText.textContent = pauseReason;
-    dialogText.style.whiteSpace = 'pre-wrap';
+  if (content.legacyLevelSelect !== undefined) {
+    const legacy = content.legacyLevelSelect;
+    dialog.innerHTML = `<div class="tag">${legacy.tag}</div><h1 id="dialogTitle">${legacy.title}</h1><p id="dialogText">${legacy.text}</p>${legacy.body}`;
+  } else {
+    const actions = content.actions === '' ? '' : `<div class="buttons">${content.actions}</div>`;
+    dialog.innerHTML = `<div class="head">${content.head}</div>${actions}`;
+    if (content.text !== undefined) {
+      const dialogText = requireElement('dialogText');
+      dialogText.textContent = content.text;
+      if (world.state === 'error') {
+        dialogText.style.whiteSpace = 'pre-wrap';
+        dialogText.style.textAlign = 'left';
+      }
+    }
   }
 
   const first =
     world.state === 'menu' && menuScreen === 'levels'
       ? (dialog.querySelector('.stage-card--selected') ?? dialog.querySelector('button'))
-      : dialog.querySelector('button');
+      : (dialog.querySelector('.wood-btn-green') ?? dialog.querySelector('button'));
   if (first instanceof HTMLButtonElement) {
     first.focus({ preventScroll: true });
   }

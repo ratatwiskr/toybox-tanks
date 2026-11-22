@@ -39,8 +39,9 @@ test.describe('Toybox Tanks smoke', () => {
     await page.goto('/');
     await expect(page).toHaveTitle(/Toybox Tanks/);
     await expect(page.locator('#overlay')).toBeVisible();
-    await expect(page.locator('#dialogTitle')).toContainText('Small tanks.');
-    await expect(page.getByRole('button', { name: 'Start two-player co-op' })).toBeVisible();
+    await expect(page.locator('#dialogTitle')).toContainText('TOYBOX');
+    await expect(page.getByRole('button', { name: 'Solo', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Co-op 2 players', exact: true })).toBeVisible();
     await expect(page.locator('#game')).toBeVisible();
 
     const painted = await page.locator('#game').evaluate((node) => {
@@ -59,7 +60,7 @@ test.describe('Toybox Tanks smoke', () => {
     });
     expect(painted).toBe(true);
 
-    // The selected stage card is focused, so Enter activates it without the
+    // The first primary button is focused, so Enter activates it without the
     // game-key handler swallowing the native button activation.
     await page.keyboard.press('Enter');
     await expect(page.locator('#dialogTitle')).toContainText('Select a stage blueprint');
@@ -83,14 +84,14 @@ test.describe('Toybox Tanks smoke', () => {
 
     await page.keyboard.press('Escape');
     await expect(page.locator('#overlay')).toBeVisible();
-    await expect(page.locator('#dialogTitle')).toContainText('Tabletop timeout');
+    await expect(page.locator('#dialogTitle')).toContainText('Pause');
 
     await page.keyboard.press('Escape');
     await expect(page.locator('#overlay')).toBeHidden();
 
     await page.keyboard.press('Escape');
     await expect(page.locator('#overlay')).toBeVisible();
-    await page.getByRole('button', { name: 'Restart this room' }).click();
+    await page.getByRole('button', { name: 'Restart room', exact: true }).click();
     await expect(page.locator('#overlay')).toBeHidden();
 
     const restarted = await readTank(page, 'P1');
@@ -104,7 +105,7 @@ test.describe('Toybox Tanks smoke', () => {
     const errors = collectErrors(page);
 
     await page.goto('/');
-    await page.getByRole('button', { name: 'Solo practice' }).click();
+    await page.getByRole('button', { name: 'Solo', exact: true }).click();
     await expect(page.locator('#dialogTitle')).toContainText('Select a stage blueprint');
     await expect(page.locator('#modeInfo')).toContainText('Solo practice');
 
@@ -126,13 +127,13 @@ test.describe('Toybox Tanks smoke', () => {
     const errors = collectErrors(page);
 
     await page.goto('/');
-    await page.getByRole('button', { name: 'Start two-player co-op' }).click();
+    await page.getByRole('button', { name: 'Co-op 2 players', exact: true }).click();
     await page.getByRole('button', { name: /Roll out!/ }).click();
     await expect(page.locator('#overlay')).toBeHidden();
 
     await page.keyboard.press('Escape');
-    await expect(page.locator('#dialogTitle')).toContainText('Tabletop timeout');
-    await page.getByRole('button', { name: 'Choose a room' }).click();
+    await expect(page.locator('#dialogTitle')).toContainText('Pause');
+    await page.getByRole('button', { name: 'Choose room', exact: true }).click();
     await expect(page.locator('#dialogTitle')).toContainText('Select a stage blueprint');
 
     await page.getByRole('button', { name: 'Stage 02: The Courtyard' }).click();

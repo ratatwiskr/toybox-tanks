@@ -133,7 +133,6 @@
 .compact .eyebrow,
 .compact .foot,
 .compact .status,
-.compact .keys,
 .compact #debugBtn,
 .compact #device1,
 .compact #aim1,
@@ -188,24 +187,8 @@
   padding: 6px;
 }
 .compact .dialog {
-  max-width: min(95%, 620px);
-  padding: 10px 16px;
+  padding: 8px 12px;
   border-radius: 12px;
-}
-.compact .dialog h1 {
-  font-size: 24px;
-  margin: 4px 0;
-}
-.compact .dialog p {
-  margin: 6px 0;
-  font-size: 12px;
-}
-.compact .buttons {
-  margin: 8px 0;
-  gap: 8px;
-}
-.compact .buttons button {
-  min-height: 44px;
 }
 .app:fullscreen {
   background: #dfcbaa;

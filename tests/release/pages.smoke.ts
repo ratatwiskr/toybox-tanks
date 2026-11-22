@@ -43,28 +43,28 @@ test('published revision loads, starts both modes, and keeps production hooks pr
   const response = await page.goto('./');
   expect(response?.ok()).toBe(true);
   await expect(page).toHaveTitle(/Toybox Tanks/);
-  await expect(page.locator('#dialogTitle')).toContainText('Small tanks.');
+  await expect(page.locator('#dialogTitle')).toContainText('TOYBOX');
   await expect(page.locator('#game')).toBeVisible();
 
-  await page.getByRole('button', { name: 'Start two-player co-op', exact: true }).click();
+  await page.getByRole('button', { name: 'Co-op 2 players', exact: true }).click();
   await page.getByRole('button', { name: /Roll out!/ }).click();
   await expect(page.locator('#overlay')).toBeHidden();
   await expect(page.locator('#modeInfo')).toContainText('Local co-op');
   await page.keyboard.press('Escape');
-  await expect(page.locator('#dialogTitle')).toContainText('Tabletop timeout');
+  await expect(page.locator('#dialogTitle')).toContainText('Pause');
   await page.keyboard.press('Escape');
   await expect(page.locator('#overlay')).toBeHidden();
 
   await page.reload();
-  await expect(page.locator('#dialogTitle')).toContainText('Small tanks.');
-  await page.getByRole('button', { name: 'Solo practice', exact: true }).click();
+  await expect(page.locator('#dialogTitle')).toContainText('TOYBOX');
+  await page.getByRole('button', { name: 'Solo', exact: true }).click();
   await page.getByRole('button', { name: /Roll out!/ }).click();
   await expect(page.locator('#overlay')).toBeHidden();
   await expect(page.locator('#modeInfo')).toContainText('Solo practice');
   await expect(page.locator('#hp2')).toContainText('SOLO');
 
   await page.goto('./?test=1');
-  await expect(page.locator('#dialogTitle')).toContainText('Small tanks.');
+  await expect(page.locator('#dialogTitle')).toContainText('TOYBOX');
   const exposed = await page.evaluate(() => '__TOYBOX_TEST__' in window);
   expect(exposed).toBe(false);
   expect(errors, errors.join('\n')).toEqual([]);
