@@ -110,9 +110,41 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+      - name: Build silent context artifact
+        run: npm run build:context
+
+      - name: Validate silent context artifact
+        run: |
+          set -euo pipefail
+          test -s dist-context/index.html
+          printf 'Silent context artifact: `dist-context/index.html`\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Add context source provenance
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          SOURCE_BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          printf '%s\n' "$SOURCE_SHA" > dist-context/deployed-commit.txt
+          jq -n \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --arg branch "$SOURCE_BRANCH" \
+            --arg sha "$SOURCE_SHA" \
+            --arg run "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            '{repository: $repository, branch: $branch, sha: $sha, run: $run}' \
+            > dist-context/playtest-source.json
+
+      - name: Upload silent context artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: toybox-tanks-context-html-${{ github.run_number }}
+          path: dist-context/
+          if-no-files-found: error
+          retention-days: 30
+
   release:
     if: github.ref == 'refs/heads/main'
-    needs: [verify, artifact]
+    needs: [artifact]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -123,6 +155,18 @@ jobs:
         with:
           name: toybox-tanks-single-html-${{ github.run_number }}
           path: dist-single
+
+      - name: Download silent context artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: toybox-tanks-context-html-${{ github.run_number }}
+          path: dist-context
+
+      - name: Use descriptive release asset names
+        run: |
+          set -euo pipefail
+          mv dist-single/index.html dist-single/toybox-tanks.html
+          mv dist-context/index.html dist-context/toybox-tanks-context.html
 
       - name: Create release tag
         id: tag
@@ -140,14 +184,23 @@ jobs:
           tag_name: ${{ steps.tag.outputs.tag }}
           name: Toybox Tanks build ${{ github.run_number }}
           body: |
-            Automated single-file build from `main`.
+            Automated builds from `main`.
 
             Commit: `${{ github.sha }}`
             Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Playable single-file game:
+            ${{ github.server_url }}/${{ github.repository }}/releases/latest/download/toybox-tanks.html
+
+            Silent context HTML for AI/cloud agents:
+            ${{ github.server_url }}/${{ github.repository }}/releases/latest/download/toybox-tanks-context.html
           files: |
-            dist-single/index.html
+            dist-single/toybox-tanks.html
             dist-single/deployed-commit.txt
             dist-single/playtest-source.json
+            dist-context/toybox-tanks-context.html
+            dist-context/deployed-commit.txt
+            dist-context/playtest-source.json
           make_latest: true
 
   deploy-pages:
