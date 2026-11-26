@@ -1,9 +1,20 @@
 import type { World } from '../sim/types';
+import { createFrameSampler, type FrameSamplerSummary } from './frame-sampler';
 import { REVIEW_BRIEF, REVIEW_PROMPTS, REVIEW_SCOPES } from './review-context';
 import { findSource, getSourceFiles } from './source-index';
 
+export interface ReviewFrame {
+  readonly timestamp: number;
+  readonly world: World;
+  readonly simulationSteps: number;
+  readonly simMs: number;
+  readonly renderMs: number;
+  readonly hudMs: number;
+  readonly clamped: boolean;
+}
+
 export interface ReviewPanel {
-  recordFrame(timestamp: number, world: World, simulationSteps: number): void;
+  recordFrame(frame: ReviewFrame): void;
   refreshLayout(): void;
 }
 
@@ -99,7 +110,12 @@ build-time snapshot, not live repository state.</p>
   <button type="button" data-review-action="copy-brief">Copy brief</button>
 </div>
 <h3>Runtime diagnostics</h3>
+<div class="row">
+  <button type="button" data-review-action="reset-stats">Reset stats</button>
+  <button type="button" data-review-action="record-10s">Record 10 s</button>
+</div>
 <pre class="diagnostics" id="review-diagnostics">Waiting for frames…</pre>
+<pre class="diagnostics" id="review-capture">No 10 s capture recorded.</pre>
 <h3>Review focus</h3>
 <select id="review-prompt"></select>
 <pre id="review-prompt-text"></pre>
@@ -136,6 +152,7 @@ build-time snapshot, not live repository state.</p>
   document.body.append(panel);
 
   const diagnostics = panel.querySelector<HTMLPreElement>('#review-diagnostics');
+  const captureView = panel.querySelector<HTMLPreElement>('#review-capture');
   const promptSelect = panel.querySelector<HTMLSelectElement>('#review-prompt');
   const promptText = panel.querySelector<HTMLPreElement>('#review-prompt-text');
   const sourceSelect = panel.querySelector<HTMLSelectElement>('#review-source');
@@ -174,13 +191,19 @@ build-time snapshot, not live repository state.</p>
   syncPrompt();
   syncSource();
 
+  const sampler = createFrameSampler();
   let previousTimestamp: number | null = null;
-  let smoothedFps = 0;
-  let worstFrameMs = 0;
   let lastFrameMs = 0;
   let lastSteps = 0;
+  let lastSimMs = 0;
+  let lastRenderMs = 0;
+  let lastHudMs = 0;
+  let lastClamped = false;
   let lastWorld: World | undefined;
   let lastDiagnosticsUpdateMs = -Infinity;
+  let captureStatus = 'No 10 s capture recorded.';
+  let capturedSummary: FrameSamplerSummary | null = null;
+  let captureEndsAtMs = 0;
   let cachedCssWidth = 0;
   let cachedCssHeight = 0;
   let cachedDpr = 1;
@@ -196,8 +219,28 @@ build-time snapshot, not live repository state.</p>
     cachedEffectiveDpr = rect.width > 0 ? options.canvas.width / rect.width : cachedDpr;
   };
 
+  const renderCapture = (): void => {
+    if (captureView === null) return;
+    if (capturedSummary === null) {
+      captureView.textContent = captureStatus;
+      return;
+    }
+    captureView.textContent = [
+      captureStatus,
+      `samples ${String(capturedSummary.samples)}`,
+      `p50 ${capturedSummary.p50.toFixed(1)} ms`,
+      `p95 ${capturedSummary.p95.toFixed(1)} ms`,
+      `p99 ${capturedSummary.p99.toFixed(1)} ms`,
+      `max ${capturedSummary.max.toFixed(1)} ms`,
+      `>20ms ${String(capturedSummary.over20ms)}`,
+      `>33ms ${String(capturedSummary.over33ms)}`,
+      `clamps ${String(capturedSummary.clampHits)}`,
+    ].join('\n');
+  };
+
   const renderDiagnostics = (nowMs: number): void => {
     if (diagnostics !== null) diagnostics.textContent = describeRuntime();
+    renderCapture();
     lastDiagnosticsUpdateMs = nowMs;
   };
 
@@ -214,6 +257,28 @@ build-time snapshot, not live repository state.</p>
     if (!(target instanceof HTMLButtonElement)) return;
     const action = target.dataset.reviewAction;
     if (action === 'close') panel.classList.remove('open');
+    if (action === 'reset-stats') {
+      sampler.reset();
+      previousTimestamp = null;
+      lastFrameMs = 0;
+      lastSteps = 0;
+      lastSimMs = 0;
+      lastRenderMs = 0;
+      lastHudMs = 0;
+      lastClamped = false;
+      captureStatus = 'No 10 s capture recorded.';
+      capturedSummary = null;
+      captureEndsAtMs = 0;
+      renderDiagnostics(performance.now());
+    }
+    if (action === 'record-10s') {
+      const nowMs = performance.now();
+      sampler.startCapture(nowMs);
+      captureEndsAtMs = nowMs + 10_000;
+      capturedSummary = null;
+      captureStatus = 'Recording 10 s capture…';
+      renderDiagnostics(nowMs);
+    }
     if (action === 'copy-brief') void copyText(REVIEW_BRIEF);
     if (action === 'copy-source') {
       const source = findSource(sourceSelect?.value ?? '');
@@ -228,6 +293,7 @@ build-time snapshot, not live repository state.</p>
 
   function buildMarkdownReport(): string {
     const scope = readField('review-scope');
+    const capture = capturedSummary;
     return [
       '# Toybox Tanks review',
       '',
@@ -254,6 +320,20 @@ build-time snapshot, not live repository state.</p>
       '',
       '## Runtime snapshot',
       describeRuntime(),
+      '',
+      '## 10s capture',
+      capture === null
+        ? '_Not recorded._'
+        : [
+            `samples ${String(capture.samples)}`,
+            `p50 ${capture.p50.toFixed(1)} ms`,
+            `p95 ${capture.p95.toFixed(1)} ms`,
+            `p99 ${capture.p99.toFixed(1)} ms`,
+            `max ${capture.max.toFixed(1)} ms`,
+            `>20ms ${String(capture.over20ms)}`,
+            `>33ms ${String(capture.over33ms)}`,
+            `clamps ${String(capture.clampHits)}`,
+          ].join('\n'),
     ].join('\n');
   }
 
@@ -268,6 +348,7 @@ build-time snapshot, not live repository state.</p>
         validation: readField('review-validation'),
         confidence: readField('review-confidence'),
         runtime: describeRuntime(),
+        capture: capturedSummary,
         sourceSnapshot: true,
       },
       null,
@@ -277,13 +358,24 @@ build-time snapshot, not live repository state.</p>
 
   function describeRuntime(): string {
     const world = lastWorld;
+    const summary = sampler.summary();
+    const captureLine =
+      captureEndsAtMs > 0 && capturedSummary === null
+        ? `Capture: recording ${Math.max(0, (captureEndsAtMs - performance.now()) / 1000).toFixed(1)} s left`
+        : capturedSummary !== null
+          ? `Capture: ${captureStatus}`
+          : `Capture: ${captureStatus}`;
     return [
-      `FPS: ${smoothedFps.toFixed(1)}`,
+      `FPS: ${(lastFrameMs > 0 ? 1000 / lastFrameMs : 0).toFixed(1)}`,
       `Last frame: ${lastFrameMs.toFixed(1)} ms`,
-      `Worst recent frame: ${worstFrameMs.toFixed(1)} ms`,
-      `Simulation steps: ${String(lastSteps)}`,
+      `Frame p50/p95/p99/max: ${summary.p50.toFixed(1)} / ${summary.p95.toFixed(1)} / ${summary.p99.toFixed(1)} / ${summary.max.toFixed(1)} ms`,
+      `Frames >20ms/>33ms: ${String(summary.over20ms)} / ${String(summary.over33ms)}`,
+      `Sim/render/HUD: ${lastSimMs.toFixed(2)} / ${lastRenderMs.toFixed(2)} / ${lastHudMs.toFixed(2)} ms`,
+      `Simulation steps: ${String(lastSteps)}${lastClamped ? ' (clamped)' : ''}`,
+      `Clamp hits: ${String(summary.clampHits)}`,
       `Canvas: ${String(cachedCssWidth)} x ${String(cachedCssHeight)} CSS px`,
       `DPR: ${cachedDpr.toFixed(2)} (effective ${cachedEffectiveDpr.toFixed(2)})`,
+      captureLine,
       world === undefined
         ? 'World: unavailable'
         : `World: room ${String(world.room + 1)}, state ${world.state}, shells ${String(world.shells.length)}, enemies ${String(world.enemies.length)}`,
@@ -302,20 +394,35 @@ build-time snapshot, not live repository state.</p>
 
   return {
     refreshLayout,
-    recordFrame(timestamp, world, simulationSteps) {
-      lastWorld = world;
-      lastSteps = simulationSteps;
-      const seconds = timestamp / 1000;
+    recordFrame(frame) {
+      lastWorld = frame.world;
+      lastSteps = frame.simulationSteps;
+      lastSimMs = frame.simMs;
+      lastRenderMs = frame.renderMs;
+      lastHudMs = frame.hudMs;
+      lastClamped = frame.clamped;
+      const seconds = frame.timestamp / 1000;
       if (previousTimestamp !== null) {
         const frameMs = Math.max(0, (seconds - previousTimestamp) * 1000);
         lastFrameMs = frameMs;
-        worstFrameMs = Math.max(worstFrameMs * 0.98, frameMs);
-        const fps = frameMs > 0 ? 1000 / frameMs : 0;
-        smoothedFps = smoothedFps === 0 ? fps : smoothedFps * 0.9 + fps * 0.1;
+        sampler.record({
+          dt: frameMs,
+          simMs: frame.simMs,
+          renderMs: frame.renderMs,
+          hudMs: frame.hudMs,
+          steps: frame.simulationSteps,
+          clamped: frame.clamped,
+        });
+        const capture = sampler.captureSummary(frame.timestamp);
+        if (capture !== null) {
+          capturedSummary = capture;
+          captureStatus = 'Recorded 10 s capture.';
+          captureEndsAtMs = 0;
+        }
       }
       previousTimestamp = seconds;
-      if (isOpen() && timestamp - lastDiagnosticsUpdateMs >= 250) {
-        renderDiagnostics(timestamp);
+      if (isOpen() && frame.timestamp - lastDiagnosticsUpdateMs >= 250) {
+        renderDiagnostics(frame.timestamp);
       }
     },
   };

@@ -85,7 +85,15 @@ try {
 
 let reviewPanel:
   | {
-      recordFrame(timestamp: number, world: World, simulationSteps: number): void;
+      recordFrame(frame: {
+        timestamp: number;
+        world: World;
+        simulationSteps: number;
+        simMs: number;
+        renderMs: number;
+        hudMs: number;
+        clamped: boolean;
+      }): void;
       refreshLayout(): void;
     }
   | undefined;
@@ -704,10 +712,16 @@ function frame(timestamp: number): void {
   setOverlay();
 
   let simulationSteps = 0;
+  let simMs = 0;
+  let renderMs = 0;
+  let hudMs = 0;
+  let clamped = false;
+  const shouldMeasure = __REVIEW_BUILD__ && reviewPanel !== undefined;
   if (!manualClock && world.state === 'playing') {
     accumulator += Math.min(CONFIG.maxFrameTime, Math.max(0, raw));
     let count = 0;
 
+    const simStart = shouldMeasure ? performance.now() : 0;
     while (accumulator >= CONFIG.fixedStep && count < CONFIG.maxSteps && isPlaying(world)) {
       audio.consume(
         advanceWorld(
@@ -719,9 +733,11 @@ function frame(timestamp: number): void {
       accumulator -= CONFIG.fixedStep;
       count += 1;
     }
+    if (shouldMeasure) simMs = performance.now() - simStart;
 
     if (count === CONFIG.maxSteps) {
       accumulator = 0;
+      clamped = true;
     }
     simulationSteps = count;
   } else {
@@ -729,9 +745,23 @@ function frame(timestamp: number): void {
   }
 
   setOverlay();
+  const renderStart = shouldMeasure ? performance.now() : 0;
   renderer.render(world, debugEnabled);
-  reviewPanel?.recordFrame(timestamp, world, simulationSteps);
+  if (shouldMeasure) renderMs = performance.now() - renderStart;
+  const hudStart = shouldMeasure ? performance.now() : 0;
   updateHUD();
+  if (shouldMeasure) hudMs = performance.now() - hudStart;
+  if (__REVIEW_BUILD__) {
+    reviewPanel?.recordFrame({
+      timestamp,
+      world,
+      simulationSteps,
+      simMs,
+      renderMs,
+      hudMs,
+      clamped,
+    });
+  }
   requestAnimationFrame(frame);
 }
 

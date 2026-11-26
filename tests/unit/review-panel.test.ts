@@ -11,6 +11,27 @@ vi.mock('../../src/review/source-index', () => ({
   findSource: () => ({ path: '/src/main.ts', content: 'src', lines: 1 }),
 }));
 
+vi.mock('../../src/review/frame-sampler', () => {
+  return {
+    createFrameSampler: () => ({
+      record: () => undefined,
+      summary: () => ({
+        samples: 0,
+        p50: 0,
+        p95: 0,
+        p99: 0,
+        max: 0,
+        over20ms: 0,
+        over33ms: 0,
+        clampHits: 0,
+      }),
+      reset: () => undefined,
+      startCapture: () => undefined,
+      captureSummary: () => null,
+    }),
+  };
+});
+
 import { installReviewPanel } from '../../src/review/review-panel';
 import type { World } from '../../src/sim/types';
 
@@ -172,7 +193,15 @@ describe('review panel frame recording', () => {
     const rectCallsAfterInstall = canvas.getBoundingClientRectCalls;
 
     for (let i = 0; i < 120; i += 1) {
-      panelApi.recordFrame(i * 16.7, world, 1);
+      panelApi.recordFrame({
+        timestamp: i * 16.7,
+        world,
+        simulationSteps: 1,
+        simMs: 1,
+        renderMs: 1,
+        hudMs: 0.1,
+        clamped: false,
+      });
     }
 
     expect(diagnostics.textContentWrites).toBe(writesAfterInstall);
@@ -182,21 +211,61 @@ describe('review panel frame recording', () => {
   it('throttles diagnostics DOM writes to 4 Hz when open', () => {
     const { diagnostics, panelApi } = installFakeDom('?review=1');
     const world = createWorld();
-    panelApi.recordFrame(0, world, 1); // initial open render at t=0
+    panelApi.recordFrame({
+      timestamp: 0,
+      world,
+      simulationSteps: 1,
+      simMs: 1,
+      renderMs: 1,
+      hudMs: 0.1,
+      clamped: false,
+    }); // initial open render at t=0
     const writesAfterFirstRender = diagnostics.textContentWrites;
 
-    panelApi.recordFrame(16, world, 1);
-    panelApi.recordFrame(100, world, 1);
-    panelApi.recordFrame(249, world, 1);
+    for (const timestamp of [16, 100, 249]) {
+      panelApi.recordFrame({
+        timestamp,
+        world,
+        simulationSteps: 1,
+        simMs: 1,
+        renderMs: 1,
+        hudMs: 0.1,
+        clamped: false,
+      });
+    }
     expect(diagnostics.textContentWrites).toBe(writesAfterFirstRender);
 
-    panelApi.recordFrame(250, world, 1);
+    panelApi.recordFrame({
+      timestamp: 250,
+      world,
+      simulationSteps: 1,
+      simMs: 1,
+      renderMs: 1,
+      hudMs: 0.1,
+      clamped: false,
+    });
     expect(diagnostics.textContentWrites).toBe(writesAfterFirstRender + 1);
 
-    panelApi.recordFrame(400, world, 1);
+    panelApi.recordFrame({
+      timestamp: 400,
+      world,
+      simulationSteps: 1,
+      simMs: 1,
+      renderMs: 1,
+      hudMs: 0.1,
+      clamped: false,
+    });
     expect(diagnostics.textContentWrites).toBe(writesAfterFirstRender + 1);
 
-    panelApi.recordFrame(500, world, 1);
+    panelApi.recordFrame({
+      timestamp: 500,
+      world,
+      simulationSteps: 1,
+      simMs: 1,
+      renderMs: 1,
+      hudMs: 0.1,
+      clamped: false,
+    });
     expect(diagnostics.textContentWrites).toBe(writesAfterFirstRender + 2);
   });
 
@@ -212,8 +281,24 @@ describe('review panel frame recording', () => {
     expect(diagnostics.textContentWrites).toBe(writesAfterInstall + 1);
     expect(canvas.getBoundingClientRectCalls).toBe(rectCallsAfterInstall);
 
-    panelApi.recordFrame(1235, world, 1);
-    panelApi.recordFrame(1400, world, 1);
+    panelApi.recordFrame({
+      timestamp: 1235,
+      world,
+      simulationSteps: 1,
+      simMs: 1,
+      renderMs: 1,
+      hudMs: 0.1,
+      clamped: false,
+    });
+    panelApi.recordFrame({
+      timestamp: 1400,
+      world,
+      simulationSteps: 1,
+      simMs: 1,
+      renderMs: 1,
+      hudMs: 0.1,
+      clamped: false,
+    });
     expect(canvas.getBoundingClientRectCalls).toBe(rectCallsAfterInstall);
 
     panelApi.refreshLayout();
