@@ -1,13 +1,11 @@
 interface ViteImportMeta {
-  glob(
+  readonly glob: <T>(
     patterns: readonly string[],
     options: { query: '?raw'; import: 'default'; eager: true },
-  ): Record<string, string>;
+  ) => Record<string, T>;
 }
 
-const viteImportMeta = import.meta as ImportMeta & ViteImportMeta;
-
-const rawSources = viteImportMeta.glob(
+const rawSources = (import.meta as ImportMeta & ViteImportMeta).glob<string>(
   [
     '/src/main.ts',
     '/src/config.ts',
