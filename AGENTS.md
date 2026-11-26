@@ -21,7 +21,18 @@ branch name, a handoff title, or this file.
   `docs/history/` must not be reopened or reconstructed as routine cleanup.
 - Inspect existing user changes and preserve them. Make the smallest coherent
   change for the explicitly assigned task; update `docs/progress.md` with actual
-  evidence.
+  evidence except for roadmap #49 work, which uses PR descriptions instead.
+- One slice per PR when an issue lists slices, in the listed order; otherwise one
+  issue per PR. Use the smallest diff that satisfies the active slice.
+- Preserve current behavior unless the active slice explicitly changes it; approved
+  roadmap decisions do not apply early to unrelated work. Update affected rules and
+  tests in the slice that changes the behavior or in the issue's named cleanup slice.
+- If a requirement is unclear or a file differs from the issue, stop and comment
+  instead of guessing.
+- Apart from current-state evidence in `docs/progress.md`, update docs only when a
+  durable rule or contract changes; do not add dev logs.
+- When extending this file, merge durable non-inferable rules into existing sections
+  and link to live issues/config for volatile detail instead of duplicating it.
 - Keep `docs/progress.md` current-state only. When work merges or is superseded,
   move detailed evidence to `docs/history/<topic>-<year>-<month>.md` and leave a
   one-line summary with the link.
@@ -38,9 +49,12 @@ branch name, a handoff title, or this file.
 - Local two-player co-op is primary; solo has exactly one actual player.
 - Free 2D movement, normalized diagonals, independent turret aim, persistent
   direction after release, and fixed logical coordinates with aspect/DPR handling.
+  The logical arena is letterboxed; never reveal extra area on wide screens
+  (dimensions in `src/config.ts`).
 - Player shells hit enemies only; enemy shells hit players only. No friendly
   fire or tank-tank blocking/pushing. Any two shells that touch mid-air are
   both removed, regardless of faction.
+- Bruiser's configured HP and one-bounce behavior are not retuned by roadmap #49.
 - Ordinary shells get one permanent-wall bounce; the next contact removes them.
   Sweep complete paths and muzzle travel, resolve earliest impact, preserve
   remaining travel and surface separation, and bound processing. Keep conservative
@@ -64,6 +78,8 @@ branch name, a handoff title, or this file.
 - Simulation is DOM/Node-free with explicit world state, time, and commands. No
   real-time reads, scheduling, device polling, drawing, or global randomness.
   Inject reproducible randomness only when needed and reset it with the world.
+  Rendering-only cosmetic randomness (effects, shake) may be nondeterministic;
+  simulation stays reproducible.
 - Fixed simulation steps stay separate from rendering; bound catch-up work and
   accumulated time after interruptions. Do not promise cross-platform float
   determinism. Same supported-runtime inputs must reproduce state.
@@ -111,8 +127,9 @@ branch name, a handoff title, or this file.
   exact working-tree context, environment, commands, exits, artifacts, and limits.
   Historical results do not prove a later head or rebased branch passes.
 - No `any`, broad casts, unchecked non-null assertions, ignored type errors,
-  ESLint disables, broad excludes, weakened assertions/coverage, or disabled
-  checks to make work pass. Explain any narrowly scoped exception for review.
+  ESLint disables, broad excludes, weakened/deleted tests, weakened assertions or
+  coverage, or disabled checks to make work pass. Add the tests the issue lists;
+  explain any narrowly scoped exception for review.
 - Never silently change validation scripts, CI, guardrail configuration,
   dependencies, lockfiles, or formal regression references. Obtain specific
   approval. Development-catalogue updates follow the explicit scope above and
@@ -143,8 +160,9 @@ branch name, a handoff title, or this file.
 - Do not auto-stage unrelated changes, commit, push, rewrite history, alter
   remotes, rebase, retarget, merge, deploy, or change branch protection without
   explicit authorization. Check actual branch state before repository actions.
-- Final reports distinguish changes, deliberate behavior changes, checks actually
-  run, artifacts, pending work, and limitations.
+- Final reports and PR descriptions distinguish changes, deliberate behavior changes,
+  checks actually run, artifacts, pending work, and limitations. List commands run,
+  results, and anything not verified in the PR description.
 
 ## GitHub state and updates
 
@@ -173,3 +191,15 @@ future artwork adoption. Do not start either without a separate assignment. Cork
 enemy kinds, mines, audio, and campaign rooms 1–19 are implemented scope, not
 deferred migration work. Supplied artwork stays untouched; never adjust gameplay
 geometry to fit it.
+
+## Roadmap #49 decisions
+
+Applies only to issues under [#49](https://github.com/ratatwiskr/toybox-tanks/issues/49);
+see that issue for full decisions, constraints and rejected prototypes.
+
+- Friendly fire and shell-cap / HP / cooldown tuning belong to #54; no wall-slam
+  damage and no Pogo/bouncing-betty state machine until an issue adopts it.
+- No progress persistence; room select stays free. Formal browser accessibility
+  compliance is not a goal; readability and game feel win, and existing control
+  rules still apply.
+- Ideas from other agents' prototypes are not adopted unless an issue says so.
