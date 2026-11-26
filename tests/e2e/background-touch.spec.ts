@@ -13,7 +13,7 @@ test('missed native touches keep focus without commands; pause remains explicit'
     Object.defineProperty(navigator, 'maxTouchPoints', { configurable: true, value: 2 });
   });
   await page.goto('/');
-  await page.getByRole('button', { name: 'Solo practice', exact: true }).click();
+  await page.getByRole('button', { name: 'Solo', exact: true }).click();
   await page.getByRole('button', { name: /Roll out!/ }).click();
   const snapshot = () =>
     page.evaluate(() => {
@@ -58,9 +58,7 @@ test('missed native touches keep focus without commands; pause remains explicit'
     }
     await tapControl(page.locator('#pauseBtn'));
     await expect(page.locator('#overlay')).toBeVisible();
-    await expect(page.locator('#dialogText')).toHaveText(
-      'Take a breath. No shells move while paused.',
-    );
+    await expect(page.locator('#dialogText')).toHaveText('No shells move while paused.');
     expect((await snapshot()).state).toBe('paused');
     await session.send('Input.dispatchTouchEvent', {
       type: 'touchStart',

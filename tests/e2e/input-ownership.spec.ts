@@ -71,7 +71,7 @@ async function tapAim(page: Page, session: CDPSession): Promise<void> {
 async function start(page: Page, coop: boolean, touch = true): Promise<BridgeSnapshot> {
   await page.goto('/');
   await page.locator('#touchToggle').setChecked(touch);
-  const name = coop ? 'Start two-player co-op' : 'Solo practice';
+  const name = coop ? 'Co-op 2 players' : 'Solo';
   await page.getByRole('button', { name, exact: true }).click();
   await page.getByRole('button', { name: /Roll out!/ }).click();
   await sample(page, 0);
@@ -239,7 +239,7 @@ for (const interruption of ['pause', 'restart', 'cancel']) {
     } else {
       await page.keyboard.press('Escape');
       await expect(page.locator('#overlay')).toBeVisible();
-      const name = interruption === 'restart' ? 'Restart this room' : 'Resume';
+      const name = interruption === 'restart' ? 'Restart room' : 'Resume';
       await page.getByRole('button', { name, exact: true }).click();
       await frames(page);
     }
