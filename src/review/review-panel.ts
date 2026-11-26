@@ -1,4 +1,5 @@
 import type { World } from '../sim/types';
+import { buildReviewBundleJson, buildReviewBundleMarkdown } from './review-bundle';
 import { createReviewEventLog } from './review-events';
 import { createFrameSampler, type FrameSamplerSummary } from './frame-sampler';
 import { REVIEW_BRIEF, REVIEW_PROMPTS, REVIEW_SCOPES } from './review-context';
@@ -119,6 +120,8 @@ build-time snapshot, not live repository state.</p>
 <div class="row">
   <button type="button" data-review-action="close">Close</button>
   <button type="button" data-review-action="copy-brief">Copy brief</button>
+  <button type="button" data-review-action="copy-bundle-md">Copy agent bundle</button>
+  <button type="button" data-review-action="copy-bundle-json">Copy bundle JSON</button>
 </div>
 <h3>Runtime diagnostics</h3>
 <div class="row">
@@ -302,6 +305,9 @@ build-time snapshot, not live repository state.</p>
     }
     if (action === 'copy-markdown') void copyText(buildMarkdownReport());
     if (action === 'copy-json') void copyText(buildJsonReport());
+    if (action === 'copy-bundle-md') void copyText(buildReviewBundleMarkdown(buildBundleInput()));
+    if (action === 'copy-bundle-json')
+      void copyText(JSON.stringify(buildReviewBundleJson(buildBundleInput()), null, 2));
   });
 
   const readField = (id: string): string =>
@@ -365,11 +371,36 @@ build-time snapshot, not live repository state.</p>
         confidence: readField('review-confidence'),
         runtime: describeRuntime(),
         capture: capturedSummary,
+        eventLog: events.entries(),
         sourceSnapshot: true,
       },
       null,
       2,
     );
+  }
+
+  function buildBundleInput() {
+    const promptKey = promptSelect?.value ?? 'menu';
+    const source = findSource(sourceSelect?.value ?? '');
+    return {
+      brief: REVIEW_BRIEF,
+      promptKey,
+      prompt: REVIEW_PROMPTS[promptKey] ?? '',
+      diagnostics: describeRuntime(),
+      capture: capturedSummary,
+      eventLog: events.entries(),
+      fields: {
+        scope: readField('review-scope'),
+        observation: readField('review-observation'),
+        evidence: readField('review-evidence'),
+        proposal: readField('review-proposal'),
+        risks: readField('review-risks'),
+        validation: readField('review-validation'),
+        confidence: readField('review-confidence'),
+      },
+      selectedSourcePath: source?.path ?? '',
+      selectedSource: source?.content ?? '',
+    };
   }
 
   function describeEnvironment(): string {

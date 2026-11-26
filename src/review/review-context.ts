@@ -57,6 +57,18 @@ requirements, and validation plan.`,
 replay, and full reset. Identify only issues that can leave stale input, stale
 effects, incorrect outcomes, or confusing recovery. Preserve the requirement
 that a restart resets world and input-adapter state completely.`,
+  touch: `Review touch controls, layout, orientation/fullscreen, and mobile recovery.
+Attach evidence: device/browser/viewport, touch layout mode, active sticks/buttons,
+and reproduction steps. Identify only issues that reduce readability, control
+confidence, or recovery. Propose the smallest change for each issue.`,
+  assets: `Review asset loading, fallbacks, and visual/audio asset integration. Attach
+evidence: asset warnings, load status, build/release mode, affected file/URL, and
+visible fallback behavior. Distinguish missing-asset handling from art direction.
+Propose the smallest change for each issue.`,
+  maps: `Review map layout, validation, spawn/readability, and room progression. Attach
+evidence: room number/name, map snippet or source path, validation/error message,
+and reproduction steps. Preserve map validation and existing room-order constraints.
+Propose the smallest change for each issue.`,
 };
 
 export const REVIEW_SCOPES = [
@@ -64,6 +76,9 @@ export const REVIEW_SCOPES = [
   'Performance and scaling',
   'Enemies and maps',
   'Reset and recovery',
+  'Touch controls',
+  'Assets and loading',
+  'Maps and validation',
   'Other',
 ] as const;
 
