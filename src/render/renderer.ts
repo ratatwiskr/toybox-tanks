@@ -3,6 +3,7 @@ import { bodyHeading } from '../presentation/body-heading';
 import { firstTerrain, isSolidCork, reflect } from '../sim/collision';
 import { KINDS, MINE } from '../sim/kinds';
 import type { Cork, Effect, Shell, Tank, Wall, World } from '../sim/types';
+import { computeCanvasSize } from './canvas-size';
 
 // Rendering only needs this narrow slice of the Canvas API. Keeping the surface
 // explicit lets unit tests prove rendering is read-only without a DOM.
@@ -813,9 +814,11 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
   return {
     resize(): void {
       const rect = canvas.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
-      const width = Math.max(1, Math.round(rect.width * dpr));
-      const height = Math.max(1, Math.round(rect.height * dpr));
+      const { width, height } = computeCanvasSize(
+        rect.width,
+        rect.height,
+        window.devicePixelRatio || 1,
+      );
 
       if (canvas.width !== width || canvas.height !== height) {
         canvas.width = width;
