@@ -84,7 +84,11 @@ try {
 }
 
 let reviewPanel:
-  { recordFrame(timestamp: number, world: World, simulationSteps: number): void } | undefined;
+  | {
+      recordFrame(timestamp: number, world: World, simulationSteps: number): void;
+      refreshLayout(): void;
+    }
+  | undefined;
 if (__REVIEW_BUILD__) {
   const { installReviewPanel } = await import('./review/review-panel');
   reviewPanel = installReviewPanel({ canvas });
@@ -105,6 +109,7 @@ const mobile = createMobileControls({
   onGeometryChange: () => {
     clearInputs();
     renderer.resize();
+    reviewPanel?.refreshLayout();
     setOverlay();
   },
 });
@@ -679,14 +684,14 @@ keyboard.attach({
   onDebug: toggleDebug,
 });
 
-const resizeObserver = new ResizeObserver(() => {
+const handleResize = (): void => {
   mobile.clear();
   renderer.resize();
-});
+  reviewPanel?.refreshLayout();
+};
+const resizeObserver = new ResizeObserver(handleResize);
 resizeObserver.observe(canvas);
-window.addEventListener('resize', () => {
-  renderer.resize();
-});
+window.addEventListener('resize', handleResize);
 
 let previousTime: number | null = null;
 
@@ -787,6 +792,7 @@ if (__TEST_BUILD__) {
 }
 
 renderer.resize();
+reviewPanel?.refreshLayout();
 setOverlay();
 updateHUD();
 renderer.render(world);

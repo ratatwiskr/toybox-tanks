@@ -4,6 +4,7 @@ import { findSource, getSourceFiles } from './source-index';
 
 export interface ReviewPanel {
   recordFrame(timestamp: number, world: World, simulationSteps: number): void;
+  refreshLayout(): void;
 }
 
 interface ReviewPanelOptions {
@@ -173,9 +174,41 @@ build-time snapshot, not live repository state.</p>
   syncPrompt();
   syncSource();
 
+  let previousTimestamp: number | null = null;
+  let smoothedFps = 0;
+  let worstFrameMs = 0;
+  let lastFrameMs = 0;
+  let lastSteps = 0;
+  let lastWorld: World | undefined;
+  let lastDiagnosticsUpdateMs = -Infinity;
+  let cachedCssWidth = 0;
+  let cachedCssHeight = 0;
+  let cachedDpr = 1;
+  let cachedEffectiveDpr = 1;
+
+  const isOpen = (): boolean => panel.classList.contains('open');
+
+  const refreshLayout = (): void => {
+    const rect = options.canvas.getBoundingClientRect();
+    cachedCssWidth = Math.round(rect.width);
+    cachedCssHeight = Math.round(rect.height);
+    cachedDpr = window.devicePixelRatio || 1;
+    cachedEffectiveDpr = rect.width > 0 ? options.canvas.width / rect.width : cachedDpr;
+  };
+
+  const renderDiagnostics = (nowMs: number): void => {
+    if (diagnostics !== null) diagnostics.textContent = describeRuntime();
+    lastDiagnosticsUpdateMs = nowMs;
+  };
+
   const open = new URLSearchParams(window.location.search).has('review');
   panel.classList.toggle('open', open);
-  toggle.addEventListener('click', () => panel.classList.toggle('open'));
+  refreshLayout();
+  if (open) renderDiagnostics(performance.now());
+  toggle.addEventListener('click', () => {
+    panel.classList.toggle('open');
+    if (isOpen()) renderDiagnostics(performance.now());
+  });
   panel.addEventListener('click', (event) => {
     const target = event.target;
     if (!(target instanceof HTMLButtonElement)) return;
@@ -189,13 +222,6 @@ build-time snapshot, not live repository state.</p>
     if (action === 'copy-markdown') void copyText(buildMarkdownReport());
     if (action === 'copy-json') void copyText(buildJsonReport());
   });
-
-  let previousTimestamp: number | null = null;
-  let smoothedFps = 0;
-  let worstFrameMs = 0;
-  let lastFrameMs = 0;
-  let lastSteps = 0;
-  let lastWorld: World | undefined;
 
   const readField = (id: string): string =>
     panel.querySelector<HTMLTextAreaElement | HTMLSelectElement>(`#${id}`)?.value ?? '';
@@ -251,15 +277,13 @@ build-time snapshot, not live repository state.</p>
 
   function describeRuntime(): string {
     const world = lastWorld;
-    const rect = options.canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio;
     return [
       `FPS: ${smoothedFps.toFixed(1)}`,
       `Last frame: ${lastFrameMs.toFixed(1)} ms`,
       `Worst recent frame: ${worstFrameMs.toFixed(1)} ms`,
       `Simulation steps: ${String(lastSteps)}`,
-      `Canvas: ${Math.round(rect.width)} x ${Math.round(rect.height)} CSS px`,
-      `DPR: ${dpr.toFixed(2)}`,
+      `Canvas: ${String(cachedCssWidth)} x ${String(cachedCssHeight)} CSS px`,
+      `DPR: ${cachedDpr.toFixed(2)} (effective ${cachedEffectiveDpr.toFixed(2)})`,
       world === undefined
         ? 'World: unavailable'
         : `World: room ${String(world.room + 1)}, state ${world.state}, shells ${String(world.shells.length)}, enemies ${String(world.enemies.length)}`,
@@ -277,6 +301,7 @@ build-time snapshot, not live repository state.</p>
   }
 
   return {
+    refreshLayout,
     recordFrame(timestamp, world, simulationSteps) {
       lastWorld = world;
       lastSteps = simulationSteps;
@@ -289,7 +314,9 @@ build-time snapshot, not live repository state.</p>
         smoothedFps = smoothedFps === 0 ? fps : smoothedFps * 0.9 + fps * 0.1;
       }
       previousTimestamp = seconds;
-      if (diagnostics !== null) diagnostics.textContent = describeRuntime();
+      if (isOpen() && timestamp - lastDiagnosticsUpdateMs >= 250) {
+        renderDiagnostics(timestamp);
+      }
     },
   };
 }
