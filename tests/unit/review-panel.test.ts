@@ -132,7 +132,17 @@ class FakeCanvas {
 }
 
 function createWorld(): World {
-  return { room: 0, state: 'playing', shells: [], enemies: [] } as unknown as World;
+  return {
+    room: 0,
+    mode: 'coop',
+    state: 'playing',
+    shells: [],
+    enemies: [],
+    mines: [],
+    poms: [],
+    effects: [],
+    players: [],
+  } as unknown as World;
 }
 
 function installFakeDom(search = '') {
@@ -145,7 +155,15 @@ function installFakeDom(search = '') {
       return tag === 'button' ? new FakeButton() : new FakeElement();
     },
   });
-  vi.stubGlobal('window', { location: { search }, devicePixelRatio: 2 });
+  vi.stubGlobal('window', {
+    location: { search },
+    devicePixelRatio: 2,
+    innerWidth: 1024,
+    innerHeight: 768,
+    addEventListener: () => undefined,
+    matchMedia: () => ({ matches: false }),
+  });
+  vi.stubGlobal('screen', { orientation: { type: 'landscape-primary' } });
   vi.stubGlobal('navigator', {
     clipboard: {
       writeText: () => Promise.resolve(),
@@ -156,7 +174,10 @@ function installFakeDom(search = '') {
   vi.stubGlobal('performance', { now: () => nowMs });
 
   const canvas = new FakeCanvas();
-  const panelApi = installReviewPanel({ canvas: canvas as unknown as HTMLCanvasElement });
+  const panelApi = installReviewPanel({
+    canvas: canvas as unknown as HTMLCanvasElement,
+    buildInfo: { commit: 'test', builtAt: '2026-01-01T00:00:00Z', mode: 'context' },
+  });
   const panel = body.children.find((node) => node.id === 'agent-review-panel');
   const toggle = body.children.find((node) => node.id === 'agent-review-toggle');
   if (!(panel instanceof FakeElement) || !(toggle instanceof FakeButton)) {

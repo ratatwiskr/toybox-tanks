@@ -21,6 +21,9 @@ export default defineConfig(({ mode }) => {
     define: {
       __TEST_BUILD__: JSON.stringify(mode === 'test'),
       __REVIEW_BUILD__: JSON.stringify(context),
+      __BUILD_COMMIT__: JSON.stringify(process.env.GITHUB_SHA ?? 'local'),
+      __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+      __BUILD_MODE__: JSON.stringify(mode),
     },
     build: {
       outDir: context

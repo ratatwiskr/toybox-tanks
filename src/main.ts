@@ -95,11 +95,21 @@ let reviewPanel:
         clamped: boolean;
       }): void;
       refreshLayout(): void;
+      recordEvent(kind: string, detail: string): void;
+      setPauseReason(reason: string): void;
     }
   | undefined;
 if (__REVIEW_BUILD__) {
   const { installReviewPanel } = await import('./review/review-panel');
-  reviewPanel = installReviewPanel({ canvas });
+  reviewPanel = installReviewPanel({
+    canvas,
+    buildInfo: {
+      commit: __BUILD_COMMIT__,
+      builtAt: __BUILD_TIME__,
+      mode: __BUILD_MODE__,
+    },
+    getGamepads: () => (typeof navigator.getGamepads === 'function' ? navigator.getGamepads() : []),
+  });
 }
 
 const mobile = createMobileControls({
@@ -302,6 +312,10 @@ function setOverlay(): void {
   accumulator = 0;
   overlay.hidden = world.state === 'playing';
   pauseButton.textContent = world.state === 'paused' ? 'Resume · Esc' : 'Pause · Esc';
+  if (__REVIEW_BUILD__) {
+    reviewPanel?.recordEvent('state', `${overlayKey} room=${String(world.room + 1)}`);
+    reviewPanel?.setPauseReason(pauseReason);
+  }
 
   if (world.state === 'playing') {
     focusGame();
@@ -348,10 +362,12 @@ function loadRoom(index: number, mode: Mode = world.mode): void {
     lastShownState = '';
     setOverlay();
     updateHUD();
+    if (__REVIEW_BUILD__) reviewPanel?.recordEvent('map-validation', pauseReason);
   }
 }
 
 function restartRoom(): void {
+  if (__REVIEW_BUILD__) reviewPanel?.recordEvent('restart', `room=${String(world.room + 1)}`);
   loadRoom(world.room, world.mode);
 }
 
@@ -381,6 +397,7 @@ function showError(message: string): void {
   clearInputs();
   setOverlay();
   updateHUD();
+  if (__REVIEW_BUILD__) reviewPanel?.recordEvent('map-validation', message);
 }
 
 function isPlaying(world: World): boolean {
@@ -394,6 +411,7 @@ function pauseGame(reason = ''): void {
     clearInputs();
     accumulator = 0;
     setOverlay();
+    if (__REVIEW_BUILD__) reviewPanel?.recordEvent('pause', reason || 'paused');
   }
 }
 
@@ -459,6 +477,7 @@ function openLevelSelect(mode: Mode): void {
     world = createEmptyWorld(mode);
     world.state = 'error';
     pauseReason = error instanceof Error ? error.message : String(error);
+    if (__REVIEW_BUILD__) reviewPanel?.recordEvent('map-validation', pauseReason);
   }
   lastShownState = '';
   clearInputs();
@@ -769,6 +788,7 @@ function showAssetWarning(message: string): void {
   console.error(message);
   statusLine.textContent = message;
   statusLine.classList.add('warning');
+  if (__REVIEW_BUILD__) reviewPanel?.recordEvent('asset-warning', message);
 }
 
 async function preloadFloorArtwork(): Promise<void> {

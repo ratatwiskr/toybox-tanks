@@ -1,7 +1,14 @@
 import type { World } from '../sim/types';
+import { createReviewEventLog } from './review-events';
 import { createFrameSampler, type FrameSamplerSummary } from './frame-sampler';
 import { REVIEW_BRIEF, REVIEW_PROMPTS, REVIEW_SCOPES } from './review-context';
 import { findSource, getSourceFiles } from './source-index';
+
+interface ReviewBuildInfo {
+  readonly commit: string;
+  readonly builtAt: string;
+  readonly mode: string;
+}
 
 export interface ReviewFrame {
   readonly timestamp: number;
@@ -16,10 +23,14 @@ export interface ReviewFrame {
 export interface ReviewPanel {
   recordFrame(frame: ReviewFrame): void;
   refreshLayout(): void;
+  recordEvent(kind: string, detail: string): void;
+  setPauseReason(reason: string): void;
 }
 
 interface ReviewPanelOptions {
   readonly canvas: HTMLCanvasElement;
+  readonly buildInfo: ReviewBuildInfo;
+  readonly getGamepads?: () => (Gamepad | null)[];
 }
 
 const PANEL_ID = 'agent-review-panel';
@@ -192,6 +203,7 @@ build-time snapshot, not live repository state.</p>
   syncSource();
 
   const sampler = createFrameSampler();
+  const events = createReviewEventLog();
   let previousTimestamp: number | null = null;
   let lastFrameMs = 0;
   let lastSteps = 0;
@@ -208,6 +220,10 @@ build-time snapshot, not live repository state.</p>
   let cachedCssHeight = 0;
   let cachedDpr = 1;
   let cachedEffectiveDpr = 1;
+  let pauseReason = '';
+  const getGamepads =
+    options.getGamepads ??
+    (() => (typeof navigator.getGamepads === 'function' ? navigator.getGamepads() : []));
 
   const isOpen = (): boolean => panel.classList.contains('open');
 
@@ -356,8 +372,63 @@ build-time snapshot, not live repository state.</p>
     );
   }
 
+  function describeEnvironment(): string {
+    const dpr = window.devicePixelRatio || 1;
+    const backingW = options.canvas.width;
+    const backingH = options.canvas.height;
+    const megapixels = (backingW * backingH) / 1_000_000;
+    const orientation =
+      typeof screen !== 'undefined' && typeof screen.orientation.type === 'string'
+        ? screen.orientation.type
+        : 'unknown';
+    const coarse =
+      typeof window.matchMedia === 'function'
+        ? String(window.matchMedia('(pointer: coarse)').matches)
+        : 'unknown';
+    const concurrency = navigator.hardwareConcurrency;
+    return [
+      `Viewport: ${String(window.innerWidth)} x ${String(window.innerHeight)} CSS px`,
+      `Canvas: ${String(cachedCssWidth)} x ${String(cachedCssHeight)} CSS px`,
+      `DPR raw/effective: ${dpr.toFixed(2)} / ${cachedEffectiveDpr.toFixed(2)}`,
+      `Backing store: ${String(backingW)} x ${String(backingH)} (${megapixels.toFixed(2)} MP)`,
+      `Orientation: ${orientation}`,
+      `Pointer coarse: ${coarse}`,
+      `Hardware concurrency: ${typeof concurrency === 'number' ? String(concurrency) : 'unknown'}`,
+      `User agent: ${navigator.userAgent}`,
+      `Build: ${options.buildInfo.commit} @ ${options.buildInfo.builtAt} (${options.buildInfo.mode}) [snapshot, not live repo state]`,
+    ].join('\n');
+  }
+
+  function describeGame(world: World | undefined): string {
+    if (world === undefined) return 'World: unavailable';
+    const pads = getGamepads()
+      .filter((pad): pad is Gamepad => pad !== null)
+      .map((pad) => `${String(pad.index)}:${pad.id}`);
+    const players = world.players
+      .map(
+        (p, i) =>
+          `P${String(i + 1)} hp=${String(p.hp)} alive=${String(p.alive)} shells=${String(world.shells.filter((s) => s.owner === p.id && !s.dead).length)}`,
+      )
+      .join('; ');
+    const aliveEnemies = world.enemies.filter((e) => e.alive).length;
+    const aliveMines = world.mines.filter((m) => !m.dead).length;
+    const alivePoms = world.poms.filter((p) => !p.dead).length;
+    return [
+      `Room: ${String(world.room + 1)}`,
+      `Mode: ${world.mode}`,
+      `State: ${world.state}`,
+      `Pause reason: ${pauseReason || 'none'}`,
+      `Players: ${players || 'none'}`,
+      `Shells: ${String(world.shells.filter((s) => !s.dead).length)} (total ${String(world.shells.length)})`,
+      `Enemies alive: ${String(aliveEnemies)} / ${String(world.enemies.length)}`,
+      `Mines: ${String(aliveMines)}`,
+      `Poms: ${String(alivePoms)}`,
+      `Effects: ${String(world.effects.length)}`,
+      `Assigned gamepads: ${pads.length > 0 ? pads.join(', ') : 'none'}`,
+    ].join('\n');
+  }
+
   function describeRuntime(): string {
-    const world = lastWorld;
     const summary = sampler.summary();
     const captureLine =
       captureEndsAtMs > 0 && capturedSummary === null
@@ -373,12 +444,20 @@ build-time snapshot, not live repository state.</p>
       `Sim/render/HUD: ${lastSimMs.toFixed(2)} / ${lastRenderMs.toFixed(2)} / ${lastHudMs.toFixed(2)} ms`,
       `Simulation steps: ${String(lastSteps)}${lastClamped ? ' (clamped)' : ''}`,
       `Clamp hits: ${String(summary.clampHits)}`,
-      `Canvas: ${String(cachedCssWidth)} x ${String(cachedCssHeight)} CSS px`,
-      `DPR: ${cachedDpr.toFixed(2)} (effective ${cachedEffectiveDpr.toFixed(2)})`,
       captureLine,
-      world === undefined
-        ? 'World: unavailable'
-        : `World: room ${String(world.room + 1)}, state ${world.state}, shells ${String(world.shells.length)}, enemies ${String(world.enemies.length)}`,
+      '',
+      '== Environment ==',
+      describeEnvironment(),
+      '',
+      '== Game ==',
+      describeGame(lastWorld),
+      '',
+      '== Event log ==',
+      events
+        .entries()
+        .slice(-30)
+        .map((e) => `${e.at} [${e.kind}] ${e.detail}`)
+        .join('\n') || 'No events.',
     ].join('\n');
   }
 
@@ -392,8 +471,45 @@ build-time snapshot, not live repository state.</p>
     }
   }
 
+  interface ListenerTarget {
+    addEventListener(type: string, listener: (event: unknown) => void): void;
+  }
+  const addListener = (target: unknown, type: string, listener: (event: unknown) => void): void => {
+    if (
+      typeof target === 'object' &&
+      target !== null &&
+      'addEventListener' in target &&
+      typeof (target as { addEventListener?: unknown }).addEventListener === 'function'
+    ) {
+      (target as ListenerTarget).addEventListener(type, listener);
+    }
+  };
+
+  addListener(globalThis.window, 'error', (event) => {
+    const message =
+      typeof event === 'object' && event !== null && 'message' in event
+        ? (event as { message?: unknown }).message
+        : undefined;
+    events.record('error', typeof message === 'string' ? message : 'error');
+  });
+  addListener(globalThis.document, 'visibilitychange', () => {
+    events.record(
+      'visibility',
+      typeof document !== 'undefined' && document.hidden ? 'hidden' : 'visible',
+    );
+  });
+  addListener(globalThis.window, 'blur', () => {
+    events.record('focus', 'blur');
+  });
+
   return {
     refreshLayout,
+    recordEvent(kind: string, detail: string) {
+      events.record(kind, detail);
+    },
+    setPauseReason(reason: string) {
+      pauseReason = reason;
+    },
     recordFrame(frame) {
       lastWorld = frame.world;
       lastSteps = frame.simulationSteps;
