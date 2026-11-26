@@ -24,4 +24,12 @@ describe('computeCanvasSize', () => {
     expect(computeCanvasSize(0.1, 10.4, 2)).toEqual({ width: 1, height: 21, dpr: 2 });
     expect(computeCanvasSize(10.4, 0, 2)).toEqual({ width: 21, height: 1, dpr: 2 });
   });
+
+  it('supports an explicit max DPR', () => {
+    expect(computeCanvasSize(960, 540, 3, 1.5)).toEqual({
+      width: 1440,
+      height: 810,
+      dpr: 1.5,
+    });
+  });
 });

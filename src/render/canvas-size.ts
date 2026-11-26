@@ -1,7 +1,10 @@
-const MAX_DPR = 2;
-
-export function computeCanvasSize(rectW: number, rectH: number, rawDpr: number) {
-  const dpr = Number.isFinite(rawDpr) && rawDpr > 0 ? Math.min(rawDpr, MAX_DPR) : 1;
+export function computeCanvasSize(
+  rectW: number,
+  rectH: number,
+  rawDpr: number,
+  maxDpr = 2,
+): { width: number; height: number; dpr: number } {
+  const dpr = Number.isFinite(rawDpr) && rawDpr > 0 ? Math.min(rawDpr, maxDpr) : 1;
   return {
     width: Math.max(1, Math.round(rectW * dpr)),
     height: Math.max(1, Math.round(rectH * dpr)),
