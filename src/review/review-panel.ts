@@ -32,6 +32,8 @@ interface ReviewPanelOptions {
   readonly canvas: HTMLCanvasElement;
   readonly buildInfo: ReviewBuildInfo;
   readonly getGamepads?: () => (Gamepad | null)[];
+  readonly getTouchSticksActive?: () => number;
+  readonly getHeldKeyCount?: () => number;
 }
 
 const PANEL_ID = 'agent-review-panel';
@@ -227,6 +229,8 @@ build-time snapshot, not live repository state.</p>
   const getGamepads =
     options.getGamepads ??
     (() => (typeof navigator.getGamepads === 'function' ? navigator.getGamepads() : []));
+  const getTouchSticksActive = options.getTouchSticksActive ?? (() => 0);
+  const getHeldKeyCount = options.getHeldKeyCount ?? (() => 0);
 
   const isOpen = (): boolean => panel.classList.contains('open');
 
@@ -247,10 +251,10 @@ build-time snapshot, not live repository state.</p>
     captureView.textContent = [
       captureStatus,
       `samples ${String(capturedSummary.samples)}`,
-      `p50 ${capturedSummary.p50.toFixed(1)} ms`,
-      `p95 ${capturedSummary.p95.toFixed(1)} ms`,
-      `p99 ${capturedSummary.p99.toFixed(1)} ms`,
-      `max ${capturedSummary.max.toFixed(1)} ms`,
+      `frame p50/p95/p99/max ${capturedSummary.p50.toFixed(1)} / ${capturedSummary.p95.toFixed(1)} / ${capturedSummary.p99.toFixed(1)} / ${capturedSummary.max.toFixed(1)} ms`,
+      `sim p50/p95/max ${capturedSummary.simP50.toFixed(2)} / ${capturedSummary.simP95.toFixed(2)} / ${capturedSummary.simMax.toFixed(2)} ms`,
+      `render p50/p95/max ${capturedSummary.renderP50.toFixed(2)} / ${capturedSummary.renderP95.toFixed(2)} / ${capturedSummary.renderMax.toFixed(2)} ms`,
+      `hud p50/p95/max ${capturedSummary.hudP50.toFixed(2)} / ${capturedSummary.hudP95.toFixed(2)} / ${capturedSummary.hudMax.toFixed(2)} ms`,
       `>20ms ${String(capturedSummary.over20ms)}`,
       `>33ms ${String(capturedSummary.over33ms)}`,
       `clamps ${String(capturedSummary.clampHits)}`,
@@ -348,10 +352,10 @@ build-time snapshot, not live repository state.</p>
         ? '_Not recorded._'
         : [
             `samples ${String(capture.samples)}`,
-            `p50 ${capture.p50.toFixed(1)} ms`,
-            `p95 ${capture.p95.toFixed(1)} ms`,
-            `p99 ${capture.p99.toFixed(1)} ms`,
-            `max ${capture.max.toFixed(1)} ms`,
+            `frame p50/p95/p99/max ${capture.p50.toFixed(1)} / ${capture.p95.toFixed(1)} / ${capture.p99.toFixed(1)} / ${capture.max.toFixed(1)} ms`,
+            `sim p50/p95/max ${capture.simP50.toFixed(2)} / ${capture.simP95.toFixed(2)} / ${capture.simMax.toFixed(2)} ms`,
+            `render p50/p95/max ${capture.renderP50.toFixed(2)} / ${capture.renderP95.toFixed(2)} / ${capture.renderMax.toFixed(2)} ms`,
+            `hud p50/p95/max ${capture.hudP50.toFixed(2)} / ${capture.hudP95.toFixed(2)} / ${capture.hudMax.toFixed(2)} ms`,
             `>20ms ${String(capture.over20ms)}`,
             `>33ms ${String(capture.over33ms)}`,
             `clamps ${String(capture.clampHits)}`,
@@ -456,6 +460,8 @@ build-time snapshot, not live repository state.</p>
       `Poms: ${String(alivePoms)}`,
       `Effects: ${String(world.effects.length)}`,
       `Assigned gamepads: ${pads.length > 0 ? pads.join(', ') : 'none'}`,
+      `Touch sticks active: ${String(getTouchSticksActive())}`,
+      `Held keys: ${String(getHeldKeyCount())}`,
     ].join('\n');
   }
 
@@ -471,8 +477,11 @@ build-time snapshot, not live repository state.</p>
       `FPS: ${(lastFrameMs > 0 ? 1000 / lastFrameMs : 0).toFixed(1)}`,
       `Last frame: ${lastFrameMs.toFixed(1)} ms`,
       `Frame p50/p95/p99/max: ${summary.p50.toFixed(1)} / ${summary.p95.toFixed(1)} / ${summary.p99.toFixed(1)} / ${summary.max.toFixed(1)} ms`,
+      `Sim p50/p95/max: ${summary.simP50.toFixed(2)} / ${summary.simP95.toFixed(2)} / ${summary.simMax.toFixed(2)} ms`,
+      `Render p50/p95/max: ${summary.renderP50.toFixed(2)} / ${summary.renderP95.toFixed(2)} / ${summary.renderMax.toFixed(2)} ms`,
+      `HUD p50/p95/max: ${summary.hudP50.toFixed(2)} / ${summary.hudP95.toFixed(2)} / ${summary.hudMax.toFixed(2)} ms`,
       `Frames >20ms/>33ms: ${String(summary.over20ms)} / ${String(summary.over33ms)}`,
-      `Sim/render/HUD: ${lastSimMs.toFixed(2)} / ${lastRenderMs.toFixed(2)} / ${lastHudMs.toFixed(2)} ms`,
+      `Sim/render/HUD last: ${lastSimMs.toFixed(2)} / ${lastRenderMs.toFixed(2)} / ${lastHudMs.toFixed(2)} ms`,
       `Simulation steps: ${String(lastSteps)}${lastClamped ? ' (clamped)' : ''}`,
       `Clamp hits: ${String(summary.clampHits)}`,
       captureLine,
@@ -552,14 +561,17 @@ build-time snapshot, not live repository state.</p>
       if (previousTimestamp !== null) {
         const frameMs = Math.max(0, (seconds - previousTimestamp) * 1000);
         lastFrameMs = frameMs;
-        sampler.record({
-          dt: frameMs,
-          simMs: frame.simMs,
-          renderMs: frame.renderMs,
-          hudMs: frame.hudMs,
-          steps: frame.simulationSteps,
-          clamped: frame.clamped,
-        });
+        sampler.record(
+          {
+            dt: frameMs,
+            simMs: frame.simMs,
+            renderMs: frame.renderMs,
+            hudMs: frame.hudMs,
+            steps: frame.simulationSteps,
+            clamped: frame.clamped,
+          },
+          frame.timestamp,
+        );
         const capture = sampler.captureSummary(frame.timestamp);
         if (capture !== null) {
           capturedSummary = capture;

@@ -109,6 +109,8 @@ if (__REVIEW_BUILD__) {
       mode: __BUILD_MODE__,
     },
     getGamepads: () => (typeof navigator.getGamepads === 'function' ? navigator.getGamepads() : []),
+    getTouchSticksActive: () => mobile.activeStickCount(),
+    getHeldKeyCount: () => keyboard.heldCount(),
   });
 }
 

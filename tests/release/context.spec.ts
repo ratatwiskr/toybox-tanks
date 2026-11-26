@@ -1,5 +1,5 @@
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { readFileSync, readdirSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import { expect, test } from '@playwright/test';
@@ -43,10 +43,15 @@ test.describe('context release artifact', () => {
 
   test('release artifacts do not contain review panel markers', () => {
     const markers = ['Agent review workspace', 'agent-review-panel', 'Copy agent bundle'];
-    for (const file of ['dist/index.html', 'dist-single/index.html']) {
-      const html = readFileSync(resolve(file), 'utf8');
+    const files = ['dist/index.html', 'dist-single/index.html'];
+    const distAssets = resolve('dist/assets');
+    for (const entry of readdirSync(distAssets)) {
+      if (entry.endsWith('.js')) files.push(join('dist/assets', entry));
+    }
+    for (const file of files) {
+      const text = readFileSync(resolve(file), 'utf8');
       for (const marker of markers) {
-        expect(html, `${file} should not contain ${marker}`).not.toContain(marker);
+        expect(text, `${file} should not contain ${marker}`).not.toContain(marker);
       }
     }
   });

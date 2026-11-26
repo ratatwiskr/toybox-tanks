@@ -125,6 +125,10 @@ export class TouchAdapter {
     this.altPending = false;
   }
 
+  activeStickCount(): number {
+    return (this.movement === null ? 0 : 1) + (this.aiming === null ? 0 : 1);
+  }
+
   readCommand(fallback: Command): Command {
     let x = fallback.x;
     let y = fallback.y;

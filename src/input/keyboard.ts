@@ -75,6 +75,10 @@ export class KeyboardAdapter {
     };
   }
 
+  heldCount(): number {
+    return this.held.size;
+  }
+
   attach(callbacks: KeyboardCallbacks): () => void {
     const onKeyDown = (event: KeyboardEvent): void => {
       if (!callbacks.isFocused() || !CONTROL_KEYS.has(event.code)) {

@@ -33,6 +33,7 @@ export interface MobileControls {
   readonly enabled: boolean;
   readonly compact: boolean;
   readonly canPlay: boolean;
+  activeStickCount(): number;
   clear(): void;
   sync(mode: Mode, state: GameState): void;
   readCommand(fallback: Command): Command;
@@ -337,6 +338,9 @@ export function createMobileControls(host: MobileHost): MobileControls {
     },
     get canPlay() {
       return canPlay();
+    },
+    activeStickCount() {
+      return active ? adapter.activeStickCount() : 0;
     },
     clear,
     sync(mode, state) {

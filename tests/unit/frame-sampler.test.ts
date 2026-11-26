@@ -6,7 +6,7 @@ function sample(dt: number, overrides: Partial<FrameSample> = {}): FrameSample {
   return {
     dt,
     simMs: 1,
-    renderMs: 1,
+    renderMs: 2,
     hudMs: 0.1,
     steps: 1,
     clamped: false,
@@ -17,8 +17,8 @@ function sample(dt: number, overrides: Partial<FrameSample> = {}): FrameSample {
 describe('frame sampler', () => {
   it('computes percentiles on known arrays', () => {
     const sampler = createFrameSampler();
-    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].forEach((dt) => {
-      sampler.record(sample(dt));
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].forEach((dt, i) => {
+      sampler.record(sample(dt, { simMs: i + 1, renderMs: 10 - i, hudMs: 0.5 }), 0);
     });
 
     expect(sampler.summary()).toMatchObject({
@@ -27,6 +27,15 @@ describe('frame sampler', () => {
       p95: 10,
       p99: 10,
       max: 10,
+      simP50: 5,
+      simP95: 10,
+      simMax: 10,
+      renderP50: 5,
+      renderP95: 10,
+      renderMax: 10,
+      hudP50: 0.5,
+      hudP95: 0.5,
+      hudMax: 0.5,
       over20ms: 0,
       over33ms: 0,
       clampHits: 0,
@@ -36,7 +45,7 @@ describe('frame sampler', () => {
   it('wraps the 240-sample ring buffer', () => {
     const sampler = createFrameSampler();
     for (let i = 1; i <= 245; i += 1) {
-      sampler.record(sample(i));
+      sampler.record(sample(i), 0);
     }
 
     const summary = sampler.summary();
@@ -47,9 +56,9 @@ describe('frame sampler', () => {
 
   it('counts clamp hits and slow frames', () => {
     const sampler = createFrameSampler();
-    sampler.record(sample(16));
-    sampler.record(sample(21));
-    sampler.record(sample(34, { clamped: true }));
+    sampler.record(sample(16), 0);
+    sampler.record(sample(21), 16);
+    sampler.record(sample(34, { clamped: true }), 37);
 
     expect(sampler.summary()).toMatchObject({
       samples: 3,
@@ -59,16 +68,18 @@ describe('frame sampler', () => {
     });
   });
 
-  it('captures a full 10s window independently of the rolling ring', () => {
+  it('captures a full 10s window and finalizes even if panel is closed', () => {
     const sampler = createFrameSampler();
     sampler.startCapture(1000);
 
-    for (let i = 0; i < 600; i += 1) {
-      sampler.record(sample(16.7));
+    for (let i = 0; i < 599; i += 1) {
+      sampler.record(sample(16.7), 1000 + i * 16.7);
     }
     expect(sampler.captureSummary(10_999)).toBeNull();
 
-    const captured = sampler.captureSummary(11_000);
+    // 600th sample crosses the capture boundary; record() must finalize.
+    sampler.record(sample(16.7), 11_000);
+    const captured = sampler.captureSummary(12_000);
     expect(captured).not.toBeNull();
     expect(captured).toMatchObject({
       samples: 600,
@@ -77,8 +88,8 @@ describe('frame sampler', () => {
     });
 
     // Samples after capture finalization should not enter the 10s summary.
-    sampler.record(sample(40, { clamped: true }));
-    expect(sampler.captureSummary(11_100)).toEqual(captured);
+    sampler.record(sample(40, { clamped: true }), 12_016);
+    expect(sampler.captureSummary(12_100)).toEqual(captured);
 
     // Rolling ring only keeps last 240, including post-capture sample.
     expect(sampler.summary().samples).toBe(240);
