@@ -49,6 +49,13 @@ class StubContext implements RenderContext {
   createPattern(_image: CanvasImageSource, _repetition: string | null): CanvasPattern | null {
     return null;
   }
+  drawImage(
+    _image: CanvasImageSource,
+    _dx: number,
+    _dy: number,
+    _dWidth?: number,
+    _dHeight?: number,
+  ): void {}
   fillText(_text: string, _x: number, _y: number): void {}
 }
 
@@ -98,12 +105,21 @@ interface RecordedArc {
   readonly lineWidth: number;
 }
 
+interface RecordedImage {
+  readonly image: CanvasImageSource;
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+}
+
 class RecordingContext extends StubContext {
   readonly strokes: RecordedPath[] = [];
   readonly fills: RecordedPath[] = [];
   readonly texts: RecordedText[] = [];
   readonly fillRects: RecordedFillRect[] = [];
   readonly arcs: RecordedArc[] = [];
+  readonly drawImages: RecordedImage[] = [];
   readonly createdPattern = {} as unknown as CanvasPattern;
   patternAvailable = true;
   private points: Array<{ x: number; y: number }> = [];
@@ -130,6 +146,22 @@ class RecordingContext extends StubContext {
     _repetition: string | null,
   ): CanvasPattern | null {
     return this.patternAvailable ? this.createdPattern : null;
+  }
+
+  override drawImage(
+    image: CanvasImageSource,
+    dx: number,
+    dy: number,
+    dWidth?: number,
+    dHeight?: number,
+  ): void {
+    this.drawImages.push({
+      image,
+      x: dx,
+      y: dy,
+      width: dWidth ?? 0,
+      height: dHeight ?? 0,
+    });
   }
 
   override save(): void {
@@ -386,6 +418,51 @@ describe('renderer contract', () => {
     renderer.render(world);
 
     expect(snapshot(world)).toEqual(before);
+  });
+
+  it('draws a supplied SVG wall image once per wall at its logical tile bounds', () => {
+    const world = createWorld(0, 'coop');
+    const canvas = new RecordingCanvas();
+    const renderer = createRenderer(canvas);
+    const image = {} as unknown as CanvasImageSource;
+    const before = snapshot(world);
+
+    renderer.setWallImage(image);
+    renderer.render(world);
+
+    expect(snapshot(world)).toEqual(before);
+    expect(canvas.recording.drawImages).toHaveLength(world.walls.length);
+    for (const wall of world.walls) {
+      expect(canvas.recording.drawImages).toContainEqual({
+        image,
+        x: wall.x,
+        y: wall.y,
+        width: wall.w,
+        height: wall.h,
+      });
+    }
+  });
+
+  it('keeps procedural wall drawing when no SVG image is supplied', () => {
+    const world = createWorld(0, 'coop');
+    const canvas = new RecordingCanvas();
+
+    createRenderer(canvas).render(world);
+
+    expect(canvas.recording.drawImages).toEqual([]);
+    const wall = world.walls[0];
+    if (wall === undefined) {
+      throw new Error('Wall missing');
+    }
+    expect(
+      canvas.recording.fills.some(
+        (path) =>
+          path.style === '#b88650' &&
+          path.rect !== null &&
+          path.rect.x === wall.x + 1 &&
+          path.rect.y === wall.y + 1,
+      ),
+    ).toBe(true);
   });
 
   it('keeps crack and chip paths inside the cork face at both damaged stages', () => {

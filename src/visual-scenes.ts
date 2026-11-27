@@ -45,6 +45,7 @@ export const VISUAL_SCENES = [
     id: 'mines-armed',
     purpose: 'Unarmed, armed, and chain-fused jack-in-the-box mines on the floor.',
   },
+  { id: 'wall-art', purpose: 'Wall SVG art on the border and on adjacent interior tiles.' },
   {
     id: 'lobber-pom',
     purpose: 'A lobbed pom in flight with its red landing ring above the floor.',
@@ -240,6 +241,13 @@ export function createVisualWorld(name: VisualSceneId): World {
       world.nextMine = mines.length;
       break;
     }
+    case 'wall-art':
+      world.walls.push(
+        { x: 360, y: 250, w: CONFIG.tile, h: CONFIG.tile },
+        { x: 400, y: 250, w: CONFIG.tile, h: CONFIG.tile },
+        { x: 440, y: 250, w: CONFIG.tile, h: CONFIG.tile },
+      );
+      break;
     case 'lobber-pom': {
       const lobber = createTank('l0', 'enemy', 760, 150, 'lobber');
       lobber.angle = Math.PI * 0.75;

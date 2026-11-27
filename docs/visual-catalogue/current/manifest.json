@@ -5,9 +5,9 @@
   "complete": true,
   "runError": null,
   "source": {
-    "revision": "f0f0dfb752d0e841582b03c5d0294666e5d7b40a",
-    "sourceStatus": " M README.md\n M docs/architecture.md\n M docs/enemy-kinds-opencode-handoff.md\n M docs/progress.md\n M src/input/mobile.ts\n M src/input/touch.ts\n M src/main.ts\n M src/mobile.css\n M tests/e2e/mobile-layout.spec.ts\n M tests/e2e/mobile.spec.ts\n M tests/unit/touch.test.ts\n M tests/visual/catalogue-fullscreen.ts\n M tests/visual/catalogue-mobile.ts\n M tests/visual/catalogue-support.ts",
-    "sourceTreeSha256": "a7c8e7bf8b2a799d09b27383b1143a42ef0b88aef65aa99aaa35c5d1045c71df"
+    "revision": "b2bdd8d23fb30b9a4e7a7d5d57d067fc8d398fc2",
+    "sourceStatus": " M src/main.ts\n M src/render/renderer.ts\n M src/visual-scenes.ts\n M tests/e2e/svg-loader.spec.ts\n M tests/unit/renderer.test.ts\n M tests/unit/visual-scenes.test.ts\n?? reference/26-11-18_claude/26-11-18_claude_HANDOFF_toybox_tanks_v145.md\n?? reference/26-11-18_claude/26-11-18_claude_toybox_tanks_v145_spec_rework.html\n?? reference/26-11-18_claude/26-11-18_claude_toybox_tanks_v145_spec_rework.html.txt\n?? reference/26-11-18_px_gemini/26-11-18_px_gemini_toybox-tanks-iteration.html.txt\n?? reference/26-11-18_px_gemini/26-11-18_px_gemini_toybox-tanks-ts-handoff.md\n?? reference/26-11-21_current_state/26-11-21_current_state_index.html.txt\n?? src/assets/svg/wall.svg",
+    "sourceTreeSha256": "504c382b4742edf4856d7a7001dac2446e2f958878cb6fa1b0e1ae800730a55d"
   },
   "environment": {
     "os": "linux",
@@ -21,7 +21,7 @@
     "reducedMotion": "reduce",
     "locale": "en-US",
     "timezoneId": "UTC",
-    "baseURL": "http://127.0.0.1:34789",
+    "baseURL": "http://127.0.0.1:36835",
     "headless": "true"
   },
   "comparisonsPerformed": false,
@@ -646,11 +646,11 @@
       "images": [
         {
           "file": "ui-menu.full.png",
-          "sha256": "1367afd4c0153aeb01c6b13685da595f58a8b72c410277b8e1287fdc07dde599"
+          "sha256": "5dddb7fcc6d1ed59d9202e035968e2f1e037b42647e3c3c43f1a026d5f060384"
         },
         {
           "file": "ui-menu.arena.png",
-          "sha256": "449b1e28ee9b7bb39918060b471f9149f3b6ac37d2409c19cc06229daeb18d48"
+          "sha256": "4194d979109ea43c089934222cece1b41625bdc653a47bcb1c7579f27b2f1f69"
         }
       ],
       "expectedFiles": ["ui-menu.full.png", "ui-menu.arena.png"]
@@ -1275,11 +1275,11 @@
       "images": [
         {
           "file": "ui-coop.full.png",
-          "sha256": "e5a071d6a96740908432cc7f9ca8cea0bff7b5026a0f75cd9659d0c46fc28304"
+          "sha256": "0573cd3f0cbee47a5913195e0da412765b1738f538bb643e9772368f1cc05fd8"
         },
         {
           "file": "ui-coop.arena.png",
-          "sha256": "80b73f88dabe04e8cf4596466e45e1ee3337a53ee1b065ccff75232b4912e74b"
+          "sha256": "0ae1114c27818ad0a6c3815be658fdbf0215bd9d0c8005b457aa0b1283c2fb0d"
         }
       ],
       "expectedFiles": ["ui-coop.full.png", "ui-coop.arena.png"]
@@ -1916,11 +1916,11 @@
       "images": [
         {
           "file": "ui-active-shot.full.png",
-          "sha256": "a40d4a7101ddcdeae16202e699a4e42553c41f3ca1ac2b70c65a72ace0ed0660"
+          "sha256": "9365912e8a3f0f90b39edc5ac5af7a295ed254ab3e604656e2e7d74228b526aa"
         },
         {
           "file": "ui-active-shot.arena.png",
-          "sha256": "8ab50a731fb5d5b16584ca9b3f76c6d66a47e976cddc9152750c98f98b744fb0"
+          "sha256": "9578ee5b1b3c35caed1df9829831c435da3447d28ca2e625af1e9c4cbdac31c4"
         }
       ],
       "expectedFiles": ["ui-active-shot.full.png", "ui-active-shot.arena.png"]
@@ -2545,11 +2545,11 @@
       "images": [
         {
           "file": "ui-disabled-player.full.png",
-          "sha256": "5c32642f8f794a1e1d5d0a6e01c9881f8313ef978b82ad96706a75b401f60ae9"
+          "sha256": "5364c770c532c441d0dd96c061107721a27462b0543f7805cff9538f3c8afd63"
         },
         {
           "file": "ui-disabled-player.arena.png",
-          "sha256": "2d4e5e209c04f0ecd996fff28fff2506443abb8311eaf5c388357a6ad31cddaf"
+          "sha256": "235eeef16812b8b1e5378508f02b3d205a6e868e44dbf89463d614cd29c601a6"
         }
       ],
       "expectedFiles": ["ui-disabled-player.full.png", "ui-disabled-player.arena.png"]
@@ -3174,11 +3174,11 @@
       "images": [
         {
           "file": "ui-paused.full.png",
-          "sha256": "4f70322c3b637d415df37b4be084087b211f4cdbcc46dfedf3b9ac332f132b45"
+          "sha256": "cc6512244353d36cca65da4d704e5f43cf3c5dfe7b3f6edc18f881c5e5b4ecb4"
         },
         {
           "file": "ui-paused.arena.png",
-          "sha256": "f9742150bd721e7daea66a738cfbb689aa36e3ced4051233ecd1145b9454fbdd"
+          "sha256": "8052d4b0305c4bdc79c155b28a8981cb16b24d6149eb5e4c88ff1f243a936eef"
         }
       ],
       "expectedFiles": ["ui-paused.full.png", "ui-paused.arena.png"]
@@ -3803,11 +3803,11 @@
       "images": [
         {
           "file": "ui-cleared.full.png",
-          "sha256": "1ba546b3665d1edfc3cf3d2c36edc5a1ea43aa2b59d6921c54089272dae7d140"
+          "sha256": "373a912cda73e60f97cb7caecd3c98da0fac680b300c0c3bf724214ec2081b2b"
         },
         {
           "file": "ui-cleared.arena.png",
-          "sha256": "176619f0c92699c67215b39ba58014e3a72b86b371a2fb704135ac2b109faee3"
+          "sha256": "19aa62e0a5e661fd80d410ce8ddfefde93a8df8ae4b686a3894a892f7a8fff5c"
         }
       ],
       "expectedFiles": ["ui-cleared.full.png", "ui-cleared.arena.png"]
@@ -4432,11 +4432,11 @@
       "images": [
         {
           "file": "ui-defeat.full.png",
-          "sha256": "c60b78f509b4c48c0b84b5e8db664f95ec819dc9a26603351a56cd43747f245e"
+          "sha256": "46a86b1758691d40d83c93121759841bba83221fff0aa1cf703ad11b756d8be1"
         },
         {
           "file": "ui-defeat.arena.png",
-          "sha256": "d658c98669f1d9e6a9baf7c8b75f615f61032be05107d78f2d87498e9567adb9"
+          "sha256": "cd2bbffa41c116afe6bbcccac199b6f322f76a7008bddaace9c5dbc1c7f693bc"
         }
       ],
       "expectedFiles": ["ui-defeat.full.png", "ui-defeat.arena.png"]
@@ -5156,11 +5156,11 @@
       "images": [
         {
           "file": "ui-completed.full.png",
-          "sha256": "a7ff6874bbd7178b28e947520f6efef44c69e82f9f38462057203fac9aeb2d0f"
+          "sha256": "677f7f81ac17f419a4e13914e51381127a1ee7752e545f2547c2a0a19c822b50"
         },
         {
           "file": "ui-completed.arena.png",
-          "sha256": "42cc6abddd1e7a0e2b5e05d877150a93a1c9707af880edaa71f53f0dc3ad69df"
+          "sha256": "4e88b16cbe94400aa15f611f4d7bd6245daecd532a26510eade5bbc3608f196e"
         }
       ],
       "expectedFiles": ["ui-completed.full.png", "ui-completed.arena.png"]
@@ -5788,7 +5788,7 @@
       "images": [
         {
           "file": "ui-level-select.full.png",
-          "sha256": "9177f3b6a598de7c742a90531e2a9411682c9782993dd75fed82a7b950ce1a11"
+          "sha256": "e5caf655b99d5e5a895065f625398968a55dbe2869fc29c9698e2306ce615139"
         }
       ],
       "expectedFiles": ["ui-level-select.full.png"]
@@ -6413,11 +6413,11 @@
       "images": [
         {
           "file": "ui-resized-gameplay.full.png",
-          "sha256": "0a1142563445f774420e4d825553789fb6022b67282f749e6ad84720834e24da"
+          "sha256": "37febe4522430907130fe6426074c0d784083d1a450b92b7c62b275f7ca891ce"
         },
         {
           "file": "ui-resized-gameplay.arena.png",
-          "sha256": "cd876183a0d25c71e4cd5e04734afa0c4bfe445a61093252dc5f8dec9925c226"
+          "sha256": "459f94b1e9e3466f640f2558ea5728079defa731f80288ebf1ed49669f3c34a0"
         }
       ],
       "expectedFiles": ["ui-resized-gameplay.full.png", "ui-resized-gameplay.arena.png"]
@@ -7045,11 +7045,11 @@
       "images": [
         {
           "file": "campaign-first-bounce-start.full.png",
-          "sha256": "e5a071d6a96740908432cc7f9ca8cea0bff7b5026a0f75cd9659d0c46fc28304"
+          "sha256": "0573cd3f0cbee47a5913195e0da412765b1738f538bb643e9772368f1cc05fd8"
         },
         {
           "file": "campaign-first-bounce-start.arena.png",
-          "sha256": "80b73f88dabe04e8cf4596466e45e1ee3337a53ee1b065ccff75232b4912e74b"
+          "sha256": "0ae1114c27818ad0a6c3815be658fdbf0215bd9d0c8005b457aa0b1283c2fb0d"
         }
       ],
       "expectedFiles": [
@@ -7801,11 +7801,11 @@
       "images": [
         {
           "file": "campaign-the-courtyard-start.full.png",
-          "sha256": "4e9fe7d56001d34a6ce2c6ef617ed7544447927aa2dece42412fb600138411d2"
+          "sha256": "4d0e285f9d9f78a25f6b1d0cb8e737078843caf604a9f7d2975811dc979d412b"
         },
         {
           "file": "campaign-the-courtyard-start.arena.png",
-          "sha256": "2365392ca120750fb2b6a5761ad1ca487baf396ed10274ad30576be90206dcb0"
+          "sha256": "89d3a4f194b52240295eb71e6e5a795dc41c74ae24ccebe64c55200887d8e210"
         }
       ],
       "expectedFiles": [
@@ -8507,11 +8507,11 @@
       "images": [
         {
           "file": "campaign-block-party-start.full.png",
-          "sha256": "f8a2b295c985c5ae89af14796162129222b36c12d9e765a18cfb445e13b51424"
+          "sha256": "b254d4c4f4237c9bb31e0071bdf62038355e9674d276bc95bd42d1b1cb3b1d32"
         },
         {
           "file": "campaign-block-party-start.arena.png",
-          "sha256": "2b7808e5e8d8ef4bfaf16a49754d85810dfd18a13bb78b4d0b2796860a0eec91"
+          "sha256": "01a0568f9602de1a0c1e736c1ae93ebabf7f80b21b08cc6f221b2bd846b87f00"
         }
       ],
       "expectedFiles": [
@@ -9218,11 +9218,11 @@
       "images": [
         {
           "file": "campaign-together-through-start.full.png",
-          "sha256": "04cfb033c2535ae777819bed91f8c579df9b792c0b1ce3bcfcfe5ae06bf4a981"
+          "sha256": "169a0d9e2533e4d68e1f977ea631814db24bad3aef6d5b2a1d88a54657bce838"
         },
         {
           "file": "campaign-together-through-start.arena.png",
-          "sha256": "c918733024632302763ce54f1d253b329e31e1a7d192e7236f79bafcb9c36438"
+          "sha256": "a5e8af782b0b968312796a784be09c0564ab47c93b8de43963eccbe3fcc6b7f2"
         }
       ],
       "expectedFiles": [
@@ -10001,11 +10001,11 @@
       "images": [
         {
           "file": "campaign-cork-keep-start.full.png",
-          "sha256": "f25e1905a063db3bc5667ea52c91910e7485bd410d578f50e74f0fae3c07695a"
+          "sha256": "6b4a318e8c440ecc766b3fef54fa87cdc3d339cb58cb12f642d8015f28398bd0"
         },
         {
           "file": "campaign-cork-keep-start.arena.png",
-          "sha256": "e527e52e58884e86aa69ba9b85dd2c21d3fbc8b6c82eabb0c7dea568b5b98b48"
+          "sha256": "80185ccb63ae6be57304501a44b2c2df2e5fc69bf340c587f8711252b9ec3c3d"
         }
       ],
       "expectedFiles": ["campaign-cork-keep-start.full.png", "campaign-cork-keep-start.arena.png"]
@@ -10884,11 +10884,11 @@
       "images": [
         {
           "file": "campaign-crossfire-alley-start.full.png",
-          "sha256": "6e3a0722aca6a6b5b1b0a1bb97b355fb728cef6541c2ca568c0eafc0fb97da43"
+          "sha256": "7bf0003e10ec05032b97d15514bbb42f893d9fab8d2c6fa08a13050f5c49a7b2"
         },
         {
           "file": "campaign-crossfire-alley-start.arena.png",
-          "sha256": "d4a34ebf06ead3005bffb623af69fb24c8075800ce2bd31143ee18d34be5035a"
+          "sha256": "76efa9be5d065479346544076563d69a13e4776fec521a84c09cff41aa004c25"
         }
       ],
       "expectedFiles": [
@@ -11654,11 +11654,11 @@
       "images": [
         {
           "file": "campaign-pillars-of-salt-start.full.png",
-          "sha256": "6c04d0e9563f9f0f412aefc6ebc1d1d0fd2b0c97a35288337271bdd05941a162"
+          "sha256": "f605844ed02022674896b52f05fbfd80e4ff0f0c4ea7c8c540de840169206077"
         },
         {
           "file": "campaign-pillars-of-salt-start.arena.png",
-          "sha256": "3560523352838325c16e20395041355a7ca8feea2b247d0cdff78eeae80e3cbe"
+          "sha256": "c08a2dd7eb87fdd0c02e28c2f537c270a1fe33c2e8c1f8d14ced47dba7032970"
         }
       ],
       "expectedFiles": [
@@ -12462,11 +12462,11 @@
       "images": [
         {
           "file": "campaign-choke-point-start.full.png",
-          "sha256": "1cbf5657b3d5e0d7a2e8d660a4ae58573433c1df62f41b030cbb30e51bd7a549"
+          "sha256": "6505fca279d9052c59e9ba63e687edce8a6b0dc0ba98876b55d9a67cbd524730"
         },
         {
           "file": "campaign-choke-point-start.arena.png",
-          "sha256": "0f69c55a7a0522e366fcb398deb31afe28c9db4479cda2166c02c9bf76f502a1"
+          "sha256": "93995d1142a6093f20b5e31ae1c0a1f2bddb38f47bf1ded3890f5936a0f9b6b2"
         }
       ],
       "expectedFiles": [
@@ -13468,11 +13468,11 @@
       "images": [
         {
           "file": "campaign-cork-sieve-start.full.png",
-          "sha256": "3a5d8265e747401c940b8567c867eb6f239de61e9fd3c9784bb80aa9b36068b9"
+          "sha256": "ba426d4137efd4fcbb1f0c2020ca3a286eee8611691b5cbf0639655beb71f3ee"
         },
         {
           "file": "campaign-cork-sieve-start.arena.png",
-          "sha256": "58b23941cf136c983f4ec8757ac6efb008c2778973f868a16548ed115b982b08"
+          "sha256": "f2dee811a9e228bff98dd2c44ad0ae1ebcab39697afc98c3e9d19b31ae25c018"
         }
       ],
       "expectedFiles": ["campaign-cork-sieve-start.full.png", "campaign-cork-sieve-start.arena.png"]
@@ -14499,11 +14499,11 @@
       "images": [
         {
           "file": "campaign-the-fortress-start.full.png",
-          "sha256": "8124adff124b7c673f9a030333eb9d5929e2d211f8f07de9cf718b9f71578edf"
+          "sha256": "93f6bde0e135a2a27c205ede8585bf9ca9d0ccee568d744b102453978c3bdb34"
         },
         {
           "file": "campaign-the-fortress-start.arena.png",
-          "sha256": "e2bfd5fa9294dbe17ef3a8df35c15eca3e0d6c13eb92966eafa1c01cc3d3fce1"
+          "sha256": "2c9443758aad07a4082e8d5283bcdcc331e9a24ebf054b11ece86ceea429e17c"
         }
       ],
       "expectedFiles": [
@@ -15397,11 +15397,11 @@
       "images": [
         {
           "file": "campaign-spiral-start.full.png",
-          "sha256": "312b5aefa94a4eb5f4de579dbac013c27beaed7fdfcdc7ea572b4c1810f7805b"
+          "sha256": "494296c1373ed7c6e566f7fa88aae7c470484f2558f0f0ea7da3ae5c8c6df406"
         },
         {
           "file": "campaign-spiral-start.arena.png",
-          "sha256": "afb6a84d73e2e23fb52d0c127a456b43d9e57854f0b72fe01246a2e5b71b820a"
+          "sha256": "fcf87721e9caa630be5e7c24b4547595e3450cc27cce30fbd48ace70aa44ba5d"
         }
       ],
       "expectedFiles": ["campaign-spiral-start.full.png", "campaign-spiral-start.arena.png"]
@@ -16362,11 +16362,11 @@
       "images": [
         {
           "file": "campaign-double-bunker-start.full.png",
-          "sha256": "187aa9797380c2ae0150423afbfe28b7d11c3ad31ca5f5d9b0594d417d82729b"
+          "sha256": "677acbbecc847fe0ad407fd796dd80ac12f2388699b9f5313f055bb367e89cc2"
         },
         {
           "file": "campaign-double-bunker-start.arena.png",
-          "sha256": "07fab82d9b374826af84d857dba3bbd91b75c57d134c4af92ed73aa78a916b16"
+          "sha256": "e9264727768dfe4940e8287e3f18f575624633df409a5eef8e0e1151b101b1c4"
         }
       ],
       "expectedFiles": [
@@ -17344,11 +17344,11 @@
       "images": [
         {
           "file": "campaign-the-labyrinth-start.full.png",
-          "sha256": "eb05ccbc80caa37cce5cbcba48776a7eba02d65152847770f3ad280f03f9ea21"
+          "sha256": "b3800bce580281377bc8c87cf62b7410c17bbdb17bcc9e77cdd1a0f76849a0df"
         },
         {
           "file": "campaign-the-labyrinth-start.arena.png",
-          "sha256": "bf21b555e3028df06460124a999de6f99482783635d20333d7cfd3f85d94aba2"
+          "sha256": "6df98a34ccd0052a6005b07fc2958d870fe1e9288c0760279eb9813da326e5fe"
         }
       ],
       "expectedFiles": [
@@ -18253,11 +18253,11 @@
       "images": [
         {
           "file": "campaign-the-gauntlet-start.full.png",
-          "sha256": "1c77d2e57d6629d148400b26505caa17a35a5bbb32580e74e9731f814af0ea4f"
+          "sha256": "3d4d514d71aca16865d0896ea4de21ab8430a468baf3f90468f1893cff30777d"
         },
         {
           "file": "campaign-the-gauntlet-start.arena.png",
-          "sha256": "0ab146f9147d87e540268b3b25a481160becae499113121fb57b9d2469b09cfe"
+          "sha256": "5bdb7158936646992c0121c8b7168ed1ab8922a00c50608dc68cccdd8f8bd563"
         }
       ],
       "expectedFiles": [
@@ -19146,11 +19146,11 @@
       "images": [
         {
           "file": "campaign-ring-of-fire-start.full.png",
-          "sha256": "48957ef29611aef99175c34f83f907ed273fddc3e268bf1c43d0aecbc5c8bda1"
+          "sha256": "cc1fb64fafcd46a347e04add197d24bf3281e3bf91eb8c16296ca0ad0686cf3b"
         },
         {
           "file": "campaign-ring-of-fire-start.arena.png",
-          "sha256": "9637976a4257f2848448145c37a40e031afa0965cda38a46d05b0a8744eec0db"
+          "sha256": "11c2568c16ec997aed2971239b4629b92e11d8d9a204d8644f4d6fb97c487183"
         }
       ],
       "expectedFiles": [
@@ -19859,11 +19859,11 @@
       "images": [
         {
           "file": "campaign-roaming-patrol-start.full.png",
-          "sha256": "a2a2a4cd832c8dea723f6bc646bbb84f41e2a1126f67f0e83a22c5af114e6a9b"
+          "sha256": "76d8be200e7051c1d22aa3f7e3f75f74bda358b36531665f0f85aba0590e1fc2"
         },
         {
           "file": "campaign-roaming-patrol-start.arena.png",
-          "sha256": "d2bf4e2f335b06ab6e2d5eee2e5782e12d0a2e77f0806dc3d789a4ba7ba556d3"
+          "sha256": "877ac584cb91e8e2eddc2d0427dd2563395816cd4b8bdf965db422089532265b"
         }
       ],
       "expectedFiles": [
@@ -20614,11 +20614,11 @@
       "images": [
         {
           "file": "campaign-corner-shark-start.full.png",
-          "sha256": "44faad5cc076b73ebc961dcca7c2b7531ee95d0283821d5bd4729697eb6690af"
+          "sha256": "8ee0532b0fcaf2465be99da3a84c3d17ee2b4a9e43b98fe0cd7040321c9b7b51"
         },
         {
           "file": "campaign-corner-shark-start.arena.png",
-          "sha256": "2c7d8e31a04f28d796e328b1e7747d60224c50d4f51b77956c78aae26054f344"
+          "sha256": "e25c59b9cb3898df495f72cfc47f485ff88d106684732118c6b5773b2a782345"
         }
       ],
       "expectedFiles": [
@@ -21391,11 +21391,11 @@
       "images": [
         {
           "file": "campaign-confetti-cannons-start.full.png",
-          "sha256": "b2995b25c2617db53591dbcc2a23ee590313a36c12e10b04a69e8e44cc949d8d"
+          "sha256": "1ebdd1d449cbeb01259c392539776b018efe16b32b74ea4cad58111e884fc35b"
         },
         {
           "file": "campaign-confetti-cannons-start.arena.png",
-          "sha256": "5a55ed4169869911a81f866f99734080d0371731b14e1712f5979c9ab6433b93"
+          "sha256": "983505ef26cea3d26cdcb409e13a33e622a0cffd9b650c8eed31b57b4e5a3ed0"
         }
       ],
       "expectedFiles": [
@@ -22121,11 +22121,11 @@
       "images": [
         {
           "file": "campaign-prank-alley-start.full.png",
-          "sha256": "2d8b1a2777cb83459c91da4fc8bcfa812604299815aa2940d1028eae06ff321f"
+          "sha256": "86475622094cfaab1d1bfffa30bdc830bda94a497c4bce69d05bc8d0575be992"
         },
         {
           "file": "campaign-prank-alley-start.arena.png",
-          "sha256": "e6946725681a2bbf33e726419cb047fbcfaaab68dd046343d79798e342369caf"
+          "sha256": "ed9e3a49255ebfc1f6389dd1bc56a96ea5849807b5ae43771f082c35b748edad"
         }
       ],
       "expectedFiles": [
@@ -22702,11 +22702,11 @@
       "images": [
         {
           "file": "cork-atlas.full.png",
-          "sha256": "fc6591ca25a8f85c949f9c61999f83859008ce15d2a39778bec97991cf38f6c6"
+          "sha256": "1025c392bd4789029209b8fc688115cd7f4acf253d059cb6e0028180a18ee4ac"
         },
         {
           "file": "cork-atlas.arena.png",
-          "sha256": "67113712005065a41a5a22446dbc0b3a00397d4ddaadd5fe39172845b243bbc7"
+          "sha256": "e3402fb9c6a3a4b7f48669c0c906d466db5f4742c35e3b5c38f0ef8fef34131e"
         },
         {
           "file": "cork-atlas.detail.png",
@@ -23266,11 +23266,11 @@
       "images": [
         {
           "file": "cork-isolated.full.png",
-          "sha256": "0181c764fd6766dfd736a3525bbae28ff4fc42eb6b2cadfc1af30dda4f2367ab"
+          "sha256": "9b1f9c466f87e2472b859d843818b019657d814ab48b0ecb5aa695709b725e44"
         },
         {
           "file": "cork-isolated.arena.png",
-          "sha256": "888f1707a82a30c65d4432351abb739e89becd1f490177e78ba98d89feb32e74"
+          "sha256": "9ef7912c9200ed56952a78ce66b69f81b519fd2653c09f4f7b8074d920f4a2c1"
         },
         {
           "file": "cork-isolated.detail.png",
@@ -23852,11 +23852,11 @@
       "images": [
         {
           "file": "cork-adjacent.full.png",
-          "sha256": "bcefc5b3a7f7d4c57008e129443c03bdb3c1b49c0c90648ad9fc5ed6b3ff3549"
+          "sha256": "3c8515c6763c3f8d01388b9a9e9458c978fc0aef04f277065b35ac2d0cd0d553"
         },
         {
           "file": "cork-adjacent.arena.png",
-          "sha256": "172d972073a18ee786a2dd86321abb1e90e922f2feaa59323485d4cbbd81909d"
+          "sha256": "964eaba89d7250ca78a8870eee26d63e6a52ed4bc99dee05e2122e20f7289b9f"
         },
         {
           "file": "cork-adjacent.detail.png",
@@ -24438,11 +24438,11 @@
       "images": [
         {
           "file": "cork-reversed.full.png",
-          "sha256": "bcefc5b3a7f7d4c57008e129443c03bdb3c1b49c0c90648ad9fc5ed6b3ff3549"
+          "sha256": "3c8515c6763c3f8d01388b9a9e9458c978fc0aef04f277065b35ac2d0cd0d553"
         },
         {
           "file": "cork-reversed.arena.png",
-          "sha256": "172d972073a18ee786a2dd86321abb1e90e922f2feaa59323485d4cbbd81909d"
+          "sha256": "964eaba89d7250ca78a8870eee26d63e6a52ed4bc99dee05e2122e20f7289b9f"
         },
         {
           "file": "cork-reversed.detail.png",
@@ -24997,11 +24997,11 @@
       "images": [
         {
           "file": "cork-aim-blocked.full.png",
-          "sha256": "f680161720081ec724d9c6cbf05815b0a2b582984d328a252ff839999a334727"
+          "sha256": "4102cf753f73553dcb928dbd268c671ad7f478d5656e7981399f20c9d93c8150"
         },
         {
           "file": "cork-aim-blocked.arena.png",
-          "sha256": "dc533dbe8e7eaa057d4e4c87a7b2431eee4511f657e631ebb671bc04b64a0ea5"
+          "sha256": "0905c5e0acb9120311b30d0e512dbf7723a7459d0261758487dbbf1637116b43"
         },
         {
           "file": "cork-aim-blocked.detail.png",
@@ -25556,11 +25556,11 @@
       "images": [
         {
           "file": "cork-aim-cleared.full.png",
-          "sha256": "4d4a34a2aab5fc8c42852f48d2766abbb85920d606fd61b64758378965a86244"
+          "sha256": "19e88ceca4cd8a971867046db7e4c42c7aaa8e8d7dc9393f196022e9021bc582"
         },
         {
           "file": "cork-aim-cleared.arena.png",
-          "sha256": "df457e00baa92f2a440fc8b36df9672add33d5ebabcfd751e531fd907a7f1009"
+          "sha256": "49852dd6d061874c79375e1b931840f80c5e837e73a5677646e16564c238e481"
         },
         {
           "file": "cork-aim-cleared.detail.png",
@@ -26121,15 +26121,15 @@
       "images": [
         {
           "file": "cork-aim-reflected.full.png",
-          "sha256": "ca59e0c27e1d7a5a4b053ff2310c523f5a7821874aed5e323e7e94defc92ffee"
+          "sha256": "8d2096333861589938499d9fb25ec77f09747a4b15bf12d0246549c4e480968a"
         },
         {
           "file": "cork-aim-reflected.arena.png",
-          "sha256": "9acba501738365a44c02b25b7d6bc85c847f25154fb94ae2c44e259d303450a4"
+          "sha256": "202a79dc744818cefb9fa2604e7f5187624692cfd9c0cafd40144baaa49acb1f"
         },
         {
           "file": "cork-aim-reflected.detail.png",
-          "sha256": "d0ada37992e5b1e4c4a95433236b5af240f8e35abca3facee01eabd4781ea2c8"
+          "sha256": "7676d2c6807dc299be881710dd9af0e321352ddc159017d411c6bdad06b580ab"
         }
       ],
       "expectedFiles": [
@@ -26721,11 +26721,11 @@
       "images": [
         {
           "file": "combat-feedback.full.png",
-          "sha256": "5a9dc5459a56ff62642c206cccbf85abee6002857ed8a755053347b1398d1be5"
+          "sha256": "4a765baaeca294e633713dadf10659574e070dff7af4e80169571b1be6b9b328"
         },
         {
           "file": "combat-feedback.arena.png",
-          "sha256": "d98318e8f6a9235575546f79c4b649f30ac79fdb45fe677290623821ceb038b0"
+          "sha256": "8457892b79cbc5a35dde2d6f54580b91a1ff0d93519332db24b68c9864115901"
         },
         {
           "file": "combat-feedback.detail.png",
@@ -27338,11 +27338,11 @@
       "images": [
         {
           "file": "enemy-kinds.full.png",
-          "sha256": "a6df18ad9130d933d3f0b959febb156716304c51c18be6080367f102e6d58551"
+          "sha256": "d489d444ac58df4ce75b97bfbef644e5781008ddc08a9e0d690f39eeaee20f9a"
         },
         {
           "file": "enemy-kinds.arena.png",
-          "sha256": "958356f74980841fc55e69094a98d7035a610527d04cd2eb0e4f4c0f33d9d966"
+          "sha256": "f4a35aa2ace8f2ecac1a09987bc937c167770dd1b14bc88d81cc544986295730"
         },
         {
           "file": "enemy-kinds.detail.png",
@@ -27938,18 +27938,581 @@
       "images": [
         {
           "file": "mines-armed.full.png",
-          "sha256": "220b95f2f213fadcdfd7821e67c1d0d831311f5a5bc392a9924719da96364188"
+          "sha256": "cf10f30572a88e8086c59909329203346b845af9e6c711b6fa0d3d9695a0bca7"
         },
         {
           "file": "mines-armed.arena.png",
-          "sha256": "b1169e6b4f655770829168e3f79a92c3cffc6acf6537dd5f915cdfa922961f3d"
+          "sha256": "af7ec41a2165b8ccc88b113f07238ce9e2b0fcd4e8d17d2c34269b59c1b6398f"
         },
         {
           "file": "mines-armed.detail.png",
-          "sha256": "f72e87b87d3cbac1954c94f5c505686b78b0aab48126c66519c63d10ac22e4f8"
+          "sha256": "9f25a47f2840879d400c450a5a8bc9c186efac8b115f4342bb3a4fa5011d3c04"
         }
       ],
       "expectedFiles": ["mines-armed.full.png", "mines-armed.arena.png", "mines-armed.detail.png"]
+    },
+    {
+      "scene": {
+        "id": "wall-art",
+        "purpose": "Synthetic fixture: Wall SVG art on the border and on adjacent interior tiles.",
+        "scenario": "coop",
+        "options": {},
+        "fixture": "wall-art",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        }
+      },
+      "status": "captured",
+      "error": null,
+      "state": {
+        "room": 0,
+        "mode": "coop",
+        "state": "playing",
+        "time": 0,
+        "ticks": 0,
+        "nextShell": 0,
+        "nextMine": 0,
+        "shots": 0,
+        "bounces": 0,
+        "walls": [
+          {
+            "x": 0,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 10,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 50,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 90,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 130,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 170,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 210,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 290,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 330,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 370,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 410,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 450,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 0,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 40,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 80,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 120,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 160,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 200,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 240,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 280,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 320,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 480,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 520,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 560,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 600,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 640,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 680,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 720,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 760,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 800,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 840,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 880,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 920,
+            "y": 490,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 360,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 400,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          },
+          {
+            "x": 440,
+            "y": 250,
+            "w": 40,
+            "h": 40
+          }
+        ],
+        "corks": [],
+        "players": [
+          {
+            "id": "p1",
+            "faction": "player",
+            "x": 200,
+            "y": 270,
+            "spawnX": 200,
+            "spawnY": 270,
+            "r": 15,
+            "angle": 0,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          },
+          {
+            "id": "p2",
+            "faction": "player",
+            "x": 800,
+            "y": 450,
+            "spawnX": 800,
+            "spawnY": 450,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 2,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "enemies": [
+          {
+            "id": "s0",
+            "faction": "enemy",
+            "x": 800,
+            "y": 130,
+            "spawnX": 800,
+            "spawnY": 130,
+            "r": 15,
+            "angle": -1.5707963267948966,
+            "hp": 1,
+            "alive": true,
+            "invuln": 0,
+            "cooldown": 0,
+            "charge": 0,
+            "targetId": null,
+            "track": 0
+          }
+        ],
+        "shells": [],
+        "mines": [],
+        "poms": [],
+        "effects": [],
+        "events": ["Synthetic visual fixture: wall-art"]
+      },
+      "renderContext": {
+        "canvasBounds": {
+          "x": 82,
+          "y": 169.25,
+          "width": 1276,
+          "height": 717.75
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "mobileContext": null,
+        "fullscreenContext": null,
+        "deviceScaleFactor": 1,
+        "maxTouchPoints": 0,
+        "fonts": "loaded",
+        "focusedElement": "stage",
+        "focusVisible": true,
+        "documentHasFocus": true,
+        "visible": "visible"
+      },
+      "images": [
+        {
+          "file": "wall-art.full.png",
+          "sha256": "5069bc0405448b7bd018995f2dad92b9aa8be12a15e7d1a99950626fc884d853"
+        },
+        {
+          "file": "wall-art.arena.png",
+          "sha256": "5facfcbf0d5ef99623e4cf38c5288bfd7df2a9aa79c84f57b2036ab1b5af2523"
+        },
+        {
+          "file": "wall-art.detail.png",
+          "sha256": "e5c724498bd13138fa3ab5e3a8e3b3e6c2ed9961efa8740cdedc8a281e5694a6"
+        }
+      ],
+      "expectedFiles": ["wall-art.full.png", "wall-art.arena.png", "wall-art.detail.png"]
     },
     {
       "scene": {
@@ -28512,11 +29075,11 @@
       "images": [
         {
           "file": "lobber-pom.full.png",
-          "sha256": "810c0fb8a6e5d7a469f22a3ff281caf6e6526d6f5c7eb8ac5aeca3a7fa06497b"
+          "sha256": "7c3ce2bc9365fff8ecc02586504991e0844f66e651ae384c2ead8803c4f974f3"
         },
         {
           "file": "lobber-pom.arena.png",
-          "sha256": "6c681b9adee18bd7b5f0cb6561b1e2fd3c056e94aea5ffef0044d533ac080a2a"
+          "sha256": "3b508d8288922e99a2a49530035efbf58ee0a4b33368e69b632b7374ed708bb2"
         },
         {
           "file": "lobber-pom.detail.png",
@@ -29057,11 +29620,11 @@
       "images": [
         {
           "file": "body-aim-independent.full.png",
-          "sha256": "32dd0a753f8bf17584c40d34455173a1958490783296571e3f9e8e11808be3d2"
+          "sha256": "e3693503a074f7cb3981b2e10cc2302d639f833f7c579c29aafe9fadd8de0c73"
         },
         {
           "file": "body-aim-independent.arena.png",
-          "sha256": "0f06af44513371e30e54da65511c82a7cf5d532166ffde88f56376ede311d4e5"
+          "sha256": "cab893a6e59ae09430d5d979ed703680209b4fe7c24e22013cc49c3f82966e4f"
         },
         {
           "file": "body-aim-independent.detail.png",
@@ -29606,11 +30169,11 @@
       "images": [
         {
           "file": "body-diagonal.full.png",
-          "sha256": "0a45629bf52d9b7505295f99393a1463ea511ad1a2a2fb8f8666a2bc9b7e684f"
+          "sha256": "9b2b8dd7f271ec142dc857f83453f12296f451b108d86f6b914dda93dd7df0df"
         },
         {
           "file": "body-diagonal.arena.png",
-          "sha256": "a801dd3e2d5d27d6c3399c69bbb50e0771e0fc7c37c6072ffc5797e21b1416fd"
+          "sha256": "14b299c7d302922e23ebcffb73e2dafaaadac01d6e1fec1876570cb1416e01c3"
         },
         {
           "file": "body-diagonal.detail.png",
@@ -30161,15 +30724,15 @@
       "images": [
         {
           "file": "body-wall-slide.full.png",
-          "sha256": "15d8d5239e929352b1fcc195327257894a125854344de067a3db7eb1b397cc10"
+          "sha256": "b793d4b587fc923449bc0d177ace9d608768f5599efd66b14af103dc419af4c3"
         },
         {
           "file": "body-wall-slide.arena.png",
-          "sha256": "91fc45a2e7d6ea4018a973848d3ca73afa569bbb75fde8953a155c16e3b5ecc7"
+          "sha256": "f396b9ec590e12ba855ebd37ac544f652b29bedfd2c781327a8e852c61d1050e"
         },
         {
           "file": "body-wall-slide.detail.png",
-          "sha256": "9dd01996f4672bc0c3c4f049ca9cbfb9d3b438b6fc540a19fed682d8247c4419"
+          "sha256": "54e14200cb04f9604329b432ee876644b34f69751fae3808cb2105b15c7f03b7"
         }
       ],
       "expectedFiles": [
@@ -30733,11 +31296,11 @@
       "images": [
         {
           "file": "shell-head-on-before.full.png",
-          "sha256": "e89e62cfd709d29814d97a99ee12656bf428f7ce3024edbb2939b08691846004"
+          "sha256": "74f6b02234abe6ab2e885f775b2bb19f41b196890f34b8b6ca36e38f7e780e8f"
         },
         {
           "file": "shell-head-on-before.arena.png",
-          "sha256": "289895e4c1a390816b45015cc104612afdf846813093d7e05b53e01c9a233133"
+          "sha256": "635c00c46d975c53d143438ce9dae63aa350ff3a756cd14d3121a4a7d368dcf7"
         },
         {
           "file": "shell-head-on-before.detail.png",
@@ -31291,11 +31854,11 @@
       "images": [
         {
           "file": "shell-head-on-contact.full.png",
-          "sha256": "9f50a9597cfad30e865cf553b8f81b19626f8cbcb03014a2b801744ccca9fe49"
+          "sha256": "b33672cccbfbbacfa3272a6def79751f70307288acbeb37a527756301747089e"
         },
         {
           "file": "shell-head-on-contact.arena.png",
-          "sha256": "77f76a2e3ffc626c9789a258d3cce93c5bb4ae492e527e5d5e6a86defb8c5cb1"
+          "sha256": "605b34d52810d09972ec092d89b27a25e463d48330597015733c9fc47579f02b"
         },
         {
           "file": "shell-head-on-contact.detail.png",
@@ -31849,11 +32412,11 @@
       "images": [
         {
           "file": "shell-head-on-aged.full.png",
-          "sha256": "9d6b6dc57658661418cfdfebdc27cd87c2a0ae99bf6afaa852cff89b3a1459b1"
+          "sha256": "47595205f79a992dd4fb3b25b816845a0f34d53a4892591cc7bd9307da6e746e"
         },
         {
           "file": "shell-head-on-aged.arena.png",
-          "sha256": "63bb43ae0153dc1e0c0415241f1229a6d1e2071f3d3458117d576d7c6999c69f"
+          "sha256": "f049637b73e986b6e75d7cba01d704f70250c521d8b3ea9fcdf1097cd6ee5519"
         },
         {
           "file": "shell-head-on-aged.detail.png",
@@ -32398,11 +32961,11 @@
       "images": [
         {
           "file": "shell-head-on-cleared.full.png",
-          "sha256": "8ecde19b9f85dead5f9c3ad811f8324a5f3ef633e240095463fc0f0ae9b7f9ea"
+          "sha256": "b463410490b205848fb0abf0b01845033ca672cdb77b15fe5a52f9ce2d56d4b1"
         },
         {
           "file": "shell-head-on-cleared.arena.png",
-          "sha256": "e52bd70bd8bb343e4e7ffe01dea67751bc6b3a59597762ffe974e769ddf3bbfa"
+          "sha256": "b38003d56926c3c02fff70615c38910a256e817caef4a8ad05a2fbc5f09f11f6"
         },
         {
           "file": "shell-head-on-cleared.detail.png",
@@ -33046,11 +33609,11 @@
       "images": [
         {
           "file": "touch-landscape-gameplay.full.png",
-          "sha256": "829c785154ef907f5d7fecaab923e6ba2230d6c41769a17c9dc77b6148ec6c7c"
+          "sha256": "bd33ca970ddf2808b34788af105a486c493e992aa536faf5f9347af259c470c3"
         },
         {
           "file": "touch-landscape-gameplay.arena.png",
-          "sha256": "3bf4bc285a28d640e037f4c5170791ee8b5a68cdc32ea5cd5dab801431e6940a"
+          "sha256": "1676fb0d50c35793763d4d37523af8f5153a7ab3f0c9c7b5a6b1d07407b89ec7"
         }
       ],
       "expectedFiles": ["touch-landscape-gameplay.full.png", "touch-landscape-gameplay.arena.png"]

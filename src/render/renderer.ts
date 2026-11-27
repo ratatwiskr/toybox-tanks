@@ -35,6 +35,7 @@ export type RenderContext = Pick<
   | 'setTransform'
   | 'setLineDash'
   | 'createPattern'
+  | 'drawImage'
   | 'fillText'
 >;
 
@@ -50,6 +51,8 @@ export interface Renderer {
   render(world: World, debug?: boolean): void;
   /** Creates the world-anchored floor pattern; false keeps the procedural floor. */
   setFloorPattern(image: CanvasImageSource): boolean;
+  /** Supplies the decoded wall SVG; rendering falls back to canvas walls until set. */
+  setWallImage(image: CanvasImageSource): void;
 }
 
 const ENEMY_LABEL = {
@@ -78,6 +81,7 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
   let scaleX = 1;
   let scaleY = 1;
   let floorPattern: CanvasPattern | null = null;
+  let wallImage: CanvasImageSource | null = null;
 
   const rounded = (
     x: number,
@@ -145,6 +149,13 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
   };
 
   const drawWall = (wall: Wall): void => {
+    // The SVG is decoded once by the loader; the existing canvas transform
+    // scales it to the backing store. No per-wall caching is built in A2.
+    if (wallImage !== null) {
+      ctx.drawImage(wallImage, wall.x, wall.y, wall.w, wall.h);
+      return;
+    }
+
     rounded(wall.x + 2, wall.y + 5, 37, 37, 5, '#6548262a');
     rounded(wall.x + 1, wall.y + 1, 38, 37, 5, '#b88650', '#9a6d3c');
     rounded(wall.x + 3, wall.y + 2, 34, 31, 4, '#d4aa70');
@@ -836,6 +847,10 @@ export function createRenderer(canvas: RenderCanvas): Renderer {
       }
       floorPattern = pattern;
       return true;
+    },
+
+    setWallImage(image: CanvasImageSource): void {
+      wallImage = image;
     },
 
     render(world: World, debug = false): void {

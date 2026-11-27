@@ -13,6 +13,7 @@ import { AssetLoadError } from './render/assets';
 import { FLOOR_WOOD_WARM } from './render/floor-data';
 import { prepareFloorImage } from './render/floor';
 import { createRenderer } from './render/renderer';
+import { isSplitSvgLayers, preloadSvgAssets, svgAssets } from './render/svg-loader';
 import { MAPS } from './sim/maps';
 import type { Command, GameState, Mode, World } from './sim/types';
 import { activeShells, createEmptyWorld, createWorld } from './sim/world';
@@ -809,9 +810,22 @@ async function preloadFloorArtwork(): Promise<void> {
   }
 }
 
+async function preloadSvgArtwork(): Promise<void> {
+  const report = await preloadSvgAssets(['wall']);
+  if (report.warning !== null) {
+    showAssetWarning(report.warning);
+  }
+
+  const wall = svgAssets.get('wall');
+  if (wall !== null && !isSplitSvgLayers(wall)) {
+    renderer.setWallImage(wall.full);
+  }
+}
+
 // Preload before the first frame so captures and gameplay never race the decode.
-// A failure keeps the procedural floor and shows the reason in the status line.
+// A failure keeps the procedural artwork and shows the reason in the status line.
 await preloadFloorArtwork();
+await preloadSvgArtwork();
 
 if (__TEST_BUILD__) {
   installTestBridge({

@@ -16,6 +16,10 @@ const TANK_WITHOUT_OPTIONAL_LAYERS =
 
 interface SvgLoaderModule {
   splitTank(source: string): { hull: string; turret: string | null; key: string | null };
+  isSplitSvgLayers(layers: unknown): boolean;
+  svgAssets: {
+    prepare(id: string): Promise<unknown>;
+  };
 }
 
 async function splitInBrowser(
@@ -58,5 +62,25 @@ test.describe('svg loader DOM path', () => {
     expect(layers.hull).toContain('id="hull"');
     expect(layers.turret).toBeNull();
     expect(layers.key).toBeNull();
+  });
+
+  test('loads the checked-in wall SVG through the real raw glob', async ({ page }) => {
+    const result = await page.evaluate(async () => {
+      const moduleUrl = '/src/render/svg-loader.ts';
+      const loader = (await import(/* @vite-ignore */ moduleUrl)) as SvgLoaderModule;
+      const layers = await loader.svgAssets.prepare('wall');
+      const split = loader.isSplitSvgLayers(layers);
+      const full =
+        typeof layers === 'object' && layers !== null && 'full' in layers ? layers.full : null;
+      return {
+        split,
+        isImage: full instanceof HTMLImageElement,
+        naturalWidth: full instanceof HTMLImageElement ? full.naturalWidth : 0,
+      };
+    });
+
+    expect(result.split).toBe(false);
+    expect(result.isImage).toBe(true);
+    expect(result.naturalWidth).toBe(128);
   });
 });

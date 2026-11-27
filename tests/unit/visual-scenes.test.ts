@@ -94,6 +94,20 @@ describe('curated visual fixtures', () => {
     expect(world.nextMine).toBe(world.mines.length);
   });
 
+  it('provides interior walls for the wall art fixture', () => {
+    const world = createVisualWorld('wall-art');
+    const interior = world.walls.filter(
+      (wall) =>
+        wall.x > 0 &&
+        wall.x < CONFIG.width - CONFIG.tile &&
+        wall.y > CONFIG.gridY &&
+        wall.y < CONFIG.gridY + (CONFIG.rows - 1) * CONFIG.tile,
+    );
+
+    expect(interior).toHaveLength(3);
+    expect(interior.map((wall) => wall.y)).toEqual([250, 250, 250]);
+  });
+
   it('shows a real lobber pom in flight with its landing point', () => {
     const world = createVisualWorld('lobber-pom');
     const pom = world.poms[0];
