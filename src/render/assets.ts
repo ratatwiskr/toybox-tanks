@@ -26,7 +26,12 @@ export type AssetLayerAngles = {
 };
 
 export type AssetErrorCode =
-  'unknown-asset' | 'invalid-asset' | 'decode-failed' | 'canvas-unavailable' | 'invalid-resolution';
+  | 'unknown-asset'
+  | 'missing-source'
+  | 'invalid-asset'
+  | 'decode-failed'
+  | 'canvas-unavailable'
+  | 'invalid-resolution';
 
 export class AssetLoadError extends Error {
   readonly code: AssetErrorCode;
